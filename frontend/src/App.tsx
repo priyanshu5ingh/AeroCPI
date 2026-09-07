@@ -8,38 +8,41 @@ interface HealthStatus {
   database: string;
 }
 
-interface Observation {
-  observation_id: string;
-  source_id: string;
-  route_id: string;
-  carrier_id: string;
-  travel_date: string;
-  observed_at: string;
-  booking_horizon_days: number;
-  cabin: string;
-  base_fare: number;
-  taxes: number;
-  mandatory_fees: number;
-  total_fare: number;
-  currency: string;
-  data_status: string;
-  normalization_result?: {
-    normalized_total: number;
-    normalization_version: string;
-  };
-  quality_result?: {
-    eligible: boolean;
-    outlier_status: string;
-  };
+interface IndexRun {
+  run_id: string;
+  run_timestamp: string;
+  reference_period: string;
+  comparison_period: string;
+  dataset_version_id: string;
+  number_of_observations: number;
+  number_of_eligible_observations: number;
+  number_of_excluded_observations: number;
+  number_of_outlier_flagged: number;
+  number_of_retained_warning: number;
+  number_of_duplicates: number;
+  coverage_ratio: number;
+  index_value: number;
+  canonical_run_fingerprint: str;
+}
+
+interface QualitySummary {
+  total_observations: number;
+  eligible_observations: number;
+  excluded_observations: number;
+  outlier_flagged_observations: number;
+  retained_with_warning_observations: number;
+  duplicate_observations: number;
+  missing_incomplete_observations: number;
+  coverage_ratio: number;
 }
 
 export default function App() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
-  const [healthError, setHealthError] = useState<string | null>(null);
-  const [observations, setObservations] = useState<Observation[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [selectedRoute, setSelectedRoute] = useState<string>('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const [runs, setRuns] = useState<IndexRun[]>([]);
+  const [selectedRun, setSelectedRun] = useState<IndexRun | null>(null);
+  const [qualitySummary, setQualitySummary] = useState<QualitySummary | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [executing, setExecuting] = useState<boolean>(false);
 
   const API_BASE = 'http://localhost:8000/api/v1';
 
@@ -47,157 +50,158 @@ export default function App() {
     try {
       const res = await axios.get<HealthStatus>(`${API_BASE}/health`);
       setHealth(res.data);
-      setHealthError(null);
-    } catch (err: any) {
-      setHealthError(err.message || 'Failed to connect to backend server');
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const fetchObservations = async () => {
+  const fetchIndexRuns = async () => {
     setLoading(true);
     try {
-      let url = `${API_BASE}/observations?limit=50`;
-      if (selectedRoute) url += `&route_id=${selectedRoute}`;
-      if (selectedStatus) url += `&data_status=${selectedStatus}`;
-      
-      const res = await axios.get<Observation[]>(url);
-      setObservations(res.data);
-    } catch (err: any) {
-      console.error("Error fetching observations:", err);
+      const res = await axios.get<IndexRun[]>(`${API_BASE}/index-runs`);
+      setRuns(res.data);
+      if (res.data.length > 0) {
+        selectRun(res.data[0]);
+      }
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
+  const selectRun = async (run: IndexRun) => {
+    setSelectedRun(run);
+    try {
+      const res = await axios.get<QualitySummary>(`${API_BASE}/index-runs/${run.run_id}/quality-summary`);
+      setQualitySummary(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const executeNewRun = async () => {
+    setExecuting(true);
+    try {
+      const res = await axios.post<IndexRun>(`${API_BASE}/index-runs`, {
+        reference_period: "2026-08-01",
+        comparison_period: "2026-09-01",
+        proxy_weight_version: "DGCA_PROXY_2026_V1"
+      });
+      await fetchIndexRuns();
+    } catch (err: any) {
+      alert("Failed to execute index run: " + (err.response?.data?.detail || err.message));
+    } finally {
+      setExecuting(false);
+    }
+  };
+
   useEffect(() => {
     checkHealth();
-    fetchObservations();
-  }, [selectedRoute, selectedStatus]);
+    fetchIndexRuns();
+  }, []);
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif', backgroundColor: '#0f172a', color: '#f8fafc' }}>
       <header style={{ borderBottom: '1px solid #334155', paddingBottom: '16px', marginBottom: '24px' }}>
-        <h1 style={{ margin: 0, fontSize: '24px', color: '#6366f1' }}>AeroCPI — Airfare Measurement Platform Shell</h1>
+        <h1 style={{ margin: 0, color: '#6366f1' }}>AeroCPI — Milestone 2 Index & Quality Engine Shell</h1>
         <p style={{ margin: '4px 0 0 0', color: '#94a3b8', fontSize: '14px' }}>
-          Experimental Prototype for CPI Augmentation | Milestone 1 Foundational Domain Layer
+          Experimental prototype airfare price measurement intended to augment CPI airfare measurement.
         </p>
 
         <div style={{ marginTop: '16px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <div style={{ padding: '8px 16px', borderRadius: '6px', backgroundColor: '#1e293b', border: '1px solid #334155', fontSize: '14px' }}>
-            Backend API: <strong>{healthError ? 'DISCONNECTED' : health ? 'CONNECTED' : 'CHECKING...'}</strong>
-            {health && ` (${health.app} v${health.version})`}
-          </div>
-
-          <div style={{ padding: '8px 16px', borderRadius: '6px', backgroundColor: '#1e293b', border: '1px solid #334155', fontSize: '14px' }}>
-            Database: <strong style={{ color: health?.database === 'connected' ? '#10b981' : '#ef4444' }}>
-              {health?.database || 'UNKNOWN'}
-            </strong>
+          <div style={{ padding: '8px 16px', borderRadius: '6px', backgroundColor: '#1e293b', border: '1px solid #334155' }}>
+            Backend API: <strong>{health?.status === 'ok' ? 'CONNECTED' : 'DISCONNECTED'}</strong>
           </div>
 
           <button 
-            onClick={() => { checkHealth(); fetchObservations(); }}
-            style={{ padding: '8px 16px', backgroundColor: '#4f46e5', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+            onClick={executeNewRun}
+            disabled={executing}
+            style={{ padding: '8px 16px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
           >
-            Refresh Status
+            {executing ? 'Executing Pipeline...' : 'Run Index Engine (2026-08 vs 2026-09)'}
           </button>
         </div>
       </header>
 
-      {/* Filter Controls */}
-      <section style={{ marginBottom: '20px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-        <label style={{ fontSize: '14px', color: '#cbd5e1' }}>
-          Filter Route:
-          <select 
-            value={selectedRoute} 
-            onChange={(e) => setSelectedRoute(e.target.value)}
-            style={{ marginLeft: '8px', padding: '6px 12px', borderRadius: '4px', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #475569' }}
-          >
-            <option value="">All Routes</option>
-            <option value="DEL-BOM">DEL-BOM</option>
-            <option value="BOM-DEL">BOM-DEL</option>
-            <option value="BLR-DEL">BLR-DEL</option>
-            <option value="CCU-DEL">CCU-DEL</option>
-            <option value="DEL-MAA">DEL-MAA</option>
-          </select>
-        </label>
-
-        <label style={{ fontSize: '14px', color: '#cbd5e1' }}>
-          Filter Data Status:
-          <select 
-            value={selectedStatus} 
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            style={{ marginLeft: '8px', padding: '6px 12px', borderRadius: '4px', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #475569' }}
-          >
-            <option value="">All Statuses</option>
-            <option value="OBSERVED">OBSERVED</option>
-            <option value="FROZEN">FROZEN</option>
-            <option value="SYNTHETIC">SYNTHETIC</option>
-            <option value="DEMO">DEMO</option>
-          </select>
-        </label>
-
-        <span style={{ fontSize: '14px', color: '#94a3b8', marginLeft: 'auto' }}>
-          Showing {observations.length} observations
-        </span>
-      </section>
-
-      {/* Observations Table */}
-      <main>
-        {loading ? (
-          <p style={{ color: '#94a3b8' }}>Loading observations from AeroCPI API...</p>
-        ) : observations.length === 0 ? (
-          <div style={{ padding: '32px', backgroundColor: '#1e293b', borderRadius: '8px', textAlign: 'center' }}>
-            <p style={{ color: '#94a3b8', margin: 0 }}>No observations found. Run `python scripts/seed_demo_data.py` to seed sample data.</p>
-          </div>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#1e293b', borderRadius: '8px', overflow: 'hidden' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#0f172a', textAlign: 'left', borderBottom: '2px solid #334155' }}>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Route</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Carrier</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Travel Date</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Horizon</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Base Fare</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Taxes & Fees</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Total Fare</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Normalized</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Data Status</th>
-                <th style={{ padding: '12px', fontSize: '13px', color: '#94a3b8' }}>Quality</th>
-              </tr>
-            </thead>
-            <tbody>
-              {observations.map((obs) => (
-                <tr key={obs.observation_id} style={{ borderBottom: '1px solid #334155' }}>
-                  <td style={{ padding: '12px', fontWeight: 600 }}>{obs.route_id}</td>
-                  <td style={{ padding: '12px' }}>{obs.carrier_id}</td>
-                  <td style={{ padding: '12px' }}>{obs.travel_date}</td>
-                  <td style={{ padding: '12px' }}>T+{obs.booking_horizon_days}</td>
-                  <td style={{ padding: '12px' }}>₹{obs.base_fare.toFixed(2)}</td>
-                  <td style={{ padding: '12px' }}>₹{(obs.taxes + obs.mandatory_fees).toFixed(2)}</td>
-                  <td style={{ padding: '12px', fontWeight: 600, color: '#10b981' }}>₹{obs.total_fare.toFixed(2)}</td>
-                  <td style={{ padding: '12px' }}>
-                    ₹{obs.normalization_result?.normalized_total.toFixed(2) || '—'}
-                  </td>
-                  <td style={{ padding: '12px' }}>
-                    <span style={{ 
-                      padding: '4px 8px', 
-                      borderRadius: '4px', 
-                      fontSize: '11px', 
-                      fontWeight: 600,
-                      backgroundColor: obs.data_status === 'OBSERVED' ? '#065f46' : obs.data_status === 'SYNTHETIC' ? '#92400e' : '#3730a3',
-                      color: '#fff'
-                    }}>
-                      {obs.data_status}
+      <main style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        {/* Left Column: Index Runs List */}
+        <section>
+          <h2>Index Runs ({runs.length})</h2>
+          {loading ? (
+            <p>Loading index runs...</p>
+          ) : runs.length === 0 ? (
+            <p style={{ color: '#94a3b8' }}>No index runs recorded yet. Click "Run Index Engine" above.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {runs.map((r) => (
+                <div 
+                  key={r.run_id}
+                  onClick={() => selectRun(r)}
+                  style={{ 
+                    padding: '16px', 
+                    borderRadius: '8px', 
+                    backgroundColor: selectedRun?.run_id === r.run_id ? '#312e81' : '#1e293b', 
+                    border: '1px solid #4338ca',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>
+                      AeroCPI Index: {r.index_value.toFixed(3)}
                     </span>
-                  </td>
-                  <td style={{ padding: '12px', fontSize: '12px', color: '#94a3b8' }}>
-                    {obs.quality_result?.outlier_status || 'VALID'}
-                  </td>
-                </tr>
+                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>
+                      {new Date(r.run_timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: '13px', color: '#cbd5e1' }}>
+                    Reference Period: <strong>{r.reference_period}</strong> → Current: <strong>{r.comparison_period}</strong>
+                  </div>
+
+                  <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px', fontFamily: 'monospace' }}>
+                    SHA-256 Fingerprint: {r.canonical_run_fingerprint.substring(0, 16)}...
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        )}
+            </div>
+          )}
+        </section>
+
+        {/* Right Column: Selected Run Details & Quality Summary */}
+        <section>
+          <h2>Index Run & Quality Summary</h2>
+          {selectedRun ? (
+            <div style={{ backgroundColor: '#1e293b', padding: '20px', borderRadius: '8px', border: '1px solid #334155' }}>
+              <h3 style={{ margin: '0 0 12px 0', color: '#6366f1' }}>Run Metadata</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '14px', lineHeight: '1.8' }}>
+                <li><strong>Run ID:</strong> {selectedRun.run_id}</li>
+                <li><strong>Reference Period:</strong> {selectedRun.reference_period}</li>
+                <li><strong>Current Period:</strong> {selectedRun.comparison_period}</li>
+                <li><strong>Dataset Version:</strong> {selectedRun.dataset_version_id}</li>
+                <li><strong>Methodology:</strong> {selectedRun.methodology_version}</li>
+                <li><strong>Weight Version:</strong> {selectedRun.proxy_weight_version}</li>
+                <li><strong>Index Method:</strong> Jevons (Elementary) + Young/Laspeyres (National)</li>
+              </ul>
+
+              {qualitySummary && (
+                <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #334155' }}>
+                  <h3 style={{ margin: '0 0 12px 0', color: '#f59e0b' }}>Quality Metrics Summary</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '14px' }}>
+                    <div>Total Observations: <strong>{qualitySummary.total_observations}</strong></div>
+                    <div>Eligible Observations: <strong style={{ color: '#10b981' }}>{qualitySummary.eligible_observations}</strong></div>
+                    <div>Excluded Observations: <strong style={{ color: '#ef4444' }}>{qualitySummary.excluded_observations}</strong></div>
+                    <div>Outlier Flagged (MAD &gt; 3.5): <strong style={{ color: '#f59e0b' }}>{qualitySummary.outlier_flagged_observations}</strong></div>
+                    <div>Duplicate Count: <strong>{qualitySummary.duplicate_observations}</strong></div>
+                    <div>Coverage Ratio: <strong>{(qualitySummary.coverage_ratio * 100).toFixed(1)}%</strong></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p style={{ color: '#94a3b8' }}>Select an Index Run from the left to view details.</p>
+          )}
+        </section>
       </main>
     </div>
   );

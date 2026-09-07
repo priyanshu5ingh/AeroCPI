@@ -5,6 +5,17 @@
 
 ---
 
+## Milestone Implementation Progress
+
+| Milestone | Scope / Objective | Status | Verification Gate |
+|---|---|---|---|
+| **Milestone 1** | Foundation & Domain Layer (Models, Schemas, Services, Validation) | ✅ **COMPLETED & VERIFIED** | Tag: `milestone-1-foundation` |
+| **Milestone 2** | Quality Engine + Core Index Computation Pipeline (Jevons, Young/Laspeyres, MAD, SHA-256 Fingerprint) | ✅ **COMPLETED & VERIFIED** | 30/30 Tests Passed, Fingerprint Verified |
+| **Milestone 3** | Ingestion & Live Scraper Integration | ⏳ Pending | Next Milestone |
+| **Milestone 4** | Trust Engine & Counterfactual Analysis | ⏳ Pending | Later Milestone |
+
+---
+
 ## Priority Implementation Focus
 
 The 10-day build focuses on delivering the **core measurement assurance platform** and **6 prioritized UI screens**:

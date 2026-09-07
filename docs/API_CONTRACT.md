@@ -44,7 +44,78 @@ The AeroCPI API exposes endpoints for querying the **AeroCPI Airfare Price Index
 
 ---
 
-### 2.2 Constant-Sample Counterfactual & Movement Breakdown
+### 2.2 Index Execution & Quality Summary Endpoints (Milestone 2)
+
+#### 2.2.1 Create / Execute Index Run
+`POST /api/v1/index-runs`
+
+**Request Body:**
+```json
+{
+  "reference_period": "2026-08-01",
+  "comparison_period": "2026-09-01",
+  "dataset_version_id": "DS-20260907-001",
+  "proxy_weight_version": "DGCA_PROXY_2026_V1",
+  "route_basket_version": "BASKET_2026_Q1"
+}
+```
+
+**Response Body (`201 Created`):**
+```json
+{
+  "run_id": "f377137e-72fc-4bbf-8527-918922b7f5a4",
+  "run_timestamp": "2026-09-07T13:35:43Z",
+  "reference_period": "2026-08-01",
+  "comparison_period": "2026-09-01",
+  "dataset_version": "DS-20260907-001",
+  "proxy_weight_version": "DGCA_PROXY_2026_V1",
+  "route_basket_version": "BASKET_2026_Q1",
+  "methodology_version": "YOUNG_LASPEYRES_V1",
+  "quality_rule_version": "MAD_3.5_V1",
+  "index_method": "JEVONS_ELEMENTARY_YOUNG_NATIONAL",
+  "index_name": "AeroCPI Airfare Price Index",
+  "classification": "Experimental prototype airfare price measurement intended to augment CPI airfare measurement.",
+  "number_of_observations": 401,
+  "number_of_eligible_observations": 394,
+  "number_of_excluded_observations": 7,
+  "index_value": 107.717,
+  "canonical_run_fingerprint": "1647aacffab35892cea8581bc80d5d5b72413963223b3b206edb97a8f63e9dc1",
+  "software_version": "0.2.0-milestone-2"
+}
+```
+
+#### 2.2.2 List Index Runs
+`GET /api/v1/index-runs`
+
+#### 2.2.3 Get Index Run Details
+`GET /api/v1/index-runs/{run_id}`
+
+#### 2.2.4 Get Route-Level Index Breakdown
+`GET /api/v1/index-runs/{run_id}/routes`
+
+#### 2.2.5 Get Underlying Observations for Index Run
+`GET /api/v1/index-runs/{run_id}/observations`
+
+#### 2.2.6 Get Quality Summary for Index Run
+`GET /api/v1/index-runs/{run_id}/quality-summary`
+
+**Response Body (`200 OK`):**
+```json
+{
+  "total_observations": 401,
+  "eligible_observations": 394,
+  "excluded_observations": 7,
+  "outlier_flagged_observations": 4,
+  "retained_with_warning_observations": 0,
+  "duplicate_observations": 3,
+  "missing_incomplete_observations": 0,
+  "coverage_ratio": 0.9825
+}
+```
+
+---
+
+### 2.3 Constant-Sample Counterfactual & Movement Breakdown
 `GET /api/v1/runs/{run_id}/movement-breakdown`
 
 Retrieves the 4-pillar Trust Engine movement analysis, comparing observed sample index vs constant-sample counterfactual index.

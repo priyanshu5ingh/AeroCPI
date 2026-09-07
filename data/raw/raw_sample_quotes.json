@@ -1,0 +1,102 @@
+[
+  {
+    "observation_id": "6609d885-749c-42ae-8c34-05573ed44390",
+    "route_id": "DEL-BOM",
+    "carrier_id": "6E",
+    "booking_horizon_days": 1,
+    "travel_date": "2026-09-08",
+    "total_fare": 5888.12,
+    "data_status": "DEMO",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "0bcc9ed8-9666-417e-bd68-9c9736b2077e",
+    "route_id": "DEL-BOM",
+    "carrier_id": "6E",
+    "booking_horizon_days": 7,
+    "travel_date": "2026-09-14",
+    "total_fare": 5600.84,
+    "data_status": "OBSERVED",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "d709bc09-21c7-40fa-ac04-a9575b335047",
+    "route_id": "DEL-BOM",
+    "carrier_id": "6E",
+    "booking_horizon_days": 15,
+    "travel_date": "2026-09-22",
+    "total_fare": 5217.8,
+    "data_status": "OBSERVED",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "eb281046-ef9f-4d87-9d20-96d3293cbd52",
+    "route_id": "DEL-BOM",
+    "carrier_id": "6E",
+    "booking_horizon_days": 30,
+    "travel_date": "2026-10-07",
+    "total_fare": 4499.6,
+    "data_status": "FROZEN",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "963c1160-f228-485f-a481-b5e3e51c3b6e",
+    "route_id": "DEL-BOM",
+    "carrier_id": "6E",
+    "booking_horizon_days": 45,
+    "travel_date": "2026-10-22",
+    "total_fare": 3781.4,
+    "data_status": "DEMO",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "0fbee6b9-36d1-48ec-82f0-783d1e4f58ea",
+    "route_id": "DEL-BOM",
+    "carrier_id": "AI",
+    "booking_horizon_days": 1,
+    "travel_date": "2026-09-08",
+    "total_fare": 6471.08,
+    "data_status": "DEMO",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "d4188587-3b2c-4e83-8756-490628810cb5",
+    "route_id": "DEL-BOM",
+    "carrier_id": "AI",
+    "booking_horizon_days": 7,
+    "travel_date": "2026-09-14",
+    "total_fare": 6153.56,
+    "data_status": "OBSERVED",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "e1a47ecc-47ad-42a2-af70-cddbf2ff5c31",
+    "route_id": "DEL-BOM",
+    "carrier_id": "AI",
+    "booking_horizon_days": 15,
+    "travel_date": "2026-09-22",
+    "total_fare": 5730.2,
+    "data_status": "OBSERVED",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "8ec47eae-a604-43e0-b585-37a7ec4c1bac",
+    "route_id": "DEL-BOM",
+    "carrier_id": "AI",
+    "booking_horizon_days": 30,
+    "travel_date": "2026-10-07",
+    "total_fare": 4936.4,
+    "data_status": "FROZEN",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  },
+  {
+    "observation_id": "2a81a8fb-cfe1-49dd-987c-fc6abb8c23e2",
+    "route_id": "DEL-BOM",
+    "carrier_id": "AI",
+    "booking_horizon_days": 45,
+    "travel_date": "2026-10-22",
+    "total_fare": 4142.6,
+    "data_status": "DEMO",
+    "disclaimer": "Integration Demo Data - Not Official MoSPI Statistics"
+  }
+]

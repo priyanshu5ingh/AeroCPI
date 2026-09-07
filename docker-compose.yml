@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aerocpi_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: aerocpi
+      POSTGRES_PASSWORD: aerocpi_secret_password
+      POSTGRES_DB: aerocpi_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aerocpi_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_SERVER: postgres
+      POSTGRES_USER: aerocpi
+      POSTGRES_PASSWORD: aerocpi_secret_password
+      POSTGRES_DB: aerocpi_db
+      POSTGRES_PORT: 5432
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

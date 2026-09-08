@@ -209,3 +209,108 @@ def test_dgca_api_endpoints(db_session, client):
     assert res_tr.status_code == 200
     tr_data = res_tr.json()
     assert len(tr_data) > 0
+
+
+def test_adversarial_publisher_rejection():
+    """Adversarial Test 1: Validator rejects datasets where publisher is not DGCA."""
+    ds_meta = {"publisher": "INVALID_PUB", "canonical_dataset_sha256": "abc", "months_expected": 12, "months_available": 12, "completeness_status": "COMPLETE"}
+    is_valid, errors = DGCAValidator.validate_dataset_and_observations(ds_meta, [], [])
+    assert is_valid is False
+    assert any("Publisher must be 'DGCA'" in e for e in errors)
+
+
+def test_adversarial_incomplete_source_period_rejection():
+    """Adversarial Test 2: Validator rejects datasets illegally marked COMPLETE when months are missing."""
+    ds_meta = {"publisher": "DGCA", "canonical_dataset_sha256": "abc", "months_expected": 12, "months_available": 10, "completeness_status": "COMPLETE"}
+    is_valid, errors = DGCAValidator.validate_dataset_and_observations(ds_meta, [], [])
+    assert is_valid is False
+    assert any("illegally marked 'COMPLETE'" in e for e in errors)
+
+
+def test_adversarial_negative_passenger_value_rejection():
+    """Adversarial Test 3: Validator rejects negative passenger counts."""
+    ds_meta = {"publisher": "DGCA", "canonical_dataset_sha256": "abc", "months_expected": 12, "months_available": 12, "completeness_status": "COMPLETE"}
+    norm_obs = [{
+        "canonical_route_key": "DELHI::MUMBAI",
+        "passengers_city1_to_city2": -500,
+        "passengers_city2_to_city1": 1000,
+        "combined_passengers": 500,
+        "reference_period": "2025-01"
+    }]
+    is_valid, errors = DGCAValidator.validate_dataset_and_observations(ds_meta, [], norm_obs)
+    assert is_valid is False
+    assert any("Negative passenger count" in e for e in errors)
+
+
+def test_adversarial_combined_passenger_mismatch_rejection():
+    """Adversarial Test 4: Validator rejects incorrect combined passenger sums."""
+    ds_meta = {"publisher": "DGCA", "canonical_dataset_sha256": "abc", "months_expected": 12, "months_available": 12, "completeness_status": "COMPLETE"}
+    norm_obs = [{
+        "canonical_route_key": "DELHI::MUMBAI",
+        "passengers_city1_to_city2": 500,
+        "passengers_city2_to_city1": 1000,
+        "combined_passengers": 9999, # False combined sum!
+        "reference_period": "2025-01"
+    }]
+    is_valid, errors = DGCAValidator.validate_dataset_and_observations(ds_meta, [], norm_obs)
+    assert is_valid is False
+    assert any("Combined passengers mismatch" in e for e in errors)
+
+
+def test_adversarial_duplicate_route_month_deduplication_failure():
+    """Adversarial Test 5: Validator rejects duplicate normalized route-month entries if deduplication failed."""
+    ds_meta = {"publisher": "DGCA", "canonical_dataset_sha256": "abc", "months_expected": 12, "months_available": 12, "completeness_status": "COMPLETE"}
+    norm_obs = [
+        {"canonical_route_key": "DELHI::MUMBAI", "passengers_city1_to_city2": 500, "passengers_city2_to_city1": 1000, "combined_passengers": 1500, "reference_period": "2025-01"},
+        {"canonical_route_key": "DELHI::MUMBAI", "passengers_city1_to_city2": 500, "passengers_city2_to_city1": 1000, "combined_passengers": 1500, "reference_period": "2025-01"}
+    ]
+    is_valid, errors = DGCAValidator.validate_dataset_and_observations(ds_meta, [], norm_obs)
+    assert is_valid is False
+    assert any("Duplicate route-month observation key" in e for e in errors)
+
+
+def test_adversarial_basket_traffic_share_sum_rejection():
+    """Adversarial Test 6: Validator rejects route baskets where traffic shares do not sum to ~1.0."""
+    b_meta = {"basket_size": 2}
+    members = [
+        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "traffic_share": 0.6, "traffic_share_unit": "share_of_basket_traffic"},
+        {"rank": 2, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "traffic_share": 0.2, "traffic_share_unit": "share_of_basket_traffic"},
+    ]
+    is_valid, errors = DGCAValidator.validate_route_basket(b_meta, members)
+    assert is_valid is False
+    assert any("Traffic shares sum to" in e for e in errors)
+
+
+def test_adversarial_basket_duplicate_rank_rejection():
+    """Adversarial Test 7: Validator rejects route baskets with duplicate ranks."""
+    b_meta = {"basket_size": 2}
+    members = [
+        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "traffic_share": 0.5, "traffic_share_unit": "share_of_basket_traffic"},
+        {"rank": 1, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "traffic_share": 0.5, "traffic_share_unit": "share_of_basket_traffic"},
+    ]
+    is_valid, errors = DGCAValidator.validate_route_basket(b_meta, members)
+    assert is_valid is False
+    assert any("Duplicate ranks found" in e for e in errors)
+
+
+def test_adversarial_basket_cpi_weight_injection_rejection():
+    """Adversarial Test 8: Validator rejects route baskets where CPI weight field is illegally injected."""
+    b_meta = {"basket_size": 1}
+    members = [
+        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "traffic_share": 1.0, "traffic_share_unit": "share_of_basket_traffic", "cpi_weight": 0.03},
+    ]
+    is_valid, errors = DGCAValidator.validate_route_basket(b_meta, members)
+    assert is_valid is False
+    assert any("CPI weight field illegally injected" in e for e in errors)
+
+
+def test_adversarial_nondeterministic_ranking_rejection():
+    """Adversarial Test 9: Validator rejects route baskets that are not sorted in strict rank order."""
+    b_meta = {"basket_size": 2}
+    members = [
+        {"rank": 2, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "traffic_share": 0.4, "traffic_share_unit": "share_of_basket_traffic"},
+        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "traffic_share": 0.6, "traffic_share_unit": "share_of_basket_traffic"},
+    ]
+    is_valid, errors = DGCAValidator.validate_route_basket(b_meta, members)
+    assert is_valid is False
+    assert any("members are not sorted in strict rank order" in e for e in errors)

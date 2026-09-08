@@ -234,8 +234,8 @@ export default function App() {
 
             <div style={{ fontSize: '12px', color: '#cbd5e1', marginBottom: '12px', lineHeight: '1.5' }}>
               • Selection Method: <strong>TOP_N_TRAFFIC (Top 10 Routes)</strong><br/>
-              • Share of All Eligible Traffic Denominator: <strong>Total pax across all 11 eligible routes (26,475,700 pax)</strong><br/>
-              • Weight within Selected Basket Denominator: <strong>Total pax within Top 10 basket (22,612,800 pax)</strong><br/>
+              • Share of All Eligible Canonical Routes Denominator: <strong>Total pax across all 13 canonical routes in 2025 reference dataset (21,615,500 pax)</strong><br/>
+              • Weight within Selected Basket Denominator: <strong>Total pax within Top 10 basket (19,773,500 pax)</strong><br/>
               <span style={{ fontSize: '11px', color: '#94a3b8', fontStyle: 'italic' }}>
                 Note: DGCA traffic proxy weights reflect passenger volume share and are strictly separated from MoSPI CPI expenditure weights.
               </span>
@@ -256,37 +256,78 @@ export default function App() {
                   <tr style={{ borderBottom: '1px solid #1e293b' }}>
                     <td style={{ padding: '6px 8px' }}>#1</td>
                     <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ BOM</td>
-                    <td style={{ padding: '6px 8px' }}>3,506,900</td>
-                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>13.25%</td>
-                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>15.51%</td>
+                    <td style={{ padding: '6px 8px' }}>3,518,800</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>16.28%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>17.80%</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #1e293b' }}>
                     <td style={{ padding: '6px 8px' }}>#2</td>
                     <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ BLR</td>
-                    <td style={{ padding: '6px 8px' }}>2,714,000</td>
-                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>10.25%</td>
-                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>12.00%</td>
+                    <td style={{ padding: '6px 8px' }}>2,790,300</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>12.91%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>14.11%</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #1e293b' }}>
                     <td style={{ padding: '6px 8px' }}>#3</td>
                     <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>BOM ↔ BLR</td>
-                    <td style={{ padding: '6px 8px' }}>2,305,000</td>
-                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>8.71%</td>
-                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>10.19%</td>
+                    <td style={{ padding: '6px 8px' }}>2,289,400</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>10.59%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>11.58%</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #1e293b' }}>
                     <td style={{ padding: '6px 8px' }}>#4</td>
                     <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ HYD</td>
-                    <td style={{ padding: '6px 8px' }}>2,036,000</td>
-                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>7.69%</td>
-                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>9.00%</td>
+                    <td style={{ padding: '6px 8px' }}>2,039,700</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>9.44%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>10.32%</td>
                   </tr>
-                  <tr>
-                    <td style={{ padding: '6px 8px' }}>#5..10</td>
-                    <td style={{ padding: '6px 8px', color: '#94a3b8' }}>CCU, GOI, MAA, PAT, etc.</td>
-                    <td style={{ padding: '6px 8px' }}>12,050,900</td>
-                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>45.51%</td>
-                    <td style={{ padding: '6px 8px', color: '#10b981' }}>53.30%</td>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#5</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ CCU</td>
+                    <td style={{ padding: '6px 8px' }}>1,955,600</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>9.05%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>9.89%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#6</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ MAA</td>
+                    <td style={{ padding: '6px 8px' }}>1,618,400</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>7.49%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>8.18%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#7</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>BOM ↔ GOI</td>
+                    <td style={{ padding: '6px 8px' }}>1,589,600</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>7.35%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>8.04%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#8</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>BLR ↔ HYD</td>
+                    <td style={{ padding: '6px 8px' }}>1,450,600</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>6.71%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>7.34%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#9</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ PAT</td>
+                    <td style={{ padding: '6px 8px' }}>1,310,500</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>6.06%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>6.63%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#10</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>BLR ↔ CCU</td>
+                    <td style={{ padding: '6px 8px' }}>1,210,600</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>5.60%</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>6.12%</td>
+                  </tr>
+                  <tr style={{ backgroundColor: '#0f172a', fontWeight: 'bold' }}>
+                    <td style={{ padding: '6px 8px' }} colSpan={2}>Top-10 Basket Total</td>
+                    <td style={{ padding: '6px 8px' }}>19,773,500</td>
+                    <td style={{ padding: '6px 8px', color: '#38bdf8' }}>91.48%</td>
+                    <td style={{ padding: '6px 8px', color: '#10b981' }}>100.00%</td>
                   </tr>
                 </tbody>
               </table>

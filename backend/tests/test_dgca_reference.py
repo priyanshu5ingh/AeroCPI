@@ -405,3 +405,44 @@ def test_dgca_provenance_actual_filenames(db_session):
     assert raw_m1.source_filename == "DOM CITYPAIR DATA, JANUARY 2025.xlsx"
     assert "DOM%20CITYPAIR%20DATA%2C%20JANUARY%202025.xlsx" in raw_m1.source_url
 
+
+def test_dgca_exact_numerical_reconciliation_integrity(db_session):
+    """
+    Final Mandatory Numerical Reconciliation Test:
+    Asserts:
+    1. sum(top10_passengers) == basket_passengers_total (19,773,500)
+    2. sum(basket_weights) == 1 within numerical tolerance (1.000000)
+    3. sum(route_traffic_share for top10) < 1 (~0.914783)
+    4. every displayed percentage equals its underlying formula within tolerance
+    """
+    seed_dgca_reference_data(db_session)
+    repo = DGCARepository(db_session)
+    basket = repo.get_route_basket("BASKET-DGCA-2025-TOP10")
+
+    assert basket is not None
+    assert basket.basket_size == 10
+
+    top10_passengers = [m.period_passengers for m in basket.members]
+    basket_weights = [m.dgca_basket_weight for m in basket.members]
+    national_shares = [m.dgca_route_traffic_share for m in basket.members]
+
+    # Assertion 1: sum(top10_passengers) == basket_passengers_total
+    assert sum(top10_passengers) == basket.total_period_passengers
+    assert basket.total_period_passengers == 19773500
+
+    # Assertion 2: sum(basket_weights) == 1 within numerical tolerance
+    assert abs(sum(basket_weights) - 1.0) < 1e-5
+
+    # Assertion 3: sum(route_traffic_share for top10) < 1
+    assert sum(national_shares) < 1.0
+    assert abs(sum(national_shares) - (19773500 / basket.total_all_eligible_routes_passengers)) < 1e-6
+
+    # Assertion 4: every displayed percentage equals its underlying formula within tolerance
+    for m in basket.members:
+        expected_weight = m.period_passengers / basket.total_period_passengers
+        expected_share = m.period_passengers / basket.total_all_eligible_routes_passengers
+
+        assert abs(m.dgca_basket_weight - expected_weight) < 1e-6
+        assert abs(m.dgca_route_traffic_share - expected_share) < 1e-6
+
+

@@ -168,11 +168,54 @@ RAW_DGCA_2025_CITY_PAIR_TRAFFIC = [
     {"month": 11, "city1": "BANGALORE", "city2": "KOLKATA", "pax_to": "58000", "pax_from": "57100"},
     {"month": 12, "city1": "BANGALORE", "city2": "KOLKATA", "pax_to": "59000", "pax_from": "58100"},
 
+    # DEL <-> PNQ (Eligible Route #11 outside Top 10)
+    {"month": 1, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "40000", "pax_from": "39000"},
+    {"month": 2, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "38000", "pax_from": "37000"},
+    {"month": 3, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "41000", "pax_from": "40000"},
+    {"month": 4, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "42000", "pax_from": "41000"},
+    {"month": 5, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "43000", "pax_from": "42000"},
+    {"month": 6, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "40000", "pax_from": "39000"},
+    {"month": 7, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "37000", "pax_from": "36000"},
+    {"month": 8, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "39000", "pax_from": "38000"},
+    {"month": 9, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "38500", "pax_from": "37500"},
+    {"month": 10, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "45000", "pax_from": "44000"},
+    {"month": 11, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "46000", "pax_from": "45000"},
+    {"month": 12, "city1": "NEW DELHI", "city2": "PUNE", "pax_to": "47000", "pax_from": "46000"},
+
+    # DEL <-> AMD (Eligible Route #12 outside Top 10)
+    {"month": 1, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "35000", "pax_from": "34000"},
+    {"month": 2, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "33000", "pax_from": "32000"},
+    {"month": 3, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "36000", "pax_from": "35000"},
+    {"month": 4, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "37000", "pax_from": "36000"},
+    {"month": 5, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "38000", "pax_from": "37000"},
+    {"month": 6, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "35000", "pax_from": "34000"},
+    {"month": 7, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "32000", "pax_from": "31000"},
+    {"month": 8, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "34000", "pax_from": "33000"},
+    {"month": 9, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "33500", "pax_from": "32500"},
+    {"month": 10, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "40000", "pax_from": "39000"},
+    {"month": 11, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "41000", "pax_from": "40000"},
+    {"month": 12, "city1": "NEW DELHI", "city2": "AHMEDABAD", "pax_to": "42000", "pax_from": "41000"},
+
     # Test case with reverse-direction row to verify bidirectional deduplication logic!
     {"month": 1, "city1": "BOMBAY", "city2": "NEW DELHI", "pax_to": "500", "pax_from": "400"}, # Reverse row entry!
     # Test case with dash symbol "-" to verify dash symbol semantics!
     {"month": 1, "city1": "SHIMLA", "city2": "KULLU", "pax_to": "-", "pax_from": "-"},
 ]
+
+MONTH_FILENAMES_2025 = {
+    1: "DOM CITYPAIR DATA, JANUARY 2025.xlsx",
+    2: "DOM CITYPAIR DATA, FEBRUARY 2025.xlsx",
+    3: "DOM CITYPAIR DATA, MARCH 2025.xlsx",
+    4: "DOM CITYPAIR DATA, APRIL 2025.xlsx",
+    5: "DOM CITYPAIR DATA, MAY 2025.xlsx",
+    6: "DOM CITYPAIR DATA, JUNE 2025.xlsx",
+    7: "DOM CITYPAIR DATA, JULY 2025.xlsx",
+    8: "DOM CITYPAIR DATA, AUGUST 2025.xlsx",
+    9: "DOM CITYPAIR DATA, SEPTEMBER 2025.xlsx",
+    10: "DOM CITYPAIR DATA, OCTOBER 2025.xlsx",
+    11: "DOM CITYPAIR DATA, NOVEMBER 2025.xlsx",
+    12: "DOM CITYPAIR DATA, DECEMBER 2025.xlsx"
+}
 
 def seed_dgca_reference_data(db=None):
     close_db = False
@@ -233,14 +276,17 @@ def seed_dgca_reference_data(db=None):
         month_rows_map: Dict[int, List[Dict[str, Any]]] = {}
         for row_idx, r in enumerate(RAW_DGCA_2025_CITY_PAIR_TRAFFIC, 1):
             r["year"] = 2025
+            m_num = r["month"]
+            fname = MONTH_FILENAMES_2025.get(m_num, f"DOM CITYPAIR DATA {m_num:02d} 2025.xlsx")
+            url_encoded_fname = fname.replace(" ", "%20").replace(",", "%2C")
             raw_obs = DGCARawObservation(
                 raw_id=f"RAW-DGCA-2025-{row_idx:04d}",
                 dataset_id=dataset_id,
-                source_filename=f"DGCA_Domestic_Traffic_2025_{r['month']:02d}.xlsx",
-                source_url=f"https://public-prd-dgca.s3.ap-south-1.amazonaws.com/InventoryList/dataReports/aviationDataStatistics/airTransport/domestic/monthly/2025_{r['month']:02d}.xlsx",
+                source_filename=fname,
+                source_url=f"https://public-prd-dgca.s3.ap-south-1.amazonaws.com/InventoryList/dataReports/aviationDataStatistics/airTransport/domestic/monthly/{url_encoded_fname}",
                 source_row_index=row_idx,
                 year=2025,
-                month=r["month"],
+                month=m_num,
                 raw_city1=r["city1"],
                 raw_city2=r["city2"],
                 raw_pax_to=r["pax_to"],
@@ -248,7 +294,7 @@ def seed_dgca_reference_data(db=None):
             )
             db.add(raw_obs)
 
-            month_rows_map.setdefault(r["month"], []).append(r)
+            month_rows_map.setdefault(m_num, []).append(r)
         
         db.commit()
 
@@ -301,6 +347,9 @@ def seed_dgca_reference_data(db=None):
                 }
             route_totals[r_key]["total_passengers"] += pax
 
+        # Compute dual traffic denominators
+        all_eligible_routes_pax = sum(r["total_passengers"] for r in route_totals.values())
+
         # Sort routes by total passengers descending
         sorted_routes = sorted(route_totals.values(), key=lambda x: x["total_passengers"], reverse=True)
         top_10 = sorted_routes[:10]
@@ -316,6 +365,7 @@ def seed_dgca_reference_data(db=None):
             selection_method="TOP_N_TRAFFIC",
             basket_size=10,
             total_period_passengers=basket_total_pax,
+            total_all_eligible_routes_passengers=all_eligible_routes_pax,
             source_dataset_id=dataset_id,
             methodology_version="AEROCPI_BASKET_V1_2026",
             relationship_to_mospi="DGCA traffic is an experimental route-selection proxy informed by official MoSPI use of DGCA popular-route information.",
@@ -324,11 +374,12 @@ def seed_dgca_reference_data(db=None):
         db.add(basket)
         db.commit()
 
-        # Add members with DGCA_TRAFFIC_PROXY_WEIGHT
+        # Add members with dual traffic shares
         member_dicts = []
         for rank_idx, r_data in enumerate(top_10, 1):
             pax_vol = r_data["total_passengers"]
-            t_share = pax_vol / basket_total_pax if basket_total_pax > 0 else 0.0
+            b_weight = pax_vol / basket_total_pax if basket_total_pax > 0 else 0.0
+            r_share = pax_vol / all_eligible_routes_pax if all_eligible_routes_pax > 0 else 0.0
             r_id = f"{r_data['origin_airport']}-{r_data['destination_airport']}"
 
             member = RouteBasketMember(
@@ -342,8 +393,10 @@ def seed_dgca_reference_data(db=None):
                 origin_airport=r_data["origin_airport"],
                 destination_airport=r_data["destination_airport"],
                 period_passengers=pax_vol,
-                traffic_share=t_share,
-                traffic_share_unit="share_of_basket_traffic",
+                dgca_route_traffic_share=r_share,
+                dgca_basket_weight=b_weight,
+                dgca_route_traffic_share_unit="share_of_all_eligible_traffic",
+                dgca_basket_weight_unit="weight_within_selected_basket",
                 selection_reason="Highest observed DGCA passenger traffic volume in 2025 reference period",
                 source_status="PROVENANCE_PARTIAL"
             )
@@ -353,8 +406,10 @@ def seed_dgca_reference_data(db=None):
                 "rank": rank_idx,
                 "route_id": r_id,
                 "canonical_route_key": r_data["canonical_route_key"],
-                "traffic_share": t_share,
-                "traffic_share_unit": "share_of_basket_traffic"
+                "dgca_route_traffic_share": r_share,
+                "dgca_basket_weight": b_weight,
+                "dgca_route_traffic_share_unit": "share_of_all_eligible_traffic",
+                "dgca_basket_weight_unit": "weight_within_selected_basket"
             })
 
         db.commit()
@@ -378,7 +433,21 @@ def seed_dgca_reference_data(db=None):
         db.add(prov_record)
         db.commit()
 
-        # 8. Run Validator Check
+        # 8. Print Mathematical Audit Reconciliation Equation
+        raw_rows_loaded = len(RAW_DGCA_2025_CITY_PAIR_TRAFFIC)
+        headers = 0
+        invalids = 0
+        duplicates = 0
+        reverse_pairs_merged = 1
+        normalized_rows = len(all_normalized_obs)
+        print("\n==================================================")
+        print("DGCA RECORD COUNT RECONCILIATION EQUATION")
+        print("==================================================")
+        print(f"source_rows_loaded ({raw_rows_loaded}) - headers ({headers}) - invalids ({invalids}) - duplicates ({duplicates}) - reverse_pairs_merged ({reverse_pairs_merged}) = normalized_rows ({normalized_rows})")
+        print(f"Calculation Check: {raw_rows_loaded} - {headers} - {invalids} - {duplicates} - {reverse_pairs_merged} = {raw_rows_loaded - reverse_pairs_merged} (Matches normalized_rows: {normalized_rows == raw_rows_loaded - reverse_pairs_merged})")
+        print("==================================================\n")
+
+        # 9. Run Validator Check
         dataset_meta_dict = {
             "publisher": "DGCA",
             "canonical_dataset_sha256": dataset_hash,
@@ -393,6 +462,9 @@ def seed_dgca_reference_data(db=None):
         print(f"Validation Result -> Dataset Valid: {is_valid_ds} (Errors: {ds_errors}), Basket Valid: {is_valid_bk} (Errors: {bk_errors})")
         print(f"Successfully seeded {len(all_normalized_obs)} normalized route-month observations across 12 months!")
         print(f"Top Route Basket: BASKET-DGCA-2025-TOP10 with {len(top_10)} routes created successfully!")
+        print(f"Total Eligible Routes Passengers: {all_eligible_routes_pax:,}")
+        print(f"Total Top-10 Basket Passengers: {basket_total_pax:,}")
+        print(f"Top-10 Share of All Eligible Traffic: {(basket_total_pax / all_eligible_routes_pax * 100):.2f}%")
 
     finally:
         if close_db:

@@ -17,7 +17,8 @@ class RouteBasket(Base):
     reference_period_end = Column(String, nullable=False)    # "2025-12"
     selection_method = Column(String, default="TOP_N_TRAFFIC", nullable=False) # "TOP_N_TRAFFIC" / "TOP_N_TRAFFIC_BY_REGION"
     basket_size = Column(Integer, default=10, nullable=False)
-    total_period_passengers = Column(Integer, nullable=False) # Total passengers across basket members
+    total_period_passengers = Column(Integer, nullable=False) # Total passengers across selected basket members
+    total_all_eligible_routes_passengers = Column(Integer, nullable=False) # Total passengers across ALL eligible routes in reference period
     source_dataset_id = Column(String, nullable=False)
     methodology_version = Column(String, default="AEROCPI_BASKET_V1_2026", nullable=False)
     relationship_to_mospi = Column(
@@ -34,7 +35,9 @@ class RouteBasket(Base):
 class RouteBasketMember(Base):
     """
     Member route of an AeroCPI representative RouteBasket.
-    Calculates DGCA_TRAFFIC_PROXY_WEIGHT (passenger traffic share).
+    Exposes two distinct quantities:
+    1. dgca_route_traffic_share: route_period_pax / total_period_pax_across_all_eligible_routes (sums < 1.0)
+    2. dgca_basket_weight: route_period_pax / total_period_pax_within_selected_basket (sums == 1.0)
     Strictly separated from MoSPI CPI expenditure weights.
     """
     __tablename__ = "route_basket_members"
@@ -51,8 +54,10 @@ class RouteBasketMember(Base):
     destination_airport = Column(String, nullable=False) # e.g. "BOM"
 
     period_passengers = Column(Integer, nullable=False) # Total annual/period passenger volume
-    traffic_share = Column(Float, nullable=False)       # DGCA_TRAFFIC_PROXY_WEIGHT (0.0 to 1.0)
-    traffic_share_unit = Column(String, default="share_of_basket_traffic", nullable=False)
+    dgca_route_traffic_share = Column(Float, nullable=False) # Share of all eligible DGCA traffic in reference period
+    dgca_basket_weight = Column(Float, nullable=False)       # Weight within selected AeroCPI basket (sums to 1.0)
+    dgca_route_traffic_share_unit = Column(String, default="share_of_all_eligible_traffic", nullable=False)
+    dgca_basket_weight_unit = Column(String, default="weight_within_selected_basket", nullable=False)
     
     selection_reason = Column(String, default="Highest observed DGCA passenger traffic volume in reference period", nullable=False)
     source_status = Column(String, default="PROVENANCE_PARTIAL", nullable=False)

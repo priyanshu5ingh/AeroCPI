@@ -89,19 +89,26 @@ class DGCAValidator:
         if len(members) != basket_size:
             errors.append(f"Rule 12 Violation: Expected basket size {basket_size}, got {len(members)} members")
 
-        # Rule 10: Traffic shares sum to approximately 1.0
-        shares = [m.get("traffic_share", 0.0) for m in members]
-        tot_share = sum(shares)
-        if abs(tot_share - 1.0) > 1e-4:
-            errors.append(f"Rule 10 Violation: Traffic shares sum to {tot_share:.6f}, expected approximately 1.0")
+        # Rule 10: Basket weights sum to approximately 1.0, National shares sum < 1.0
+        basket_weights = [m.get("dgca_basket_weight", 0.0) for m in members]
+        tot_weight = sum(basket_weights)
+        if abs(tot_weight - 1.0) > 1e-4:
+            errors.append(f"Rule 10 Violation: Basket weights sum to {tot_weight:.6f}, expected approximately 1.0")
+
+        national_shares = [m.get("dgca_route_traffic_share", 0.0) for m in members]
+        tot_national_share = sum(national_shares)
+        if tot_national_share >= 1.0:
+            errors.append(f"Rule 10 Violation: National traffic shares sum to {tot_national_share:.6f}, expected strictly less than 1.0 for Top-N basket")
 
         # Rule 14 & 15: CPI weight separation safeguards
         for m in members:
-            # Verify weight field name is traffic_share, NOT cpi_weight
+            # Verify weight field name is traffic_share / basket_weight, NOT cpi_weight
             if "cpi_weight" in m or "cpi_weight_value" in m:
                 errors.append("Rule 15 Violation: CPI weight field illegally injected into DGCA traffic basket member!")
-            if m.get("traffic_share_unit") != "share_of_basket_traffic":
-                errors.append(f"Rule 14 Violation: Invalid traffic share unit '{m.get('traffic_share_unit')}'")
+            if m.get("dgca_basket_weight_unit") != "weight_within_selected_basket":
+                errors.append(f"Rule 14 Violation: Invalid basket weight unit '{m.get('dgca_basket_weight_unit')}'")
+            if m.get("dgca_route_traffic_share_unit") != "share_of_all_eligible_traffic":
+                errors.append(f"Rule 14 Violation: Invalid route traffic share unit '{m.get('dgca_route_traffic_share_unit')}'")
 
         # Rule 20: Determinism check
         for m in members:

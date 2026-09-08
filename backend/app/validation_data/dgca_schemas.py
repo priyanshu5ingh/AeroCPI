@@ -40,8 +40,10 @@ class RouteBasketMemberRecord(BaseModel):
     origin_airport: str
     destination_airport: str
     period_passengers: int
-    traffic_share: float
-    traffic_share_unit: str = "share_of_basket_traffic"
+    dgca_route_traffic_share: float
+    dgca_basket_weight: float
+    dgca_route_traffic_share_unit: str = "share_of_all_eligible_traffic"
+    dgca_basket_weight_unit: str = "weight_within_selected_basket"
     selection_reason: str
     source_status: str = "PROVENANCE_PARTIAL"
 
@@ -57,6 +59,7 @@ class RouteBasketRecord(BaseModel):
     selection_method: str
     basket_size: int
     total_period_passengers: int
+    total_all_eligible_routes_passengers: int
     source_dataset_id: str
     methodology_version: str
     relationship_to_mospi: str

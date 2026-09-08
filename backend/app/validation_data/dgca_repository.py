@@ -105,6 +105,7 @@ class DGCARepository:
             selection_method=b.selection_method,
             basket_size=b.basket_size,
             total_period_passengers=b.total_period_passengers,
+            total_all_eligible_routes_passengers=b.total_all_eligible_routes_passengers,
             source_dataset_id=b.source_dataset_id,
             methodology_version=b.methodology_version,
             relationship_to_mospi=b.relationship_to_mospi,

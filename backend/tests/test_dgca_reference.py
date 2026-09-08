@@ -94,7 +94,7 @@ def test_dash_symbol_semantics_and_missing_handling():
 
 def test_traffic_shares_sum_to_approximately_one(db_session):
     """
-    Requirement 10: Traffic shares (DGCA_TRAFFIC_PROXY_WEIGHT) across basket members sum to approximately 1.0.
+    Requirement 10: Basket weights (dgca_basket_weight) across basket members sum to approximately 1.0.
     """
     seed_dgca_reference_data(db_session)
     repo = DGCARepository(db_session)
@@ -104,12 +104,12 @@ def test_traffic_shares_sum_to_approximately_one(db_session):
     assert basket.basket_size == 10
     assert len(basket.members) == 10
 
-    shares = [m.traffic_share for m in basket.members]
-    total_share = sum(shares)
+    weights = [m.dgca_basket_weight for m in basket.members]
+    total_weight = sum(weights)
 
-    assert abs(total_share - 1.0) < 1e-4
+    assert abs(total_weight - 1.0) < 1e-4
     assert basket.members[0].rank == 1
-    assert basket.members[0].traffic_share > basket.members[-1].traffic_share
+    assert basket.members[0].dgca_basket_weight > basket.members[-1].dgca_basket_weight
 
 
 def test_cpi_weight_never_enters_dgca_traffic_weight_calculation(db_session):
@@ -123,7 +123,8 @@ def test_cpi_weight_never_enters_dgca_traffic_weight_calculation(db_session):
     basket = repo.get_route_basket("BASKET-DGCA-2025-TOP10")
 
     for member in basket.members:
-        assert member.traffic_share_unit == "share_of_basket_traffic"
+        assert member.dgca_basket_weight_unit == "weight_within_selected_basket"
+        assert member.dgca_route_traffic_share_unit == "share_of_all_eligible_traffic"
         assert not hasattr(member, "cpi_weight")
         assert not hasattr(member, "cpi_weight_value")
 
@@ -168,8 +169,10 @@ def test_all_20_validation_rules_on_seeded_data(db_session):
             "rank": m.rank,
             "route_id": m.route_id,
             "canonical_route_key": m.canonical_route_key,
-            "traffic_share": m.traffic_share,
-            "traffic_share_unit": m.traffic_share_unit,
+            "dgca_route_traffic_share": m.dgca_route_traffic_share,
+            "dgca_basket_weight": m.dgca_basket_weight,
+            "dgca_route_traffic_share_unit": m.dgca_route_traffic_share_unit,
+            "dgca_basket_weight_unit": m.dgca_basket_weight_unit,
         }
         for m in basket.members
     ]
@@ -197,6 +200,8 @@ def test_dgca_api_endpoints(db_session, client):
     bk_data = res_bk.json()
     assert bk_data["basket_size"] == 10
     assert len(bk_data["members"]) == 10
+    assert "dgca_route_traffic_share" in bk_data["members"][0]
+    assert "dgca_basket_weight" in bk_data["members"][0]
 
     # 3. /provenance/{id}
     res_prov = client.get("/api/v1/reference/dgca/provenance/DS-DGCA-TRAFFIC-2025")
@@ -270,23 +275,23 @@ def test_adversarial_duplicate_route_month_deduplication_failure():
 
 
 def test_adversarial_basket_traffic_share_sum_rejection():
-    """Adversarial Test 6: Validator rejects route baskets where traffic shares do not sum to ~1.0."""
+    """Adversarial Test 6: Validator rejects route baskets where basket weights do not sum to ~1.0."""
     b_meta = {"basket_size": 2}
     members = [
-        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "traffic_share": 0.6, "traffic_share_unit": "share_of_basket_traffic"},
-        {"rank": 2, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "traffic_share": 0.2, "traffic_share_unit": "share_of_basket_traffic"},
+        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "dgca_route_traffic_share": 0.3, "dgca_basket_weight": 0.6, "dgca_route_traffic_share_unit": "share_of_all_eligible_traffic", "dgca_basket_weight_unit": "weight_within_selected_basket"},
+        {"rank": 2, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "dgca_route_traffic_share": 0.1, "dgca_basket_weight": 0.2, "dgca_route_traffic_share_unit": "share_of_all_eligible_traffic", "dgca_basket_weight_unit": "weight_within_selected_basket"},
     ]
     is_valid, errors = DGCAValidator.validate_route_basket(b_meta, members)
     assert is_valid is False
-    assert any("Traffic shares sum to" in e for e in errors)
+    assert any("Basket weights sum to" in e for e in errors)
 
 
 def test_adversarial_basket_duplicate_rank_rejection():
     """Adversarial Test 7: Validator rejects route baskets with duplicate ranks."""
     b_meta = {"basket_size": 2}
     members = [
-        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "traffic_share": 0.5, "traffic_share_unit": "share_of_basket_traffic"},
-        {"rank": 1, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "traffic_share": 0.5, "traffic_share_unit": "share_of_basket_traffic"},
+        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "dgca_route_traffic_share": 0.3, "dgca_basket_weight": 0.5, "dgca_route_traffic_share_unit": "share_of_all_eligible_traffic", "dgca_basket_weight_unit": "weight_within_selected_basket"},
+        {"rank": 1, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "dgca_route_traffic_share": 0.3, "dgca_basket_weight": 0.5, "dgca_route_traffic_share_unit": "share_of_all_eligible_traffic", "dgca_basket_weight_unit": "weight_within_selected_basket"},
     ]
     is_valid, errors = DGCAValidator.validate_route_basket(b_meta, members)
     assert is_valid is False
@@ -297,7 +302,7 @@ def test_adversarial_basket_cpi_weight_injection_rejection():
     """Adversarial Test 8: Validator rejects route baskets where CPI weight field is illegally injected."""
     b_meta = {"basket_size": 1}
     members = [
-        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "traffic_share": 1.0, "traffic_share_unit": "share_of_basket_traffic", "cpi_weight": 0.03},
+        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "dgca_route_traffic_share": 0.3, "dgca_basket_weight": 1.0, "dgca_route_traffic_share_unit": "share_of_all_eligible_traffic", "dgca_basket_weight_unit": "weight_within_selected_basket", "cpi_weight": 0.03},
     ]
     is_valid, errors = DGCAValidator.validate_route_basket(b_meta, members)
     assert is_valid is False
@@ -308,9 +313,95 @@ def test_adversarial_nondeterministic_ranking_rejection():
     """Adversarial Test 9: Validator rejects route baskets that are not sorted in strict rank order."""
     b_meta = {"basket_size": 2}
     members = [
-        {"rank": 2, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "traffic_share": 0.4, "traffic_share_unit": "share_of_basket_traffic"},
-        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "traffic_share": 0.6, "traffic_share_unit": "share_of_basket_traffic"},
+        {"rank": 2, "route_id": "DEL-BLR", "canonical_route_key": "BENGALURU::DELHI", "dgca_route_traffic_share": 0.2, "dgca_basket_weight": 0.4, "dgca_route_traffic_share_unit": "share_of_all_eligible_traffic", "dgca_basket_weight_unit": "weight_within_selected_basket"},
+        {"rank": 1, "route_id": "DEL-BOM", "canonical_route_key": "DELHI::MUMBAI", "dgca_route_traffic_share": 0.3, "dgca_basket_weight": 0.6, "dgca_route_traffic_share_unit": "share_of_all_eligible_traffic", "dgca_basket_weight_unit": "weight_within_selected_basket"},
     ]
     is_valid, errors = DGCAValidator.validate_route_basket(b_meta, members)
     assert is_valid is False
     assert any("members are not sorted in strict rank order" in e for e in errors)
+
+
+# ==============================================================================
+# SPECIFIC REGRESSION TESTS FOR MILESTONE 3B CORRECTION PASS
+# ==============================================================================
+
+def test_dgca_dual_denominators_exposed(db_session):
+    """Regression Test 1: Verify dgca_route_traffic_share and dgca_basket_weight are both exposed."""
+    seed_dgca_reference_data(db_session)
+    repo = DGCARepository(db_session)
+    basket = repo.get_route_basket("BASKET-DGCA-2025-TOP10")
+
+    assert basket is not None
+    for member in basket.members:
+        assert hasattr(member, "dgca_route_traffic_share")
+        assert hasattr(member, "dgca_basket_weight")
+        assert member.dgca_route_traffic_share > 0.0
+        assert member.dgca_basket_weight > 0.0
+        # Basket weight must be strictly greater than national route share for top-N basket
+        assert member.dgca_basket_weight > member.dgca_route_traffic_share
+
+
+def test_dgca_basket_weights_sum_to_one(db_session):
+    """Regression Test 2: Verify dgca_basket_weight sums to 1.0 (100%)."""
+    seed_dgca_reference_data(db_session)
+    repo = DGCARepository(db_session)
+    basket = repo.get_route_basket("BASKET-DGCA-2025-TOP10")
+
+    basket_weights = [m.dgca_basket_weight for m in basket.members]
+    total_basket_weight = sum(basket_weights)
+    assert abs(total_basket_weight - 1.0) < 1e-5
+
+
+def test_dgca_national_shares_sum_less_than_one(db_session):
+    """Regression Test 3: Verify dgca_route_traffic_share sums to strictly less than 1.0 (national total)."""
+    seed_dgca_reference_data(db_session)
+    repo = DGCARepository(db_session)
+    basket = repo.get_route_basket("BASKET-DGCA-2025-TOP10")
+
+    national_shares = [m.dgca_route_traffic_share for m in basket.members]
+    total_national_share = sum(national_shares)
+
+    # National traffic share across Top 10 routes should be ~91.76% (< 1.0)
+    assert total_national_share < 1.0
+    assert 0.80 < total_national_share < 0.95
+
+
+def test_dgca_reverse_direction_deduplication_exact_counts(db_session):
+    """Regression Test 4: Verify exact passenger counts after Month 1 reverse merge (142500+400=142900, 141200+500=141700, combined=284600)."""
+    seed_dgca_reference_data(db_session)
+    repo = DGCARepository(db_session)
+    obs_list = repo.filter_traffic_observations(dataset_id="DS-DGCA-TRAFFIC-2025", year=2025, month=1, route_key="DELHI::MUMBAI")
+
+    assert len(obs_list) == 1
+    obs = obs_list[0]
+
+    assert obs.passengers_city1_to_city2 == 142900
+    assert obs.passengers_city2_to_city1 == 141700
+    assert obs.combined_passengers == 284600
+
+
+def test_dgca_record_count_reconciliation_equation(db_session):
+    """Regression Test 5: Verify mathematical record audit reconciliation equation (146 raw - 1 reverse merge = 145 normalized)."""
+    seed_dgca_reference_data(db_session)
+    raw_count = db_session.query(DGCARawObservation).filter(DGCARawObservation.dataset_id == "DS-DGCA-TRAFFIC-2025").count()
+    norm_count = db_session.query(DGCARouteMonthObservation).filter(DGCARouteMonthObservation.dataset_id == "DS-DGCA-TRAFFIC-2025").count()
+
+    headers = 0
+    invalids = 0
+    duplicates = 0
+    reverse_pairs_merged = 1
+
+    assert raw_count == 146
+    assert norm_count == 145
+    assert raw_count - headers - invalids - duplicates - reverse_pairs_merged == norm_count
+
+
+def test_dgca_provenance_actual_filenames(db_session):
+    """Regression Test 6: Verify raw observations store actual publication filenames and URLs."""
+    seed_dgca_reference_data(db_session)
+    raw_m1 = db_session.query(DGCARawObservation).filter(DGCARawObservation.dataset_id == "DS-DGCA-TRAFFIC-2025", DGCARawObservation.month == 1).first()
+
+    assert raw_m1 is not None
+    assert raw_m1.source_filename == "DOM CITYPAIR DATA, JANUARY 2025.xlsx"
+    assert "DOM%20CITYPAIR%20DATA%2C%20JANUARY%202025.xlsx" in raw_m1.source_url
+

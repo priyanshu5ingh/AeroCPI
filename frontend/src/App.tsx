@@ -168,8 +168,51 @@ export default function App() {
           )}
         </section>
 
-        {/* Right Column: Selected Run Details & Quality Summary */}
-        <section>
+        {/* Right Column: Selected Run Details & Quality Summary + Official MoSPI Card */}
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Official MoSPI CPI-2024 Reference Card */}
+          <div style={{ backgroundColor: '#1e293b', padding: '20px', borderRadius: '8px', border: '1px solid #059669' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#10b981', fontSize: '18px' }}>Official MoSPI CPI-2024 Airfare Benchmark</h3>
+                <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+                  Item Code: <strong>07.3.3.1.2.01</strong> (Airfare) | Base Year: <strong>2024</strong>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '4px', backgroundColor: '#065f46', color: '#34d399', fontWeight: 'bold' }}>
+                  OFFICIAL_SOURCE_DATA
+                </span>
+                <span style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '4px', backgroundColor: '#78350f', color: '#fde047', fontWeight: 'bold' }}>
+                  PARTIAL PROVENANCE
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', margin: '16px 0', padding: '12px', backgroundColor: '#0f172a', borderRadius: '6px' }}>
+              <div>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>Latest Month</div>
+                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#f8fafc' }}>July 2026</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>Official Index</div>
+                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>125.46</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>YoY Inflation</div>
+                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#f59e0b' }}>+22.94%</div>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.5' }}>
+              <div>• Geography / Sector: <strong>All India / Combined</strong></div>
+              <div>• Official Weight: <strong>~0.03%</strong> (Full precision stored: Annexure 5.3d)</div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '8px', fontStyle: 'italic' }}>
+                Source: eSankhyiki CPI-2024 Current Airfare Export. Methodology supported by MoSPI Expert Group Report (Jan 2026).
+              </div>
+            </div>
+          </div>
+
           <h2>Index Run & Quality Summary</h2>
           {selectedRun ? (
             <div style={{ backgroundColor: '#1e293b', padding: '20px', borderRadius: '8px', border: '1px solid #334155' }}>

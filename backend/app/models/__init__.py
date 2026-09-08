@@ -13,6 +13,15 @@ from app.models.proxy_route_weight import ProxyRouteWeight
 from app.models.index_run import IndexRun
 from app.models.route_index_result import RouteIndexResult
 from app.models.external_reference_data import ExternalReferenceData
+from app.models.city_airport_mapping import CityAirportMapping
+from app.models.dgca_reference import (
+    DGCAReferenceDataset,
+    DGCARawObservation,
+    DGCARouteMonthObservation,
+    DGCAIngestionRun,
+    DGCAProvenanceRecord,
+)
+from app.models.route_basket import RouteBasket, RouteBasketMember
 
 __all__ = [
     "Base",
@@ -30,4 +39,12 @@ __all__ = [
     "IndexRun",
     "RouteIndexResult",
     "ExternalReferenceData",
+    "CityAirportMapping",
+    "DGCAReferenceDataset",
+    "DGCARawObservation",
+    "DGCARouteMonthObservation",
+    "DGCAIngestionRun",
+    "DGCAProvenanceRecord",
+    "RouteBasket",
+    "RouteBasketMember",
 ]

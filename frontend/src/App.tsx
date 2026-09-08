@@ -213,6 +213,79 @@ export default function App() {
             </div>
           </div>
 
+          {/* DGCA Domestic City-Pair Traffic Evidence Card */}
+          <div style={{ backgroundColor: '#1e293b', padding: '20px', borderRadius: '8px', border: '1px solid #3b82f6' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#3b82f6', fontSize: '18px' }}>DGCA Domestic City-Pair Route Evidence</h3>
+                <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+                  AeroCPI DGCA Traffic-Derived Route Basket | Ref Period: <strong>2025-01 → 2025-12</strong>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '4px', backgroundColor: '#1e3a8a', color: '#93c5fd', fontWeight: 'bold' }}>
+                  EXPERIMENTAL ROUTE PROXY
+                </span>
+                <span style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '4px', backgroundColor: '#065f46', color: '#34d399', fontWeight: 'bold' }}>
+                  12/12 MONTHS COMPLETE
+                </span>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '12px', color: '#cbd5e1', marginBottom: '12px', lineHeight: '1.5' }}>
+              • Selection Method: <strong>TOP_N_TRAFFIC (Top 10 Routes)</strong><br/>
+              • Weight Category: <strong>DGCA_TRAFFIC_PROXY_WEIGHT</strong> (Passenger Traffic Share)<br/>
+              <span style={{ fontSize: '11px', color: '#94a3b8', fontStyle: 'italic' }}>
+                Note: DGCA traffic proxy weights reflect passenger volume share and are strictly separated from MoSPI CPI expenditure weights.
+              </span>
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8' }}>
+                    <th style={{ padding: '6px 8px' }}>Rank</th>
+                    <th style={{ padding: '6px 8px' }}>Route</th>
+                    <th style={{ padding: '6px 8px' }}>Annual Passengers</th>
+                    <th style={{ padding: '6px 8px' }}>Traffic Share (Weight)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#1</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ BOM</td>
+                    <td style={{ padding: '6px 8px' }}>3,500,200</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>27.56%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#2</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ BLR</td>
+                    <td style={{ padding: '6px 8px' }}>2,746,900</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>21.63%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#3</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>BOM ↔ BLR</td>
+                    <td style={{ padding: '6px 8px' }}>2,306,400</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>18.16%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                    <td style={{ padding: '6px 8px' }}>#4</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#60a5fa' }}>DEL ↔ HYD</td>
+                    <td style={{ padding: '6px 8px' }}>2,001,200</td>
+                    <td style={{ padding: '6px 8px', fontWeight: 'bold', color: '#10b981' }}>15.76%</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '6px 8px' }}>#5..10</td>
+                    <td style={{ padding: '6px 8px', color: '#94a3b8' }}>CCU, GOI, MAA, PAT, etc.</td>
+                    <td style={{ padding: '6px 8px' }}>2,145,300</td>
+                    <td style={{ padding: '6px 8px', color: '#10b981' }}>16.89%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <h2>Index Run & Quality Summary</h2>
           {selectedRun ? (
             <div style={{ backgroundColor: '#1e293b', padding: '20px', borderRadius: '8px', border: '1px solid #334155' }}>

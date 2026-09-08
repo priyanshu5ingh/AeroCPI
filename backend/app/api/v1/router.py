@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import health, observations, virtual_trips, routes, carriers, sources, index_runs, reference_data
+from app.api.v1.endpoints import health, observations, virtual_trips, routes, carriers, sources, index_runs, reference_data, dgca_reference
 
 api_router = APIRouter()
 
@@ -11,3 +11,4 @@ api_router.include_router(carriers.router, tags=["Carriers"])
 api_router.include_router(sources.router, tags=["Sources"])
 api_router.include_router(index_runs.router, tags=["Index Runs"])
 api_router.include_router(reference_data.router, tags=["Official Reference Data"])
+api_router.include_router(dgca_reference.router, tags=["DGCA Traffic Reference Data"])

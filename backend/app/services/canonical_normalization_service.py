@@ -242,16 +242,22 @@ class CanonicalNormalizationService:
         else:
             arithmetic_status = "ARITHMETIC_UNCHECKABLE"
 
-        # 5. Fingerprints & Hashes
+        # 5. Fingerprints & Hashes (Separated Provenance Hashes)
+        import gzip
         raw_payload_str = json.dumps(raw_quote, sort_keys=True, default=str)
-        raw_payload_hash = hashlib.sha256(raw_payload_str.encode("utf-8")).hexdigest()
+        raw_payload_bytes = raw_payload_str.encode("utf-8")
+        raw_payload_sha256 = hashlib.sha256(raw_payload_bytes).hexdigest()
+        stored_file_sha256 = hashlib.sha256(gzip.compress(raw_payload_bytes)).hexdigest()
+
+        # Backward compatible alias
+        raw_payload_hash = raw_payload_sha256
 
         # Observation Context Identity (Flight/Search Context)
         obs_key_str = f"{source_id}|{search_date}|{travel_date}|{origin_airport}|{destination_airport}|{airline}|{flight_number}|{cabin}|{fare_class}"
         observation_key = obs_key_str.upper()
 
         # Payload Identity
-        quote_fingerprint = raw_payload_hash
+        quote_fingerprint = raw_payload_sha256
 
         return {
             "source_id": source_id,
@@ -290,6 +296,8 @@ class CanonicalNormalizationService:
             "breakdown_status": breakdown_status,
             "arithmetic_status": arithmetic_status,
             "raw_payload_hash": raw_payload_hash,
+            "raw_payload_sha256": raw_payload_sha256,
+            "stored_file_sha256": stored_file_sha256,
             "observation_key": observation_key,
             "quote_fingerprint": quote_fingerprint,
         }

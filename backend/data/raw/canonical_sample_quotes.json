@@ -142,8 +142,29 @@
     "flight_number": "6E-204",
     "base_fare": 4500.0,
     "taxes": 812.0,
-    "fees": 0.0,
     "total_fare": 5312.0,
+    "currency": "INR"
+  },
+  {
+    "description": "Case 12: Quote with missing carrier information (FLAG_MISSING_CARRIER_INFO)",
+    "source_id": "SRC_AGGREGATOR_X",
+    "search_date": "2026-09-01",
+    "travel_date": "2026-09-16",
+    "origin_raw": "Delhi",
+    "destination_raw": "Mumbai",
+    "airline": "UNKNOWN",
+    "total_fare": 4800.0,
+    "currency": "INR"
+  },
+  {
+    "description": "Case 13: Quote with missing carrier_id and blank airline (FLAG_MISSING_CARRIER_INFO)",
+    "source_id": "SRC_AGGREGATOR_Y",
+    "search_date": "2026-09-01",
+    "travel_date": "2026-09-16",
+    "origin_raw": "Bengaluru",
+    "destination_raw": "Delhi",
+    "airline": "",
+    "total_fare": 5200.0,
     "currency": "INR"
   }
 ]

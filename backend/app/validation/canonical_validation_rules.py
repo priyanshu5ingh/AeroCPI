@@ -118,6 +118,11 @@ class CanonicalValidationRules:
         if not source_name:
             flag_reasons.append("FLAG_INCOMPLETE_SOURCE_METADATA")
 
+        # Flag 9: Missing carrier / airline information
+        airline = canon_obs.get("airline")
+        if not airline or str(airline).strip().upper() in ("UNKNOWN", "NONE", "NULL", ""):
+            flag_reasons.append("FLAG_MISSING_CARRIER_INFO")
+
         if flag_reasons:
             return ("FLAG", flag_reasons)
 

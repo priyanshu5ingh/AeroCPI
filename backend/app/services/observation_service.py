@@ -119,6 +119,8 @@ class ObservationService:
             currency=canon_dict["currency"],
             stop_type="NON_STOP" if canon_dict["stops"] == 0 else "ONE_STOP",
             raw_payload_hash=canon_dict["raw_payload_hash"],
+            raw_payload_sha256=canon_dict["raw_payload_sha256"],
+            stored_file_sha256=canon_dict["stored_file_sha256"],
             observation_key=canon_dict["observation_key"],
             quote_fingerprint=canon_dict["quote_fingerprint"],
             breakdown_status=canon_dict["breakdown_status"],

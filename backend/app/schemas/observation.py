@@ -81,6 +81,8 @@ class CanonicalObservationResponse(BaseModel):
     breakdown_status: str
     arithmetic_status: str
     raw_payload_hash: Optional[str] = None
+    raw_payload_sha256: Optional[str] = None
+    stored_file_sha256: Optional[str] = None
     observation_key: Optional[str] = None
     quote_fingerprint: Optional[str] = None
     validation_status: str

@@ -10,7 +10,8 @@ class RawQuoteInput(BaseModel):
     source_name: Optional[str] = None
     source_url: Optional[str] = None
     collected_at: Optional[datetime] = None
-    search_date: date
+    search_timestamp: Optional[datetime] = None
+    search_date: Optional[date] = None
     travel_date: date
     origin_raw: str
     destination_raw: str
@@ -31,12 +32,24 @@ class RawQuoteInput(BaseModel):
     total_fare: float
     currency: str = "INR"
 
+    @model_validator(mode="after")
+    def validate_search_time(self) -> "RawQuoteInput":
+        if self.search_timestamp is None and self.search_date is None:
+            raise ValueError("Either search_timestamp or search_date must be provided")
+        if self.search_timestamp is not None and self.search_date is None:
+            self.search_date = self.search_timestamp.date()
+        elif self.search_date is not None and self.search_timestamp is None:
+            from datetime import time
+            self.search_timestamp = datetime.combine(self.search_date, time.min, tzinfo=timezone.utc)
+        return self
+
 class CanonicalObservationResponse(BaseModel):
     observation_id: str
     source_id: str
     source_name: Optional[str] = None
     source_url: Optional[str] = None
     collected_at: datetime
+    search_timestamp: Optional[datetime] = None
     search_date: date
     travel_date: date
     advance_purchase_days: Optional[int] = None

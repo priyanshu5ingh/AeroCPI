@@ -13,6 +13,7 @@ class Observation(Base):
 
     collected_at = Column(DateTime(timezone=True), nullable=True, index=True)
     observed_at = Column(DateTime(timezone=True), nullable=False, index=True) # Backwards compatible
+    search_timestamp = Column(DateTime(timezone=True), nullable=True, index=True) # Authoritative collection event timestamp
     search_date = Column(Date, nullable=True, index=True)
     travel_date = Column(Date, nullable=False, index=True)
     advance_purchase_days = Column(Integer, nullable=True, index=True)

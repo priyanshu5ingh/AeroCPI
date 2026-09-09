@@ -129,5 +129,21 @@
     "fees": 100.0,
     "total_fare": 9999.0,
     "currency": "INR"
+  },
+  {
+    "description": "Case 11: Quote with misleading raw days_left=10 but search_timestamp=2026-09-01T14:30:00Z and travel_date=2026-09-16 (advance_purchase_days=15 derived strictly from search_timestamp)",
+    "source_id": "SRC_MAKE_MY_TRIP",
+    "search_timestamp": "2026-09-01T14:30:00Z",
+    "travel_date": "2026-09-16",
+    "days_left": 10,
+    "origin_raw": "Delhi",
+    "destination_raw": "Mumbai",
+    "airline": "6E",
+    "flight_number": "6E-204",
+    "base_fare": 4500.0,
+    "taxes": 812.0,
+    "fees": 0.0,
+    "total_fare": 5312.0,
+    "currency": "INR"
   }
 ]

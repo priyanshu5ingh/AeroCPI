@@ -3,15 +3,28 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.schemas.observation import ObservationCreate, ObservationResponse, ObservationFilter
 from app.schemas.common import DataStatus
 from app.schemas.normalization import NormalizationResultResponse
 from app.schemas.quality import QualityResultResponse
-from app.services.observation_service import ObservationService
+from app.schemas.observation import ObservationCreate, ObservationResponse, ObservationFilter, RawQuoteInput, CanonicalObservationResponse
 from app.models.normalization_result import NormalizationResult
 from app.models.quality_result import QualityResult
+from app.services.observation_service import ObservationService
 
 router = APIRouter()
+
+@router.post("/observations/ingest-raw", response_model=CanonicalObservationResponse, status_code=status.HTTP_201_CREATED)
+def ingest_raw_quote(
+    quote_in: RawQuoteInput,
+    db: Session = Depends(get_db)
+):
+    try:
+        obs = ObservationService.ingest_raw_quote(db=db, raw_input=quote_in)
+        return CanonicalObservationResponse.model_validate(obs)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to ingest raw quote: {str(e)}")
 
 def build_observation_response(obs) -> ObservationResponse:
     norm_dto = None
@@ -60,6 +73,8 @@ def get_observations(
     route_id: Optional[str] = Query(None, description="Filter by route_id (e.g. DEL-BOM)"),
     carrier_id: Optional[str] = Query(None, description="Filter by carrier_id (e.g. 6E)"),
     booking_horizon_days: Optional[int] = Query(None, description="Filter by lead time horizon (1, 7, 15, 30, 45)"),
+    validation_status: Optional[str] = Query(None, description="Filter by validation_status (ACCEPT, FLAG, REJECT)"),
+    basket_status: Optional[str] = Query(None, description="Filter by basket_status (BASKET_MEMBER, ROUTE_OUTSIDE_REFERENCE_BASKET)"),
     data_status: Optional[DataStatus] = Query(None, description="Filter by data_status (OBSERVED, FROZEN, OFFICIAL, SYNTHETIC, DEMO)"),
     travel_date: Optional[date] = Query(None, description="Filter by travel_date (YYYY-MM-DD)"),
     limit: int = Query(50, ge=1, le=500),
@@ -70,6 +85,8 @@ def get_observations(
         route_id=route_id,
         carrier_id=carrier_id,
         booking_horizon_days=booking_horizon_days,
+        validation_status=validation_status,
+        basket_status=basket_status,
         data_status=data_status,
         travel_date=travel_date,
         limit=limit,

@@ -5,6 +5,77 @@ from app.schemas.common import DataStatus, VALID_HORIZONS
 from app.schemas.normalization import NormalizationResultResponse
 from app.schemas.quality import QualityResultResponse
 
+class RawQuoteInput(BaseModel):
+    source_id: str
+    source_name: Optional[str] = None
+    source_url: Optional[str] = None
+    collected_at: Optional[datetime] = None
+    search_date: date
+    travel_date: date
+    origin_raw: str
+    destination_raw: str
+    airline: str
+    flight_number: Optional[str] = None
+    cabin: str = "ECONOMY"
+    fare_class: Optional[str] = "STANDARD"
+    trip_type: str = "ONE_WAY"
+    stops: Optional[int] = None
+    duration_minutes: Optional[int] = None
+    raw_total_fare: Optional[str] = None
+    raw_base_fare: Optional[str] = None
+    raw_taxes: Optional[str] = None
+    raw_fees: Optional[str] = None
+    base_fare: Optional[float] = None
+    taxes: Optional[float] = None
+    fees: Optional[float] = None
+    total_fare: float
+    currency: str = "INR"
+
+class CanonicalObservationResponse(BaseModel):
+    observation_id: str
+    source_id: str
+    source_name: Optional[str] = None
+    source_url: Optional[str] = None
+    collected_at: datetime
+    search_date: date
+    travel_date: date
+    advance_purchase_days: Optional[int] = None
+    horizon_code: str
+    origin_raw: str
+    destination_raw: str
+    origin_airport: Optional[str] = None
+    destination_airport: Optional[str] = None
+    route_id: str
+    route_mapping_status: str
+    basket_status: str
+    airline: str
+    flight_number: Optional[str] = None
+    cabin: str
+    fare_class: Optional[str] = None
+    trip_type: str
+    stops: Optional[int] = None
+    stops_status: str
+    duration_minutes: Optional[int] = None
+    raw_total_fare: Optional[str] = None
+    raw_base_fare: Optional[str] = None
+    raw_taxes: Optional[str] = None
+    raw_fees: Optional[str] = None
+    base_fare: Optional[float] = None
+    taxes: Optional[float] = None
+    fees: Optional[float] = None
+    total_fare: float
+    currency: str
+    breakdown_status: str
+    arithmetic_status: str
+    raw_payload_hash: Optional[str] = None
+    observation_key: Optional[str] = None
+    quote_fingerprint: Optional[str] = None
+    validation_status: str
+    validation_reasons: Optional[list] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
 class ObservationBase(BaseModel):
     source_id: str
     route_id: str
@@ -100,6 +171,8 @@ class ObservationFilter(BaseModel):
     route_id: Optional[str] = None
     carrier_id: Optional[str] = None
     booking_horizon_days: Optional[int] = None
+    validation_status: Optional[str] = None
+    basket_status: Optional[str] = None
     data_status: Optional[DataStatus] = None
     travel_date: Optional[date] = None
     limit: int = 50

@@ -44,11 +44,32 @@ def normalize_city_name(raw_name: str) -> str:
 
 def map_city_to_airport(raw_city: str) -> Tuple[str, str, str]:
     """
-    Maps a raw DGCA city string to (Canonical City, Primary Airport Code, Metro Area Code).
+    Maps a raw DGCA city or airport string to (Canonical City, Primary Airport Code, Metro Area Code).
+    Handles patterns like "New Delhi (DEL)", "Delhi", "Chhatrapati Shivaji Maharaj Bombay", "BOM", etc.
     """
     norm = normalize_city_name(raw_city)
     if norm in CITY_TO_AIRPORT_DEFAULT:
         return CITY_TO_AIRPORT_DEFAULT[norm]
+
+    # Check for 3-letter IATA code in parentheses e.g. "NEW DELHI (DEL)"
+    match = re.search(r"\(([A-Z]{3})\)", norm)
+    if match:
+        code = match.group(1)
+        for city_key, (c_city, apt_code, metro_code) in CITY_TO_AIRPORT_DEFAULT.items():
+            if apt_code == code:
+                return (c_city, apt_code, metro_code)
+
+    # Check if 3-letter raw input is an airport code directly e.g. "DEL", "BOM"
+    if len(norm) == 3:
+        for city_key, (c_city, apt_code, metro_code) in CITY_TO_AIRPORT_DEFAULT.items():
+            if apt_code == norm:
+                return (c_city, apt_code, metro_code)
+
+    # Check if any known city/airport keyword is in norm
+    for city_key, (c_city, apt_code, metro_code) in CITY_TO_AIRPORT_DEFAULT.items():
+        if city_key in norm:
+            return (c_city, apt_code, metro_code)
+
     # Fallback heuristic for unlisted cities
     clean_code = norm[:3] if len(norm) >= 3 else "XXX"
     return (norm, clean_code, clean_code)

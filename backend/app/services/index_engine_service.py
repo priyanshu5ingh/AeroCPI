@@ -297,6 +297,10 @@ class IndexEngineService:
                 "unavailable_details": unavailable_details
             },
             "route_weights_used": proxy_weights,
+            "provenance": {
+                "raw_payload_sha256": str(dataset_version_id or "DS_BASELINE"),
+                "stored_file_sha256": hashlib.sha256(f"{dataset_version_id}:{len(used_obs_ids)}".encode("utf-8")).hexdigest()
+            },
             "used_observation_ids_sample": sorted(list(set(used_obs_ids)))[:50]
         }
 

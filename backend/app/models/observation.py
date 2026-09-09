@@ -49,7 +49,9 @@ class Observation(Base):
     baggage_information = Column(JSON, nullable=True)
     stop_type = Column(String(20), nullable=False, default="NON_STOP")
 
-    raw_payload_hash = Column(String(64), nullable=True)
+    raw_payload_hash = Column(String(64), nullable=True) # Backwards compatible
+    raw_payload_sha256 = Column(String(64), nullable=True, index=True) # Hash of uncompressed source payload
+    stored_file_sha256 = Column(String(64), nullable=True, index=True) # Hash of persisted/compressed artifact
     observation_key = Column(String(255), nullable=True, index=True) # Flight/Search Context identity
     quote_fingerprint = Column(String(64), nullable=True, index=True) # Payload identity
 

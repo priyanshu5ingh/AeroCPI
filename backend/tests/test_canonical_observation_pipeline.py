@@ -349,3 +349,61 @@ def test_api_ingest_raw_quote_endpoint(client):
     assert data["horizon_code"] == "T+15"
     assert data["breakdown_status"] == "COMPLETE_BREAKDOWN"
     assert data["arithmetic_status"] == "ARITHMETIC_MATCH"
+
+
+def test_search_timestamp_authoritative_and_misleading_days_left_ignored(db_session):
+    """Test 17: search_timestamp is authoritative, advance_purchase_days is derived strictly from it, ignoring misleading days_left."""
+    raw_input = RawQuoteInput(
+        source_id="SRC_TEST_SEARCH_TS",
+        source_name="Search TS Test",
+        search_timestamp=datetime(2026, 9, 1, 14, 30, 0, tzinfo=timezone.utc),
+        travel_date=date(2026, 9, 16),
+        origin_raw="Delhi",
+        destination_raw="Mumbai",
+        airline="6E",
+        flight_number="6E-204",
+        total_fare=5312.0,
+        currency="INR"
+    )
+
+    # Ingest quote payload with a misleading 'days_left' field in raw dictionary
+    raw_dict = raw_input.model_dump()
+    raw_dict["days_left"] = 10 # Misleading raw field from third-party source
+
+    canon = CanonicalNormalizationService.normalize_raw_quote(raw_dict)
+    assert canon["search_timestamp"] == datetime(2026, 9, 1, 14, 30, 0, tzinfo=timezone.utc)
+    assert canon["search_date"] == date(2026, 9, 1)
+    # 2026-09-16 minus 2026-09-01 = 15 days (NOT 10 from days_left!)
+    assert canon["advance_purchase_days"] == 15
+
+    obs = ObservationService.ingest_raw_quote(db_session, raw_input)
+    assert obs.search_timestamp.replace(tzinfo=timezone.utc) == datetime(2026, 9, 1, 14, 30, 0, tzinfo=timezone.utc)
+    assert obs.search_date == date(2026, 9, 1)
+    assert obs.advance_purchase_days == 15
+
+
+def test_missing_fare_components_remain_null_in_db(db_session):
+    """Test 18: Missing base_fare, taxes, fees remain NULL in database without manufacturing 0.0 defaults."""
+    raw_input = RawQuoteInput(
+        source_id="SRC_TOTAL_ONLY_TEST",
+        source_name="Total Only Test",
+        search_date=date(2026, 9, 1),
+        travel_date=date(2026, 9, 16),
+        origin_raw="Delhi",
+        destination_raw="Mumbai",
+        airline="6E",
+        flight_number="6E-555",
+        total_fare=5000.0,
+        currency="INR"
+    )
+
+    obs = ObservationService.ingest_raw_quote(db_session, raw_input)
+    assert obs.total_fare == Decimal("5000.00")
+    assert obs.base_fare is None
+    assert obs.taxes is None
+    assert obs.fees is None
+    assert obs.mandatory_fees is None
+    assert obs.breakdown_status == "TOTAL_ONLY"
+    assert obs.validation_status == "FLAG"
+    assert "FLAG_MISSING_FARE_COMPONENT_BREAKDOWN" in obs.validation_reasons
+

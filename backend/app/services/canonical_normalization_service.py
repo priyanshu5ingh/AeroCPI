@@ -120,18 +120,36 @@ class CanonicalNormalizationService:
         if basket_keys is None:
             basket_keys = TOP_10_DGCA_BASKET_ROUTE_KEYS
 
-        # 1. Raw Metadata Preservation
+        # 1. Raw Metadata Preservation & Authoritative Search Timestamp
         source_id = str(raw_quote.get("source_id") or "UNKNOWN_SOURCE").strip()
         source_name = raw_quote.get("source_name") or source_id.replace("_", " ").title()
         source_url = raw_quote.get("source_url")
 
         collected_at = parse_datetime_value(raw_quote.get("collected_at") or raw_quote.get("observed_at"))
 
-        search_date = parse_date_value(raw_quote.get("search_date"))
+        # search_timestamp is the primary authoritative collection event field
+        raw_search_ts = raw_quote.get("search_timestamp")
+        if raw_search_ts is not None:
+            search_timestamp = parse_datetime_value(raw_search_ts)
+            search_date = search_timestamp.date()
+        else:
+            raw_sdate = parse_date_value(raw_quote.get("search_date"))
+            if raw_sdate is not None:
+                search_date = raw_sdate
+                from datetime import time
+                search_timestamp = datetime.combine(search_date, time.min, tzinfo=timezone.utc)
+            else:
+                search_timestamp = collected_at
+                search_date = search_timestamp.date()
+
         travel_date = parse_date_value(raw_quote.get("travel_date"))
 
-        if search_date and travel_date:
-            advance_purchase_days = (travel_date - search_date).days
+        # DERIVATION CONTRACT:
+        # advance_purchase_days is a derived canonical field calculated strictly as:
+        # (travel_date - search_timestamp.date()).days
+        # It MUST NEVER be read, trusted, or reconstructed from a raw source's 'days_left' or 'advance_days' field.
+        if search_timestamp and travel_date:
+            advance_purchase_days = (travel_date - search_timestamp.date()).days
         else:
             advance_purchase_days = None
 
@@ -240,6 +258,7 @@ class CanonicalNormalizationService:
             "source_name": source_name,
             "source_url": source_url,
             "collected_at": collected_at,
+            "search_timestamp": search_timestamp,
             "search_date": search_date,
             "travel_date": travel_date,
             "advance_purchase_days": advance_purchase_days,

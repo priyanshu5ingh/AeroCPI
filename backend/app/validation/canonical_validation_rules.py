@@ -127,3 +127,37 @@ class CanonicalValidationRules:
             return ("FLAG", flag_reasons)
 
         return ("ACCEPT", ["VALIDATION_OK"])
+
+    @staticmethod
+    def evaluate_index_eligibility(canon_obs: Dict[str, Any], val_status: str, val_reasons: List[str]) -> Tuple[str, List[str]]:
+        """
+        Evaluates explicit index eligibility separate from validation status.
+        Index Eligibility Policy:
+        - ACCEPT/FLAG status with valid total fare, canonical basket route, and production APW horizon -> ELIGIBLE.
+        - Total-only observations (FLAG_MISSING_FARE_COMPONENT_BREAKDOWN) and missing flight numbers (FLAG_MISSING_FLIGHT_NUMBER) -> ELIGIBLE.
+        - Routes outside basket, arithmetic mismatches, off-horizon bookings, or REJECT status -> INELIGIBLE.
+        """
+        ineligible_reasons: List[str] = []
+
+        if val_status == "REJECT":
+            ineligible_reasons.append("INELIGIBLE_REJECTED_OBSERVATION")
+
+        if "FLAG_ROUTE_OUTSIDE_REFERENCE_BASKET" in val_reasons or canon_obs.get("basket_status") == "ROUTE_OUTSIDE_REFERENCE_BASKET":
+            ineligible_reasons.append("INELIGIBLE_ROUTE_OUTSIDE_BASKET")
+
+        if "FLAG_ARITHMETIC_MISMATCH" in val_reasons or canon_obs.get("arithmetic_status") == "ARITHMETIC_MISMATCH":
+            ineligible_reasons.append("INELIGIBLE_FARE_ARITHMETIC_MISMATCH")
+
+        horizon_code = canon_obs.get("horizon_code")
+        if horizon_code not in ("T+1", "T+7", "T+15", "T+30", "T+45"):
+            ineligible_reasons.append("INELIGIBLE_OFF_HORIZON")
+
+        total_fare = canon_obs.get("total_fare")
+        if total_fare is None or float(total_fare) <= 0:
+            ineligible_reasons.append("INELIGIBLE_NON_POSITIVE_TOTAL_FARE")
+
+        if ineligible_reasons:
+            return ("INELIGIBLE", ineligible_reasons)
+
+        return ("ELIGIBLE", ["INDEX_ELIGIBLE"])
+

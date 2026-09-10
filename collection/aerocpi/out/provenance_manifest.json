@@ -1,0 +1,126 @@
+{
+  "manifest_version": "1.0",
+  "generated_at": "2026-09-09T12:27:26.298473+00:00",
+  "collection_layer": "AEROCPI_LIVE_OBSERVATION_PANEL",
+  "label": "LIVE_MARKET_DATA",
+  "source_platform": "google_flights",
+  "collection_method": "html_fetch:fast-flights",
+  "fare_breakdown_status": "TOTAL_ONLY",
+  "note": "search_timestamp is an observed collection fact. advance_purchase_days derived from it. Fare components NULL - source exposes total only.",
+  "captures": [
+    {
+      "file": "BLR-DEL_apw21_20260909T122502Z_6ee9d79d6149.html.gz",
+      "route": "BLR-DEL",
+      "horizon": "apw21",
+      "capture_utc": "20260909T122502Z",
+      "sha256": "ea3606b4ed60152e603ecb8eaed02a48e26df988640d8c749b898ecb8dbc77fd",
+      "bytes": 312743
+    },
+    {
+      "file": "BOM-BLR_apw21_20260909T122425Z_000c95f1c4ba.html.gz",
+      "route": "BOM-BLR",
+      "horizon": "apw21",
+      "capture_utc": "20260909T122425Z",
+      "sha256": "0c1c6d2e3332e48f567c5b0a2a3dec65873e60b808c5ef5c650e1c5bbec816f0",
+      "bytes": 307188
+    },
+    {
+      "file": "BOM-DEL_apw21_20260909T122459Z_83cc9e3d4b5d.html.gz",
+      "route": "BOM-DEL",
+      "horizon": "apw21",
+      "capture_utc": "20260909T122459Z",
+      "sha256": "94c71f3c47cf512de5370f4e05811c3870e6d3dc2c73b2e5311acfa61c497b2e",
+      "bytes": 322629
+    },
+    {
+      "file": "DEL-BLR_apw21_20260909T122422Z_03733e4313fa.html.gz",
+      "route": "DEL-BLR",
+      "horizon": "apw21",
+      "capture_utc": "20260909T122422Z",
+      "sha256": "a25e43b7097f167eb425b12aee5b2f7cc66fe44230a234ecbd2e0e48f6150bab",
+      "bytes": 314506
+    },
+    {
+      "file": "DEL-BOM_apw01_20260909T122441Z_4ceef8843e8f.html.gz",
+      "route": "DEL-BOM",
+      "horizon": "apw01",
+      "capture_utc": "20260909T122441Z",
+      "sha256": "e976406f6187101a3f5b7dec1bfe2c040e4c78cc053a9873d79c0446062d268e",
+      "bytes": 331821
+    },
+    {
+      "file": "DEL-BOM_apw07_20260909T122444Z_1fb4793b68a6.html.gz",
+      "route": "DEL-BOM",
+      "horizon": "apw07",
+      "capture_utc": "20260909T122444Z",
+      "sha256": "eea8320fbc16ff72d7a7c6a1e347c65369de7d55e91d7f1580dc1b2b424da194",
+      "bytes": 324211
+    },
+    {
+      "file": "DEL-BOM_apw14_20260909T122447Z_5fbfc1dc17ab.html.gz",
+      "route": "DEL-BOM",
+      "horizon": "apw14",
+      "capture_utc": "20260909T122447Z",
+      "sha256": "0f3f1e9375d20510341ea83a8d7acfa3b9314e40e54e1e945e3fed8e2542234c",
+      "bytes": 334445
+    },
+    {
+      "file": "DEL-BOM_apw21_20260909T122419Z_fdf860a6d184.html.gz",
+      "route": "DEL-BOM",
+      "horizon": "apw21",
+      "capture_utc": "20260909T122419Z",
+      "sha256": "c746e363e37c36b3d41f4ef67a4f91e759d4f5aa5b0b1e6a8a5977be749fb45e",
+      "bytes": 322877
+    },
+    {
+      "file": "DEL-BOM_apw30_20260909T122450Z_5aac9eb17525.html.gz",
+      "route": "DEL-BOM",
+      "horizon": "apw30",
+      "capture_utc": "20260909T122450Z",
+      "sha256": "8ac4c0d38d847db23b9b5baf858ed4ac5f26abea43bde38500e8e92e383c28ee",
+      "bytes": 325435
+    },
+    {
+      "file": "DEL-BOM_apw45_20260909T122453Z_c3f0bd4c7118.html.gz",
+      "route": "DEL-BOM",
+      "horizon": "apw45",
+      "capture_utc": "20260909T122453Z",
+      "sha256": "52b4716913379a7442f0d2c1443a7fb762de71b8e35bdb1bc540aca587387da4",
+      "bytes": 323712
+    },
+    {
+      "file": "DEL-BOM_apw60_20260909T122456Z_e2e357e26273.html.gz",
+      "route": "DEL-BOM",
+      "horizon": "apw60",
+      "capture_utc": "20260909T122456Z",
+      "sha256": "105ceb0d1cc9bdca18e2b0ecf2fddeada187a6392c13e8d9a0df94c1e6c6091c",
+      "bytes": 327691
+    },
+    {
+      "file": "DEL-CCU_apw21_20260909T122431Z_56a861baa454.html.gz",
+      "route": "DEL-CCU",
+      "horizon": "apw21",
+      "capture_utc": "20260909T122431Z",
+      "sha256": "bd19e2fc2ae2a0cc6790082ef26848e8a7d73defd85bfde96c868167dab1c544",
+      "bytes": 305708
+    },
+    {
+      "file": "DEL-HYD_apw21_20260909T122434Z_1587c2020c44.html.gz",
+      "route": "DEL-HYD",
+      "horizon": "apw21",
+      "capture_utc": "20260909T122434Z",
+      "sha256": "b05fce4dd8c784892a32959696aa9bbb627ea923f66a3cdea6977ff3e9765e81",
+      "bytes": 305492
+    },
+    {
+      "file": "DEL-MAA_apw21_20260909T122428Z_ecca6ebda75b.html.gz",
+      "route": "DEL-MAA",
+      "horizon": "apw21",
+      "capture_utc": "20260909T122428Z",
+      "sha256": "6ddc7981ea1cacd22f9889eebc5c7a1e62e32713a5e9fb5789dfd4a67fea9d68",
+      "bytes": 303960
+    }
+  ],
+  "observation_count": 552,
+  "capture_count": 14
+}

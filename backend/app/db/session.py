@@ -13,8 +13,10 @@ def get_engine():
             pass
         return engine
     except Exception:
-        # Fallback to local SQLite for immediate standalone dev/testing if Postgres isn't running locally
-        sqlite_url = "sqlite:///./aerocpi_dev.db"
+        import pathlib
+        backend_dir = pathlib.Path(__file__).resolve().parents[2]
+        db_file = backend_dir / "aerocpi_dev.db"
+        sqlite_url = f"sqlite:///{db_file}"
         return create_engine(sqlite_url, connect_args={"check_same_thread": False})
 
 engine = get_engine()

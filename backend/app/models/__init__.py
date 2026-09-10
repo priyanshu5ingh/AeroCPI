@@ -22,6 +22,7 @@ from app.models.dgca_reference import (
     DGCAProvenanceRecord,
 )
 from app.models.route_basket import RouteBasket, RouteBasketMember
+from app.models.collection_event import CollectionEvent
 
 __all__ = [
     "Base",
@@ -47,4 +48,5 @@ __all__ = [
     "DGCAProvenanceRecord",
     "RouteBasket",
     "RouteBasketMember",
+    "CollectionEvent",
 ]

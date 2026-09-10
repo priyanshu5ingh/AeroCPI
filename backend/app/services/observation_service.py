@@ -70,6 +70,7 @@ class ObservationService:
         raw_dict = raw_input.model_dump()
         canon_dict = CanonicalNormalizationService.normalize_raw_quote(raw_dict)
         val_status, val_reasons = CanonicalValidationRules.evaluate_observation(canon_dict)
+        index_elig, index_elig_reasons = CanonicalValidationRules.evaluate_index_eligibility(canon_dict, val_status, val_reasons)
 
         adv_days = canon_dict["advance_purchase_days"]
         horizon_days = adv_days if adv_days is not None and adv_days >= 0 else 1
@@ -130,6 +131,8 @@ class ObservationService:
             basket_status=canon_dict["basket_status"],
             validation_status=val_status,
             validation_reasons=val_reasons,
+            index_eligibility=index_elig,
+            index_eligibility_reasons=index_elig_reasons,
             data_status="OBSERVED" if val_status != "REJECT" else "REJECTED",
         )
 

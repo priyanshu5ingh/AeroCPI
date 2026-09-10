@@ -62,6 +62,8 @@ class Observation(Base):
     basket_status = Column(String(40), nullable=True, default="ROUTE_OUTSIDE_REFERENCE_BASKET")
     validation_status = Column(String(20), nullable=False, default="ACCEPT", index=True)
     validation_reasons = Column(JSON, nullable=True)
+    index_eligibility = Column(String(20), nullable=False, default="INELIGIBLE", index=True) # ELIGIBLE or INELIGIBLE
+    index_eligibility_reasons = Column(JSON, nullable=True)
     data_status = Column(String(20), nullable=False, default="OBSERVED", index=True)
     raw_reference = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))

@@ -1,0 +1,15 @@
+{
+  "fixture_name": "days_left_trap",
+  "purpose": "Proves a source-supplied days_left field cannot be treated as an observed booking date.",
+  "source_dataset": "EaseMyTrip Flight Price Prediction (Clean_Dataset.csv lineage)",
+  "claimed_provenance": "data collected for 50 days, 11 Feb 2022 - 31 Mar 2022",
+  "audited_reality": "Business class collapses to ONE implied collection date (2022-02-10, 93487/93487 rows). Economy is 2022-02-09/10. days_left is arithmetic, not observed.",
+  "rows": [
+    {"airline":"Vistara","flight":"UK-706","source_city":"Delhi","destination_city":"Mumbai","class":"Business","days_left":1,"travel_date":"2022-02-11","price":12898,
+     "implied_search_date":"2022-02-10","trap":"Looks like a same-day observation. It is not. It is one crawl on 2022-02-10."},
+    {"airline":"Vistara","flight":"UK-772","source_city":"Delhi","destination_city":"Mumbai","class":"Business","days_left":30,"travel_date":"2022-03-12","price":52540,
+     "implied_search_date":"2022-02-10","trap":"Same implied search date as the row above. A real 30-day panel cannot have identical search dates across all horizons."}
+  ],
+  "assertion": "GROUP BY implied_search_date over the full file yields <= 2 dates. Therefore ANY index computed from this file measures travel-date variation, never price movement over collection time.",
+  "required_adapter_behaviour": "REJECT with reason DERIVED_HORIZON_NO_OBSERVED_SEARCH_TIMESTAMP. Do not populate search_timestamp."
+}

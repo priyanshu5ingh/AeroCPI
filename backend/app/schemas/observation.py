@@ -15,7 +15,12 @@ class RawQuoteInput(BaseModel):
     travel_date: date
     origin_raw: str
     destination_raw: str
+    source_request_id: Optional[str] = None
+    source_offer_id: Optional[str] = None
     airline: str
+    owner_carrier: Optional[str] = None
+    marketing_carrier: Optional[str] = None
+    operating_carrier: Optional[str] = None
     flight_number: Optional[str] = None
     cabin: str = "ECONOMY"
     fare_class: Optional[str] = "STANDARD"

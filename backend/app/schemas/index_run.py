@@ -19,7 +19,7 @@ class IndexRunResponse(BaseModel):
     reference_period: str
     comparison_period: str
     frequency: str
-    dataset_version_id: str
+    dataset_version_id: Optional[str] = None
     route_basket_version: str
     proxy_weight_version: str
     methodology_version: str

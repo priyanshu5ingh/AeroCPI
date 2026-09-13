@@ -47,9 +47,10 @@ def test_production_apw_set_strictness():
     assert 60 not in PRODUCTION_APW_SET
 
 def test_collection_event_idempotency_vs_observation_deduplication(db_session):
-    # Simulate single route collection event on Today's date
+    # Simulate single route collection event on Today's date (Asia/Kolkata)
+    kolkata_tz = ZoneInfo("Asia/Kolkata")
     search_ts = datetime.now(timezone.utc)
-    search_date = search_ts.date()
+    search_date = search_ts.astimezone(kolkata_tz).date()
 
     evt1 = CollectionEvent(
         source_id="SRC_GOOGLE_FLIGHTS",

@@ -144,13 +144,16 @@ def seed_database(db=None):
 
         print(f"Successfully seeded {created_obs_count} demo observations into database.")
 
-        os.makedirs("data/demo", exist_ok=True)
-        os.makedirs("data/raw", exist_ok=True)
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        demo_dir = os.path.join(base_dir, "data", "demo")
+        raw_dir = os.path.join(base_dir, "data", "raw")
+        os.makedirs(demo_dir, exist_ok=True)
+        os.makedirs(raw_dir, exist_ok=True)
 
-        with open("data/demo/seed_demo_observations.json", "w") as f:
+        with open(os.path.join(demo_dir, "seed_demo_observations.json"), "w", encoding="utf-8") as f:
             json.dump(raw_samples, f, indent=2)
 
-        with open("data/raw/raw_sample_quotes.json", "w") as f:
+        with open(os.path.join(raw_dir, "raw_sample_quotes.json"), "w", encoding="utf-8") as f:
             json.dump(raw_samples[:10], f, indent=2)
 
         print("Exported data/demo/seed_demo_observations.json and data/raw/raw_sample_quotes.json.")

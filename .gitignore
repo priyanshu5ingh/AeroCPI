@@ -1,0 +1,7 @@
+.env
+.env.*
+__pycache__/
+*.pyc
+*.db
+logs/
+data/raw/duffel_audit/

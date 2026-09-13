@@ -142,6 +142,9 @@ class CanonicalValidationRules:
         if val_status == "REJECT":
             ineligible_reasons.append("INELIGIBLE_REJECTED_OBSERVATION")
 
+        if canon_obs.get("live_mode") is False or canon_obs.get("is_test_data") is True:
+            ineligible_reasons.append("INELIGIBLE_TEST_MODE_DATA")
+
         if "FLAG_ROUTE_OUTSIDE_REFERENCE_BASKET" in val_reasons or canon_obs.get("basket_status") == "ROUTE_OUTSIDE_REFERENCE_BASKET":
             ineligible_reasons.append("INELIGIBLE_ROUTE_OUTSIDE_BASKET")
 

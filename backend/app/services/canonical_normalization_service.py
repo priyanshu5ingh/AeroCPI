@@ -181,7 +181,12 @@ class CanonicalNormalizationService:
             basket_status = "UNMAPPABLE_ROUTE"
 
         # 3. Carrier & Flight Details
+        source_request_id = raw_quote.get("source_request_id")
+        source_offer_id = raw_quote.get("source_offer_id")
         airline = str(raw_quote.get("airline") or raw_quote.get("carrier_id") or "UNKNOWN").strip().upper()
+        owner_carrier = raw_quote.get("owner_carrier") or airline
+        marketing_carrier = raw_quote.get("marketing_carrier") or airline
+        operating_carrier = raw_quote.get("operating_carrier") or airline
         flight_number = str(raw_quote.get("flight_number") or "").strip() or None
         cabin = str(raw_quote.get("cabin") or "ECONOMY").strip().upper()
         fare_class = str(raw_quote.get("fare_class") or "STANDARD").strip().upper() or None
@@ -276,7 +281,12 @@ class CanonicalNormalizationService:
             "route_id": route_id,
             "route_mapping_status": route_mapping_status,
             "basket_status": basket_status,
+            "source_request_id": source_request_id,
+            "source_offer_id": source_offer_id,
             "airline": airline,
+            "owner_carrier": owner_carrier,
+            "marketing_carrier": marketing_carrier,
+            "operating_carrier": operating_carrier,
             "flight_number": flight_number,
             "cabin": cabin,
             "fare_class": fare_class,

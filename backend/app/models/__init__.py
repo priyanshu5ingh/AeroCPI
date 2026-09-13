@@ -23,6 +23,11 @@ from app.models.dgca_reference import (
 )
 from app.models.route_basket import RouteBasket, RouteBasketMember
 from app.models.collection_event import CollectionEvent
+from app.models.trust_evaluation import TrustEvaluation
+from app.models.horizon_index_result import HorizonIndexResult
+from app.models.measurement_configuration import MeasurementConfiguration
+from app.models.observation_quality import ObservationQuality
+from app.models.validation_lab import ValidationBenchmark, ValidationRun, ValidationMetric
 
 __all__ = [
     "Base",
@@ -39,6 +44,7 @@ __all__ = [
     "ProxyRouteWeight",
     "IndexRun",
     "RouteIndexResult",
+    "HorizonIndexResult",
     "ExternalReferenceData",
     "CityAirportMapping",
     "DGCAReferenceDataset",
@@ -49,4 +55,10 @@ __all__ = [
     "RouteBasket",
     "RouteBasketMember",
     "CollectionEvent",
+    "TrustEvaluation",
+    "MeasurementConfiguration",
+    "ObservationQuality",
+    "ValidationBenchmark",
+    "ValidationRun",
+    "ValidationMetric",
 ]

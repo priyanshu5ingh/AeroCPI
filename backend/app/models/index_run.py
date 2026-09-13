@@ -10,7 +10,7 @@ class IndexRun(Base):
     run_timestamp = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     reference_period = Column(String(20), nullable=False)
     comparison_period = Column(String(20), nullable=False)
-    dataset_version_id = Column(String(50), ForeignKey("dataset_versions.dataset_version_id"), nullable=False, index=True)
+    dataset_version_id = Column(String(50), ForeignKey("dataset_versions.dataset_version_id"), nullable=True, index=True)
     route_basket_version = Column(String(50), nullable=False, default="BASKET_2026_Q1")
     proxy_weight_version = Column(String(50), nullable=False, default="DGCA_PROXY_2026_V1")
     methodology_version = Column(String(50), nullable=False, default="JEVONS_YOUNG_LASPEYRES_V1")
@@ -40,3 +40,5 @@ class IndexRun(Base):
     software_version = Column(String(30), nullable=False, default="0.2.0-milestone2")
     canonical_run_fingerprint = Column(String(64), nullable=False)
     calculation_manifest = Column(JSON, nullable=True)
+    trust_evaluation_id = Column(String(36), nullable=True, index=True)
+

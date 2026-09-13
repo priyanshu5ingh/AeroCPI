@@ -1,0 +1,26 @@
+{
+  "collection_date": "2026-09-11",
+  "events_attempted": 50,
+  "events_succeeded": 40,
+  "events_failed": 10,
+  "events_skipped_duplicate": 0,
+  "observations_collected": 2350,
+  "observations_accepted": 0,
+  "observations_flagged": 2350,
+  "observations_rejected": 0,
+  "duplicate_payloads": 0,
+  "summary_file": "C:\\Users\\priya\\Downloads\\AeroCPI\\data\\out\\aerocpi_observations_20260911T162205Z.jsonl",
+  "log_file": "C:\\Users\\priya\\Downloads\\AeroCPI\\backend\\logs\\collection_scheduler.log",
+  "errors": [
+    "FAIL DEL-MAA APW45: ConnectError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTAtMjZqBRIDREVMcgUSA01BQUIBAUgBmAEC&hl=&curr=INR) > A socket operation was attempted to an unreachable network. (os error 10051)",
+    "FAIL BOM-GOI APW01: ConnectError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMDktMTJqBRIDQk9NcgUSA0dPSUIBAUgBmAEC&hl=&curr=INR) > A socket operation was attempted to an unreachable network. (os error 10051)",
+    "FAIL BOM-GOI APW07: ConnectError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMDktMThqBRIDQk9NcgUSA0dPSUIBAUgBmAEC&hl=&curr=INR) > A socket operation was attempted to an unreachable network. (os error 10051)",
+    "FAIL BOM-GOI APW15: DNSError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMDktMjZqBRIDQk9NcgUSA0dPSUIBAUgBmAEC&hl=&curr=INR) > error resolving DNS > no connections available",
+    "FAIL BOM-GOI APW30: DNSError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTAtMTFqBRIDQk9NcgUSA0dPSUIBAUgBmAEC&hl=&curr=INR) > error resolving DNS > no connections available",
+    "FAIL BOM-GOI APW45: DNSError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTAtMjZqBRIDQk9NcgUSA0dPSUIBAUgBmAEC&hl=&curr=INR) > error resolving DNS > no connections available",
+    "FAIL BLR-HYD APW01: DNSError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMDktMTJqBRIDQkxScgUSA0hZREIBAUgBmAEC&hl=&curr=INR) > error resolving DNS > no connections available",
+    "FAIL BLR-HYD APW07: DNSError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMDktMThqBRIDQkxScgUSA0hZREIBAUgBmAEC&hl=&curr=INR) > error resolving DNS > no connections available",
+    "FAIL BLR-HYD APW15: DNSError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMDktMjZqBRIDQkxScgUSA0hZREIBAUgBmAEC&hl=&curr=INR) > error resolving DNS > no connections available",
+    "FAIL BLR-HYD APW30: DNSError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTAtMTFqBRIDQkxScgUSA0hZREIBAUgBmAEC&hl=&curr=INR) > error resolving DNS > no connections available"
+  ]
+}

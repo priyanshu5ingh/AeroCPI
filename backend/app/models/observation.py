@@ -66,11 +66,23 @@ class Observation(Base):
     index_eligibility_reasons = Column(JSON, nullable=True)
     data_status = Column(String(20), nullable=False, default="OBSERVED", index=True)
     raw_reference = Column(String(255), nullable=True)
+
+    # Multi-Source Orchestration & Comparability Fields
+    collection_run_id = Column(String(50), nullable=True, index=True)
+    collection_attempt_id = Column(String(50), nullable=True, index=True)
+    comparability_id = Column(String(64), nullable=True, index=True)
+    source_quote_id = Column(String(100), nullable=True)
+    adapter_version = Column(String(20), nullable=True, default="1.0.0")
+    capture_method = Column(String(40), nullable=True, default="SEARCH_QUERY")
+    source_status_at_capture = Column(String(40), nullable=True, default="LIVE_OBSERVED")
+    provenance_metadata = Column(JSON, nullable=True)
+
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
 __table_args__ = (
     Index("idx_obs_route_travel_date", "route_id", "travel_date"),
     Index("idx_obs_observation_key", "observation_key"),
     Index("idx_obs_quote_fingerprint", "quote_fingerprint"),
+    Index("idx_obs_collection_run", "collection_run_id"),
 )
 Observation.__table_args__ = __table_args__

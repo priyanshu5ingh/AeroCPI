@@ -32,6 +32,7 @@ from app.models.airline_registry import AirlineRegistry
 from app.models.route_universe import RouteUniverse
 from app.models.source_capability import SourceCapability
 from app.models.longitudinal_panel import LongitudinalPanelManifest, SourcePriceComparison
+from app.models.collection_orchestration import CollectionRun, CollectionAttempt
 
 __all__ = [
     "Base",

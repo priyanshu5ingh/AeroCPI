@@ -668,3 +668,19 @@ export interface TrajectoryDetailResponse {
   status: string;
 }
 
+export interface RouteCoverageItem {
+  route_id: string;
+  origin: string;
+  destination: string;
+  tier: string;
+  description: string;
+  is_cpi_basket_member: boolean;
+  airlines_observed: string[];
+  sources_configured: string[];
+  sources_accessible: string[];
+  sources_collected: string[];
+  observations_count: number;
+  last_collection: string | null;
+  coverage_status: string;
+}
+

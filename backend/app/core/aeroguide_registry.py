@@ -26,6 +26,25 @@ TIER_2_NATIONAL_HIGH_TRAFFIC = [
     ("BLR", "CCU"), ("CCU", "BLR")
 ]
 
+TIER_3_REGIONAL_CONNECTIVITY = [
+    ("CCU", "IXB"), ("IXB", "CCU"),
+    ("CCU", "GAU"), ("GAU", "CCU"),
+    ("BLR", "PAT"), ("PAT", "BLR"),
+    ("MAA", "IXZ"), ("IXZ", "MAA"),
+    ("DEL", "DED"), ("DED", "DEL"),
+    ("DEL", "IXR"), ("IXR", "DEL"),
+    ("BOM", "JAI"), ("JAI", "BOM"),
+    ("HYD", "VTZ"), ("VTZ", "HYD")
+]
+
+TIER_4_DYNAMIC_DISCOVERY = [
+    ("BOM", "IXC"), ("IXC", "BOM"),
+    ("DEL", "SXR"), ("SXR", "DEL"),
+    ("BLR", "TRV"), ("TRV", "BLR"),
+    ("DEL", "BBI"), ("BBI", "DEL"),
+    ("BOM", "IXE"), ("IXE", "BOM")
+]
+
 def generate_comparability_id(
     origin: str,
     destination: str,

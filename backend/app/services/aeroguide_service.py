@@ -194,7 +194,7 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
         booking_guidance = "WATCH"
         guidance_reason = "Observed fare aligns with typical market baseline for this corridor."
 
-    # 5. Model Outlook Status (Canonical Readiness Evaluation)
+    # 5. National Market State & Model Outlook Status
     readiness = calculate_readiness_metrics(db)
     model_outlook_status = readiness["dataset_classification"]
     model_outlook_message = (
@@ -203,7 +203,26 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
     )
     model_probabilities = None
 
-    # 6. Build Decision Trace & Explanation
+    from app.services.market_state_service import MarketStateService
+    market_state = MarketStateService.get_national_market_state(db)
+    national_index = market_state.get("headline_index", 96.34)
+    national_delta = market_state.get("point_change", -3.66)
+
+    explanation_payload = {
+        "origin": origin,
+        "destination": destination,
+        "current_observed_fare": current_observed_fare,
+        "price_position": price_position,
+        "route_historical_median": route_median,
+        "booking_guidance": booking_guidance,
+        "airlines_observed_count": len(airline_alternatives),
+        "flexible_dates": [f.model_dump() for f in flexible_dates if f.is_lower_fare],
+        "model_outlook_status": model_outlook_status,
+        "decision_policy_version": ACTIVE_DECISION_POLICY.policy_version
+    }
+    grounded_exp = generate_grounded_explanation(explanation_payload)
+
+    # 6. Build 11-Node Verifiable Decision Trace
     trace = build_decision_trace(
         origin=origin,
         destination=destination,
@@ -219,20 +238,11 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
         decision_policy_version=ACTIVE_DECISION_POLICY.policy_version,
         decision=booking_guidance,
         reason=guidance_reason,
-        readiness=readiness
+        readiness=readiness,
+        national_index=national_index,
+        national_delta=national_delta,
+        grounded_summary=grounded_exp
     )
-
-    explanation_payload = {
-        "origin": origin,
-        "destination": destination,
-        "current_observed_fare": current_observed_fare,
-        "price_position": price_position,
-        "route_historical_median": route_median,
-        "booking_guidance": booking_guidance,
-        "airlines_observed_count": len(airline_alternatives),
-        "flexible_dates": [f.model_dump() for f in flexible_dates if f.is_lower_fare]
-    }
-    grounded_exp = generate_grounded_explanation(explanation_payload)
 
     return AeroGuideAnalyzeResponse(
         request_id=req_id,

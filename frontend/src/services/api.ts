@@ -21,7 +21,8 @@ import {
   RouteUniverseItem,
   AirlineRegistryItem,
   SourceCapabilityItem,
-  SourceHealthItem
+  SourceHealthItem,
+  RouteCoverageItem
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -228,6 +229,37 @@ export const fetchCollectionStatus = async () => {
 
 export const fetchTrajectoryDetail = async (routeId: string, travelDate: string) => {
   const response = await axios.get(`${API_BASE}/aeroguide/trajectories/${routeId}/${travelDate}`);
+  return response.data;
+};
+
+export const fetchMarketState = async (runId?: string) => {
+  const response = await axios.get(`${API_BASE}/aeroguide/market-state`, {
+    params: { run_id: runId }
+  });
+  return response.data;
+};
+
+export const fetchWhatChanged = async (runId?: string) => {
+  const response = await axios.get(`${API_BASE}/aeroguide/what-changed`, {
+    params: { run_id: runId }
+  });
+  return response.data;
+};
+
+export const fetchCollectionRuns = async (limit = 20) => {
+  const response = await axios.get(`${API_BASE}/aeroguide/collection-runs`, {
+    params: { limit }
+  });
+  return response.data;
+};
+
+export const fetchModelEvaluation = async () => {
+  const response = await axios.get(`${API_BASE}/aeroguide/model-evaluation`);
+  return response.data;
+};
+
+export const fetchRouteCoverage = async (): Promise<RouteCoverageItem[]> => {
+  const response = await axios.get<RouteCoverageItem[]>(`${API_BASE}/aeroguide/route-coverage`);
   return response.data;
 };
 

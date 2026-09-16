@@ -226,3 +226,8 @@ export const fetchCollectionStatus = async () => {
   return response.data;
 };
 
+export const fetchTrajectoryDetail = async (routeId: string, travelDate: string) => {
+  const response = await axios.get(`${API_BASE}/aeroguide/trajectories/${routeId}/${travelDate}`);
+  return response.data;
+};
+

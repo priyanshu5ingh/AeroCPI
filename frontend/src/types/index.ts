@@ -431,3 +431,177 @@ export interface ValidationRun {
 }
 
 export interface TraceIndexRunNode { run_id: string; headline_index_value: number; headline_horizon_code: string; reference_date: string; calculation_date: string; } export interface TraceConfigurationNode { configuration_version: string; basket_version: string; aggregation_version: string; configuration_fingerprint: string; } export interface TraceHorizonNode { horizon_code: string; index_value: number; is_headline: boolean; active_routes_count: number; } export interface TraceRouteNode { route_id: string; route_index_value: number; point_contribution: number | null; dgca_weight: number; base_representative_fare: number; current_representative_fare: number; } export interface TraceObservationsNode { total_observations_queried: number; eligible_observations: number; rejection_rate_pct: number; } export interface TraceQualityNode { completeness_pct: number; fare_integrity_pct: number; rule_version: string; } export interface TraceExplanationNode { top_positive_driver: string; top_positive_points: number; top_negative_driver: string; top_negative_points: number; } export interface MeasurementTraceResponse { run_id: string; provenance_chain: string[]; index_run: TraceIndexRunNode; configuration: TraceConfigurationNode; horizons: TraceHorizonNode[]; routes: TraceRouteNode[]; observation_summary: TraceObservationsNode; quality_summary: TraceQualityNode; explanation_summary: TraceExplanationNode; canonical_run_fingerprint: string; manifest_sha256: string | null; }
+
+// ==========================================
+// AeroGuide Consumer Airfare Intelligence Types
+// ==========================================
+
+export interface AirlineAlternative {
+  carrier_code: string;
+  airline_name: string;
+  observed_fare: number;
+  currency: string;
+  stops: number;
+  duration_minutes: number;
+  source_id: string;
+  source_evidence: string;
+  source_state: string;
+  is_direct_airline: boolean;
+  current_position: 'LOW' | 'TYPICAL' | 'HIGH' | string;
+  departure_time?: string | null;
+  observation_id?: string | null;
+}
+
+export interface FlexibleDateOption {
+  travel_date: string;
+  days_diff: number;
+  observed_fare: number;
+  difference_from_requested: number;
+  percent_difference: number;
+  carrier_code: string;
+  stops: number;
+  source_evidence: string;
+  is_lower_fare: boolean;
+  label: string;
+}
+
+export interface DecisionTraceNode {
+  step_number: number;
+  stage_name: string;
+  timestamp_utc: string;
+  status: 'VERIFIED' | 'PASSED' | 'COLLECTED' | 'EVALUATED' | 'DECIDED' | string;
+  input_summary: string;
+  computation_summary: string;
+  verdict_detail: string;
+  data_provenance_id: string;
+}
+
+export interface GroundedExplanation {
+  headline: string;
+  market_context: string;
+  carrier_comparison: string;
+  timing_recommendation: string;
+  evidence_anchor: Record<string, any>;
+}
+
+export interface LongitudinalReadinessInfo {
+  dataset_classification: string;
+  model_training_status: string;
+  required_target_pairs: number;
+  current_target_pairs: number;
+}
+
+export interface AeroGuideAnalyzeRequest {
+  origin: string;
+  destination: string;
+  travel_date: string;
+  flexibility_days?: number;
+  priority?: 'CHEAPEST' | 'FASTEST' | string;
+  adults?: number;
+  cabin?: string;
+  currency?: string;
+}
+
+export interface AeroGuideAnalyzeResponse {
+  request_id: string;
+  origin: string;
+  destination: string;
+  route_id: string;
+  travel_date: string;
+  days_to_departure: number;
+  current_observed_fare: number;
+  currency: string;
+  price_position: 'LOW' | 'TYPICAL' | 'HIGH' | 'INSUFFICIENT_DATA' | string;
+  route_historical_median: number;
+  route_historical_min: number;
+  route_historical_max: number;
+  observations_in_sample: number;
+  model_outlook_status: string;
+  model_probabilities?: Record<string, number> | null;
+  model_outlook_message: string;
+  booking_guidance: 'BOOK' | 'WAIT' | 'WATCH' | 'FLEX_DATE' | 'INSUFFICIENT_DATA' | string;
+  guidance_reason: string;
+  decision_policy_version: string;
+  airline_alternatives: AirlineAlternative[];
+  flexible_dates: FlexibleDateOption[];
+  sources_available: string[];
+  decision_trace: DecisionTraceNode[];
+  grounded_explanation: GroundedExplanation;
+  longitudinal_readiness: LongitudinalReadinessInfo;
+}
+
+export interface ForecastingReadinessResponse {
+  dataset_classification: string;
+  model_training_status: string;
+  total_observations: number;
+  unique_routes: number;
+  unique_travel_dates: number;
+  unique_search_dates: number;
+  longitudinal_pairs_count: number;
+  repeated_trajectories: number;
+  trajectories_with_gte_3_searches: number;
+  seven_day_target_pairs: number;
+  fourteen_day_target_pairs: number;
+  longest_history_days: number;
+  source_coverage: string[];
+  airline_coverage: string[];
+  overall_readiness: string;
+  readiness_notes: string;
+  required_collection_schedule: {
+    pinned_travel_dates: number;
+    routes_per_run: number;
+    consecutive_collection_days_required: number;
+    target_observations_required: number;
+  };
+}
+
+export interface RouteUniverseItem {
+  route_id: string;
+  origin: string;
+  destination: string;
+  city_pair: string;
+  tier: 'TIER_1_DGCA_CORE' | 'TIER_2_NATIONAL_HIGH_TRAFFIC' | 'TIER_3_REGIONAL_CONNECTIVITY' | 'TIER_4_DYNAMIC_DISCOVERY' | string;
+  is_cpi_basket_member: boolean;
+  description: string;
+}
+
+export interface AirlineRegistryItem {
+  airline_id: string;
+  iata_code: string;
+  name: string;
+  official_api_available: boolean;
+  ndc_available: boolean;
+  ndc_portal_url: string | null;
+  api_access_type: string;
+  requires_authentication: boolean;
+  partner_restriction: boolean;
+  documented_endpoints: string[];
+  observable_content: string[];
+  is_documented: boolean;
+  is_accessible: boolean;
+  is_actually_collected: boolean;
+  is_currently_observed: boolean;
+  verification_source: string;
+  verification_status: string;
+}
+
+export interface SourceCapabilityItem {
+  source_id: string;
+  source_name: string;
+  source_type: string;
+  access_status: string;
+  is_public_unrestricted: boolean;
+  fare_breakdown_supported: boolean;
+  health_status: string;
+  availability_rate: number;
+  median_response_time_ms: number | null;
+}
+
+export interface SourceHealthItem {
+  source_id: string;
+  source_name: string;
+  health_status: string;
+  availability_rate: number;
+  median_response_time_ms: number | null;
+}
+

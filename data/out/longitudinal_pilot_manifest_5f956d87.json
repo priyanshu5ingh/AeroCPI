@@ -1,0 +1,67 @@
+{
+  "collection_run": {
+    "run_id": "5f956d87-1f92-44f2-9d41-a088d7bba7ce",
+    "started_at": "2026-09-16T14:08:04.486601+00:00",
+    "finished_at": "2026-09-16T14:08:04.788107+00:00",
+    "routes_requested": 10,
+    "travel_dates_requested": 14,
+    "queries_requested": 140,
+    "queries_successful": 140,
+    "queries_failed": 0,
+    "observations_created": 560,
+    "observations_skipped": 0,
+    "source_failures": [],
+    "raw_payload_count": 560,
+    "run_status": "COMPLETED",
+    "pinned_dates": [
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-03",
+      "2026-10-04",
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-10",
+      "2026-10-11",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14"
+    ]
+  },
+  "readiness_after_run": {
+    "dataset_classification": "INSUFFICIENT_LONGITUDINAL_HISTORY",
+    "model_training_status": "DISABLED",
+    "total_observations": 16876,
+    "unique_routes": 15,
+    "unique_travel_dates": 38,
+    "unique_search_dates": 7,
+    "longitudinal_pairs_count": 140,
+    "repeated_trajectories": 2,
+    "trajectories_with_gte_3_searches": 2,
+    "seven_day_target_pairs": 1,
+    "fourteen_day_target_pairs": 1,
+    "longest_history_days": 15,
+    "source_coverage": [
+      "SRC_GOOGLE_FLIGHTS"
+    ],
+    "airline_coverage": [
+      "6E",
+      "9I",
+      "AI",
+      "QP",
+      "S5",
+      "SG",
+      "UNKNOWN"
+    ],
+    "overall_readiness": "INSUFFICIENT_LONGITUDINAL_HISTORY",
+    "readiness_notes": "Longitudinal panel contains 1 valid 7-day target pairs across 2 repeated trajectories.",
+    "required_collection_schedule": {
+      "pinned_travel_dates": 14,
+      "routes_per_run": 10,
+      "consecutive_collection_days_required": 14,
+      "target_observations_required": 35000
+    }
+  }
+}

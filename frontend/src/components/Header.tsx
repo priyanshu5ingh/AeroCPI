@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
   Plane, Calendar, Layers, Database, LayoutDashboard, Compass, Clock, BookOpen,
-  Filter, ShieldCheck, Search, FlaskConical, GitCommit, ShieldAlert, Menu, X, Check
+  Filter, ShieldCheck, Search, FlaskConical, GitCommit, ShieldAlert, Menu, X, Check,
+  Sparkles
 } from 'lucide-react';
 import { DashboardScope, SimpleIndexRun } from '../types';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -9,6 +10,7 @@ import { drawerVariants, drawerBackdropVariants } from '../lib/motion';
 
 export type PlatformTab =
   | 'overview'
+  | 'aeroguide'
   | 'live-market'
   | 'routes'
   | 'horizon'
@@ -29,6 +31,7 @@ interface HeaderProps {
 
 const TABS: { id: PlatformTab; label: string; short: string; icon: React.FC<{ className?: string }> }[] = [
   { id: 'overview', label: 'Overview', short: 'Overview', icon: LayoutDashboard },
+  { id: 'aeroguide', label: 'AeroGuide AI', short: 'AeroGuide', icon: Sparkles },
   { id: 'live-market', label: 'Observation Explorer', short: 'Explorer', icon: Search },
   { id: 'routes', label: 'Route Intelligence', short: 'Routes', icon: Compass },
   { id: 'horizon', label: 'Horizon Analysis', short: 'Horizon', icon: Clock },

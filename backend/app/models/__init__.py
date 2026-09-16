@@ -28,6 +28,10 @@ from app.models.horizon_index_result import HorizonIndexResult
 from app.models.measurement_configuration import MeasurementConfiguration
 from app.models.observation_quality import ObservationQuality
 from app.models.validation_lab import ValidationBenchmark, ValidationRun, ValidationMetric
+from app.models.airline_registry import AirlineRegistry
+from app.models.route_universe import RouteUniverse
+from app.models.source_capability import SourceCapability
+from app.models.longitudinal_panel import LongitudinalPanelManifest, SourcePriceComparison
 
 __all__ = [
     "Base",

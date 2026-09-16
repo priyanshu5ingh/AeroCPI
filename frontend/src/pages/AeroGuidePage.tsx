@@ -390,7 +390,7 @@ export const AeroGuidePage: React.FC = () => {
                     Deterministic Policy Verdict
                   </div>
                   <div className="text-3xl md:text-4xl font-black text-white tracking-tight">
-                    {analysis.booking_guidance === 'FLEX_DATE' ? 'Save money by shifting your date ±2 days' :
+                    {analysis.booking_guidance === 'FLEX_DATE' ? 'Observed lower fare on adjacent date ±2 days' :
                      analysis.booking_guidance === 'BOOK' ? 'Favorable fare window — Book now' :
                      analysis.booking_guidance === 'WAIT' ? 'Elevated fare — Wait for correction' :
                      'Market typical — Watch and track price progression'}
@@ -489,10 +489,10 @@ export const AeroGuidePage: React.FC = () => {
                     <div className="flex items-center justify-between text-xs font-mono font-bold text-emerald-800">
                       <span className="flex items-center gap-1.5">
                         <Calendar className="w-4 h-4 text-emerald-600" />
-                        Nearby Saving Opportunity
+                        Nearby Lower Fare Observed
                       </span>
                       <span className="bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full">
-                        LOWER FARE
+                        OBSERVED LOWER
                       </span>
                     </div>
                     {(() => {
@@ -501,7 +501,7 @@ export const AeroGuidePage: React.FC = () => {
                         <div className="text-xs text-emerald-950 font-sans">
                           Fly on <strong>{best.travel_date}</strong> ({best.days_diff > 0 ? `+${best.days_diff}` : best.days_diff} days) for{' '}
                           <strong className="text-emerald-700 text-sm font-mono">₹{best.observed_fare.toLocaleString('en-IN')}</strong>{' '}
-                          ({Math.abs(best.percent_difference)}% cheaper than requested date).
+                          ({Math.abs(best.percent_difference)}% observed lower than requested date).
                         </div>
                       );
                     })()}
@@ -630,7 +630,7 @@ export const AeroGuidePage: React.FC = () => {
                             </span>
                             {f.is_lower_fare && (
                               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white uppercase">
-                                Save {Math.abs(f.percent_difference)}%
+                                ↓ {Math.abs(f.percent_difference)}% observed lower
                               </span>
                             )}
                           </div>

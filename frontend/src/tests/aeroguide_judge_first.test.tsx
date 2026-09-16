@@ -371,21 +371,64 @@ describe('AeroGuide Judge-First UX Test Suite', () => {
     });
   });
 
-  it('2. Opens 11-node Decision Trace Drawer when clicking WHY THIS DECISION', async () => {
+  it('2. Enforces INSUFFICIENT_DATA state with zero fake probability values when model is collecting', async () => {
+    render(<GuideView />);
+    await waitFor(() => {
+      expect(screen.getAllByText(/AI OUTLOOK/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/0 \/ 7 valid 7-day targets/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Forecast unavailable/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/INSUFFICIENT_DATA/i).length).toBeGreaterThan(0);
+      // Ensure no synthetic % bars are rendered
+      expect(screen.queryByText(/↓ FALL 50%/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/↑ RISE 50%/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('3. Opens and closes 11-node Decision Trace Drawer cleanly', async () => {
     render(<GuideView />);
     await waitFor(() => {
       expect(screen.getByText(/WHY THIS DECISION/i)).toBeInTheDocument();
     });
 
+    // Open trace drawer
     fireEvent.click(screen.getByText(/WHY THIS DECISION/i));
 
     await waitFor(() => {
       expect(screen.getByText(/11-Node Decision Trace/i)).toBeInTheDocument();
       expect(screen.getByText(/Deterministic Computation Vector/i)).toBeInTheDocument();
+      expect(screen.getByText(/Trace Stages/i)).toBeInTheDocument();
+    });
+
+    // Close trace drawer
+    const doneBtn = screen.getByText('Done Inspecting');
+    fireEvent.click(doneBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Deterministic Computation Vector/i)).not.toBeInTheDocument();
     });
   });
 
-  it('3. Renders MarketView with National Index, 6-state badge, and 5A Attribution Drivers', async () => {
+  it('4. Toggles Multi-Carrier Pricing Breakdown on demand without visual dilution', async () => {
+    render(<GuideView />);
+    await waitFor(() => {
+      expect(screen.getByText(/Multi-Carrier Airfare Distribution/i)).toBeInTheDocument();
+      expect(screen.getByText(/View 2 Carrier Quotes/i)).toBeInTheDocument();
+    });
+
+    // Initially collapsed
+    expect(screen.queryByText(/IndiGo/i)).not.toBeInTheDocument();
+
+    // Toggle expand
+    fireEvent.click(screen.getByText(/View 2 Carrier Quotes/i));
+
+    await waitFor(() => {
+      expect(screen.getByText(/IndiGo/i)).toBeInTheDocument();
+      expect(screen.getByText(/Air India/i)).toBeInTheDocument();
+      expect(screen.getByText(/Collapse Carriers/i)).toBeInTheDocument();
+    });
+  });
+
+  it('5. Renders MarketView with National Index, 6-state badge, and 5A Attribution Drivers', async () => {
     render(
       <MarketView
         dashboard={mockDashboardData}
@@ -401,7 +444,7 @@ describe('AeroGuide Judge-First UX Test Suite', () => {
     });
   });
 
-  it('4. Renders ProofView with 5-stage source lifecycle machine and national route coverage', async () => {
+  it('6. Renders ProofView with 4-step credibility narrative and 5-stage source lifecycle machine', async () => {
     render(
       <ProofView
         dashboard={mockDashboardData}
@@ -410,10 +453,13 @@ describe('AeroGuide Judge-First UX Test Suite', () => {
     );
     await waitFor(() => {
       expect(screen.getByText(/Measurement Proof & Audit/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/DATA/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/MEASUREMENT/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/PROVENANCE/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/AUDIT/i).length).toBeGreaterThan(0);
       expect(screen.getByText(/Multi-Source Lifecycle State Machine/i)).toBeInTheDocument();
       expect(screen.getByText(/01 DOCUMENTED/i)).toBeInTheDocument();
       expect(screen.getByText(/05 OBSERVED/i)).toBeInTheDocument();
-      expect(screen.getAllByText(/DEL.*BOM/i).length).toBeGreaterThan(0);
     });
   });
 });

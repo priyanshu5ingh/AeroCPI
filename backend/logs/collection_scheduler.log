@@ -894,3 +894,10 @@
 [2026-09-16 17:03:56 UTC] Succeeded: 1, Skipped Duplicates: 0, Failed: 0
 [2026-09-16 17:03:56 UTC] Quotes Collected: 1 (Accepted: 0, Flagged: 0, Rejected: 0)
 [2026-09-16 17:03:56 UTC] Health Summary Saved: C:\Users\priya\Downloads\AeroCPI\data\out\aerocpi_health_summary_20260916T170355Z.json
+[2026-09-16 17:21:58 UTC] === Starting Daily Collection Sweep (Date: 2026-09-16, Dry Run: True) ===
+[2026-09-16 17:21:58 UTC] Targeting 1 routes x 1 production APWs (1 total sampling events)
+[2026-09-16 17:21:58 UTC] OK DEL-BOM APW15: 1 quotes -> DEL-BOM_apw15_20260916T172158Z_8aebbf0b03af.html.gz
+[2026-09-16 17:21:59 UTC] === Daily Collection Sweep Finished ===
+[2026-09-16 17:21:59 UTC] Succeeded: 1, Skipped Duplicates: 0, Failed: 0
+[2026-09-16 17:21:59 UTC] Quotes Collected: 1 (Accepted: 0, Flagged: 0, Rejected: 0)
+[2026-09-16 17:21:59 UTC] Health Summary Saved: C:\Users\priya\Downloads\AeroCPI\data\out\aerocpi_health_summary_20260916T172158Z.json

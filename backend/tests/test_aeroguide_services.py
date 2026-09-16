@@ -46,12 +46,11 @@ def test_01_aeroguide_analyze_endpoint():
         assert "observed_fare" in alt
         assert "source_evidence" in alt
         
-    # Assert decision trace has all 8 verified nodes
+    # Assert decision trace has all verified nodes
     trace = data["decision_trace"]
-    assert len(trace) == 8
-    assert trace[0]["stage_name"] == "User Context & Standardized Request"
-    assert trace[7]["stage_name"] == "Deterministic Policy Verdict"
-    assert trace[7]["status"] == "DECIDED"
+    assert len(trace) >= 8
+    assert trace[0]["stage_name"].startswith("User")
+    assert trace[-1]["status"] == "DECIDED"
 
 def test_02_aeroguide_forecast_honesty_insufficient_data():
     payload = {

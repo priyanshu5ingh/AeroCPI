@@ -11,11 +11,11 @@ import {
   fetchAudit,
   fetchIndexRuns
 } from './services/api';
-import { AnimatePresence, motion } from 'framer-motion';
-import { pageVariants } from './lib/motion';
 import { Header, PlatformTab } from './components/Header';
+import { GuideView } from './pages/GuideView';
+import { MarketView } from './pages/MarketView';
+import { ProofView } from './pages/ProofView';
 import { OverviewPage } from './pages/OverviewPage';
-import { AeroGuidePage } from './pages/AeroGuidePage';
 import { LiveMarketPage } from './pages/LiveMarketPage';
 import { RoutesPage } from './pages/RoutesPage';
 import { HorizonAnalysisPage } from './pages/HorizonAnalysisPage';
@@ -37,13 +37,23 @@ export default function App() {
   const [audit, setAudit] = useState<IndexAuditResponse | null>(null);
 
   const normalizeTab = (rawTab: string | null): PlatformTab => {
-    if (!rawTab) return 'overview';
-    if (rawTab === 'horizons') return 'horizon';
+    if (!rawTab) return 'guide';
+    if (rawTab === 'overview') return 'overview';
+    if (rawTab === 'aeroguide' || rawTab === 'guide') return 'guide';
+    if (rawTab === 'market') return 'market';
+    if (rawTab === 'proof') return 'proof';
+    if (rawTab === 'live-market') return 'live-market';
+    if (rawTab === 'routes') return 'routes';
+    if (rawTab === 'horizon' || rawTab === 'horizons') return 'horizon';
+    if (rawTab === 'methodology') return 'methodology';
+    if (rawTab === 'data-quality') return 'data-quality';
+    if (rawTab === 'validation') return 'validation';
+    if (rawTab === 'audit') return 'audit';
     return rawTab as PlatformTab;
   };
 
   const [activeTab, setActiveTab] = useState<PlatformTab>(() => {
-    if (typeof window === 'undefined') return 'overview';
+    if (typeof window === 'undefined') return 'guide';
     const params = new URLSearchParams(window.location.search);
     return normalizeTab(params.get('tab'));
   });
@@ -64,15 +74,6 @@ export default function App() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
-
-  const navigateWithParams = (tab: PlatformTab, paramsToSet: Record<string, string>) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('tab', tab);
-    Object.entries(paramsToSet).forEach(([k, v]) => params.set(k, v));
-    window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
-    setActiveTab(tab);
-  };
-
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -127,48 +128,84 @@ export default function App() {
   };
 
   if (loading && !dashboard) {
-    return <LoadingSkeleton />;
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
+        <LoadingSkeleton />
+      </div>
+    );
   }
 
   if (error && !dashboard) {
     return (
-      <ErrorView
-        message={error}
-        is404={is404}
-        onRetry={() => loadRunData(currentRunId)}
-      />
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
+        <ErrorView
+          message={error}
+          is404={is404}
+          onRetry={() => loadRunData(currentRunId)}
+        />
+      </div>
     );
   }
 
   if (!dashboard) return null;
 
   return (
-    <div className="min-h-screen bg-[#F8F9FB] text-slate-900 flex flex-col justify-between selection:bg-blue-100 selection:text-blue-900">
-      {/* Level 1 Executive Observatory View */}
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-blue-600 selection:text-white font-sans">
       <div>
         {/* Zone 1: Header */}
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">Skip to main content</a><Header
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-blue-600 text-white px-4 py-2 rounded-lg font-bold"
+        >
+          Skip to main content
+        </a>
+        <Header
           scope={dashboard.dashboard_scope}
           runs={runs}
           onSelectRun={handleSelectRun}
           activeTab={activeTab}
           onSelectTab={handleSelectTab}
           trustStatus={dashboard.trust.trust_status}
-          onOpenTrace={() => handleSelectTab('audit')}
+          onOpenTrace={() => handleSelectTab('proof')}
         />
 
-        {/* Main Observatory Canvas */}
-        <main id="main-content" className="max-w-[1600px] mx-auto px-6 lg:px-8 py-8 space-y-8">
+        {/* Main Experience Canvas */}
+        <main id="main-content" className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+          {/* MODE 1: GUIDE (Default Landing: Should I book this flight?) */}
+          {activeTab === 'guide' && (
+            <GuideView
+              onNavigateToMarket={() => handleSelectTab('market')}
+              onNavigateToProof={() => handleSelectTab('proof')}
+            />
+          )}
+
+          {/* MODE 2: MARKET (What is happening in India's airfare market?) */}
+          {activeTab === 'market' && (
+            <MarketView
+              dashboard={dashboard}
+              explanation={explanation}
+              onSelectRoute={setSelectedRouteId}
+            />
+          )}
+
+          {/* MODE 3: PROOF (Why should I trust this result?) */}
+          {activeTab === 'proof' && (
+            <ProofView
+              dashboard={dashboard}
+              audit={audit}
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+              onNavigateToMethodology={() => handleSelectTab('methodology')}
+              onNavigateToValidation={() => handleSelectTab('validation')}
+            />
+          )}
+
+          {/* Secondary Legacy Pages for Deep Analysis and Tests */}
           {activeTab === 'overview' && (
             <OverviewPage
               dashboard={dashboard}
               onSelectRoute={setSelectedRouteId}
               onOpenAuditModal={() => setIsAuditModalOpen(true)}
             />
-          )}
-
-          {activeTab === 'aeroguide' && (
-            <AeroGuidePage />
           )}
 
           {activeTab === 'live-market' && (
@@ -183,14 +220,14 @@ export default function App() {
               dashboard={dashboard}
               explanation={explanation}
               onSelectRoute={setSelectedRouteId}
-              onNavigateToExplorer={() => navigateWithParams('live-market', {})}
+              onNavigateToExplorer={() => handleSelectTab('live-market')}
             />
           )}
 
           {activeTab === 'horizon' && (
             <HorizonAnalysisPage
               dashboard={dashboard}
-              onNavigateToExplorer={(horizonDays) => navigateWithParams('live-market', { horizon: horizonDays ? horizonDays.toString() : '' })}
+              onNavigateToExplorer={() => handleSelectTab('live-market')}
               onSelectRoute={(routeId) => {
                 setSelectedRouteId(routeId);
                 handleSelectTab('routes');
@@ -199,34 +236,42 @@ export default function App() {
           )}
 
           {activeTab === 'methodology' && (
-            <MethodologyPage dashboard={dashboard} audit={audit} />
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
+              <MethodologyPage dashboard={dashboard} audit={audit} />
+            </div>
           )}
 
           {activeTab === 'data-quality' && (
-            <DataQualityPage
-              dashboard={dashboard}
-              audit={audit}
-              onNavigateToExplorer={() => navigateWithParams('live-market', {})}
-            />
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
+              <DataQualityPage
+                dashboard={dashboard}
+                audit={audit}
+                onNavigateToExplorer={() => handleSelectTab('live-market')}
+              />
+            </div>
           )}
 
           {activeTab === 'validation' && (
-            <ValidationLabPage
-              dashboard={dashboard}
-              audit={audit}
-              onSelectTab={handleSelectTab}
-              onOpenAuditModal={() => setIsAuditModalOpen(true)}
-            />
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
+              <ValidationLabPage
+                dashboard={dashboard}
+                audit={audit}
+                onSelectTab={handleSelectTab}
+                onOpenAuditModal={() => setIsAuditModalOpen(true)}
+              />
+            </div>
           )}
 
           {activeTab === 'audit' && audit && explanation && (
-            <AuditEvidencePage
-              dashboard={dashboard}
-              audit={audit}
-              explanation={explanation}
-              onOpenAuditModal={() => setIsAuditModalOpen(true)}
-              onSelectTab={handleSelectTab}
-            />
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
+              <AuditEvidencePage
+                dashboard={dashboard}
+                audit={audit}
+                explanation={explanation}
+                onOpenAuditModal={() => setIsAuditModalOpen(true)}
+                onSelectTab={handleSelectTab}
+              />
+            </div>
           )}
         </main>
       </div>

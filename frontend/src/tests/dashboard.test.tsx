@@ -164,6 +164,7 @@ const mockAuditData: IndexAuditResponse = {
 describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    window.history.pushState({}, '', '/?tab=overview');
     vi.spyOn(apiModule, 'fetchDashboard').mockResolvedValue(mockDashboardData);
     vi.spyOn(apiModule, 'fetchExplanation').mockResolvedValue(mockExplanationData);
     vi.spyOn(apiModule, 'fetchAudit').mockResolvedValue(mockAuditData);
@@ -440,6 +441,7 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   });
 
   it('1. Renders complete executive dashboard with AeroCPI branding and sections', async () => {
+    window.history.pushState({}, '', '/?tab=overview');
     render(<App />);
 
     await waitFor(() => {
@@ -453,6 +455,7 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   });
 
   it('2. Reconciles headline metric and change from baseline', async () => {
+    window.history.pushState({}, '', '/?tab=overview');
     render(<App />);
 
     await waitFor(() => {
@@ -555,15 +558,8 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   });
 
   it('11. Renders Observation Explorer evidence ledger and opens inspection drawer', async () => {
+    window.history.pushState({}, '', '/?tab=live-market');
     render(<App />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('AeroCPI')[0]).toBeInTheDocument();
-    });
-
-    // Navigate to Observation Explorer tab
-    const explorerTab = screen.getAllByText('Observation Explorer')[0];
-    fireEvent.click(explorerTab);
 
     // Verify ledger header and items
     await waitFor(() => {
@@ -573,8 +569,8 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
     });
 
     // Click "Inspect" button to trigger evidence drawer
-    const inspectButton = screen.getByText('Inspect');
-    fireEvent.click(inspectButton);
+    const inspectButtons = await screen.findAllByText('Inspect');
+    fireEvent.click(inspectButtons[0]);
 
     await waitFor(() => {
       expect(screen.getByText('Observation Evidence Record')).toBeInTheDocument();
@@ -587,15 +583,8 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   });
 
   it('12. Renders Route Intelligence page with 10 corridor tabs, fetches corridor intelligence, and displays 5-horizon term structure', async () => {
+    window.history.pushState({}, '', '/?tab=routes');
     render(<App />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('AeroCPI')[0]).toBeInTheDocument();
-    });
-
-    // Navigate to Route Intelligence tab
-    const routeTab = screen.getAllByText('Route Intelligence')[0];
-    fireEvent.click(routeTab);
 
     // Verify page header and corridor chips
     await waitFor(() => {
@@ -615,15 +604,8 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   });
 
   it('13. Renders Horizon Analysis page with Forward Booking Horizon Curve and answers core questions', async () => {
+    window.history.pushState({}, '', '/?tab=horizon');
     render(<App />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('AeroCPI')[0]).toBeInTheDocument();
-    });
-
-    // Navigate to Horizon Analysis tab
-    const horizonTab = screen.getAllByText('Horizon Analysis')[0];
-    fireEvent.click(horizonTab);
 
     // Verify page header
     await waitFor(() => {
@@ -642,15 +624,8 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   });
 
   it('14. Renders Data Quality page with decomposed health dimensions, route matrix, source status, and trust governance', async () => {
+    window.history.pushState({}, '', '/?tab=data-quality');
     render(<App />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('AeroCPI')[0]).toBeInTheDocument();
-    });
-
-    // Navigate to Data Quality tab
-    const dqTab = screen.getAllByText('Data Quality')[0];
-    fireEvent.click(dqTab);
 
     // Verify page header and decomposed health dimensions
     await waitFor(() => {
@@ -677,15 +652,8 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   });
 
   it('15. Renders Methodology Studio with versioned configuration specifications, deterministic publication gate, and 7-stage pipeline', async () => {
+    window.history.pushState({}, '', '/?tab=methodology');
     render(<App />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('AeroCPI')[0]).toBeInTheDocument();
-    });
-
-    // Navigate to Methodology Studio tab
-    const methodTab = screen.getAllByText('Methodology Studio')[0];
-    fireEvent.click(methodTab);
 
     // Verify page header and versioned configuration section
     await waitFor(() => {
@@ -729,19 +697,12 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
   });
 
   it('16. Renders Validation Lab with first-class DISABLED_NO_BENCHMARK_DATA state, protocol pipeline, and scientific interpretation', async () => {
+    window.history.pushState({}, '', '/?tab=validation');
     render(<App />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('AeroCPI')[0]).toBeInTheDocument();
-    });
-
-    // Navigate to Validation Lab tab
-    const valTab = screen.getAllByText('Validation Lab')[0];
-    fireEvent.click(valTab);
 
     // Verify header and hero state
     await waitFor(() => {
-      expect(screen.getAllByText('Validation Lab').length).toBeGreaterThan(1);
+      expect(screen.getAllByText('Validation Lab').length).toBeGreaterThan(0);
       expect(screen.getByText('Scientific Test Bench')).toBeInTheDocument();
       expect(screen.getByText('Independent Benchmarking & Measurement Validation')).toBeInTheDocument();
       expect(screen.getByText('VALIDATION STATUS')).toBeInTheDocument();
@@ -778,7 +739,7 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Benchmark Specification Inspector')).toBeInTheDocument();
-      expect(screen.getAllByText('DGCA Official Domestic Passenger Yield Series').length).toBeGreaterThan(1);
+      expect(screen.getAllByText('DGCA Official Domestic Passenger Yield Series').length).toBeGreaterThan(0);
       expect(screen.getByText('Directorate General of Civil Aviation (DGCA)')).toBeInTheDocument();
     });
 
@@ -873,14 +834,8 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
       }
     });
 
+    window.history.pushState({}, '', '/?tab=validation');
     render(<App />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('AeroCPI')[0]).toBeInTheDocument();
-    });
-
-    const valTab = screen.getAllByText('Validation Lab')[0];
-    fireEvent.click(valTab);
 
     await waitFor(() => {
       expect(screen.getByText('95.0%')).toBeInTheDocument();
@@ -893,17 +848,32 @@ describe('AeroCPI Milestone 6 Dashboard UI Tests', () => {
     });
   });
 
-it('18. Renders Audit & Measurement Trace page with 9-stage provenance visual, strictly respects zero-client-calculation rule, and populates artifacts correctly from the 5B/5A APIs', async () => { render(<App />); await waitFor(() => { expect(screen.getAllByText('Overview')[0]).toBeInTheDocument(); }); const auditTab = screen.getAllByText('Audit & Trace')[0]; fireEvent.click(auditTab); await waitFor(() => { expect(screen.getAllByText(/Measurement Trace Architecture/i).length).toBeGreaterThan(0); }); expect(screen.getAllByText(/INDEX RUN/i).length).toBeGreaterThan(0); expect(screen.getAllByText(/CONFIGURATION/i).length).toBeGreaterThan(0); expect(screen.getAllByText(/HORIZONS/i).length).toBeGreaterThan(0); expect(screen.getAllByText(/ROUTES/i).length).toBeGreaterThan(0); expect(screen.getAllByText(/REPRESENTATIVE FARES/i).length).toBeGreaterThan(0); expect(screen.getAllByText(/OBSERVATIONS/i).length).toBeGreaterThan(0); expect(screen.getAllByText(/QUALITY/i).length).toBeGreaterThan(0); expect(screen.getAllByText(/EXPLANATION/i).length).toBeGreaterThan(0); expect(screen.getAllByText(/SHA-256 FINGERPRINT/i).length).toBeGreaterThan(0); fireEvent.click(screen.getByText(/01/i).closest('div')!); await waitFor(() => { expect(screen.getAllByText(/Run ID/i).length).toBeGreaterThan(0); }); });
-
-  it('19. Renders exact frozen methodology formulas in Methodology Studio and Route Explanation Modal with KaTeX typography', async () => {
+  it('18. Renders Audit & Measurement Trace page with 9-stage provenance visual, strictly respects zero-client-calculation rule, and populates artifacts correctly from the 5B/5A APIs', async () => {
+    window.history.pushState({}, '', '/?tab=audit');
     render(<App />);
     await waitFor(() => {
-      expect(screen.getAllByText('Overview')[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/Measurement Trace Architecture/i).length).toBeGreaterThan(0);
     });
+    expect(screen.getAllByText(/INDEX RUN/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/CONFIGURATION/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/HORIZONS/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/ROUTES/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/REPRESENTATIVE FARES/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/OBSERVATIONS/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/QUALITY/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/EXPLANATION/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/SHA-256 FINGERPRINT/i).length).toBeGreaterThan(0);
+    const stage01Nodes = screen.getAllByText(/01/i);
+    const traceNode = stage01Nodes[stage01Nodes.length - 1];
+    fireEvent.click(traceNode.closest('div')!);
+    await waitFor(() => {
+      expect(screen.getAllByText(/Run ID/i).length).toBeGreaterThan(0);
+    });
+  });
 
-    // 1. Verify Methodology Studio formulas
-    const methTab = screen.getAllByText('Methodology Studio')[0];
-    fireEvent.click(methTab);
+  it('19. Renders exact frozen methodology formulas in Methodology Studio and Route Explanation Modal with KaTeX typography', async () => {
+    window.history.pushState({}, '', '/?tab=methodology');
+    render(<App />);
 
     await waitFor(() => {
       expect(screen.getByText(/METHODOLOGY STUDIO & MEASUREMENT SPECIFICATION/i)).toBeInTheDocument();

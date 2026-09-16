@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AeroCPI — Cinematic SIH 2026 Film | Team BUZZCODEX</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈</text></svg>">
+</head>
+<body>
+
+  <!-- Master 16:9 Viewport Stage -->
+  <div id="app-viewport">
+    
+    <!-- Background Canvas Layer (Starfield, Grids & Streamlines) -->
+    <canvas id="fx-canvas"></canvas>
+
+    <!-- Vignette & Grain Filter -->
+    <div class="vignette-overlay"></div>
+
+    <!-- Top HUD Header -->
+    <header id="hud-header">
+      <div class="hud-brand">
+        <div class="hud-logo">✈</div>
+        <div>
+          <div class="hud-team-title">AEROCPI OBSERVATORY</div>
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan-glow);">TEAM BUZZCODEX</div>
+        </div>
+        <div class="hud-sih-badge">SIH 2026 · SIH26056</div>
+      </div>
+
+      <div class="hud-status-center">
+        <span class="hud-scene-counter" id="hud-scene-counter">01 / 14</span>
+        <span style="opacity: 0.3;">|</span>
+        <span id="hud-scene-title" style="color: #ffffff; font-weight: 600;">Opening & Title</span>
+      </div>
+
+      <div class="hud-controls-right">
+        <button id="btn-play-pause" class="hud-btn" title="Toggle Auto-play (Space)">❚❚ Pause</button>
+        <button id="btn-mute" class="hud-btn" title="Toggle Sound (M)">🔊 Sound ON</button>
+        <button id="btn-fullscreen" class="hud-btn" title="Fullscreen (F)">⛶ Fullscreen</button>
+      </div>
+    </header>
+
+    <!-- 14 Scene Mount Container -->
+    <main id="scenes-container"></main>
+
+    <!-- Bottom Progress & Timekeeper -->
+    <footer id="hud-footer">
+      <div class="timeline-progress-track">
+        <div id="timeline-progress-bar" class="timeline-progress-bar"></div>
+      </div>
+      <div class="scene-timer-subtrack">
+        <div id="scene-timer-subbar" class="scene-timer-subbar"></div>
+      </div>
+
+      <!-- Quick Jump Scene Drawer (Hover at bottom or press Tab) -->
+      <nav id="scene-drawer" aria-label="Scene Navigator"></nav>
+    </footer>
+
+    <!-- Preloader Screen (Required for Audio Context Activation) -->
+    <div id="preloader">
+      <div class="preloader-radar">
+        <div class="radar-sweep"></div>
+        <div style="font-size: 2rem; color: var(--cyan-bright);">✈</div>
+      </div>
+
+      <h1 class="hero-title metallic-text" style="font-size: 3rem; margin-bottom: 0.5rem;">AeroCPI</h1>
+      <div class="mono-tag" style="letter-spacing: 0.25em; color: var(--cyan-glow);">
+        PREPARING MEASUREMENT OBSERVATORY...
+      </div>
+      <div style="color: var(--text-dim); margin-top: 0.75rem; font-size: 0.95rem;">
+        Smart India Hackathon 2026 · Pitch Film (Third Screen)
+      </div>
+
+      <button id="btn-start-film" class="preloader-btn">
+        <span>START CINEMATIC FILM</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+      </button>
+
+      <div style="margin-top: 1.5rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+        Keyboard: [Space] Pause/Play · [←/→] Navigate · [F] Fullscreen · [M] Mute · [1-9] Scenes
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="./audio.js"></script>
+  <script src="./scenes.js"></script>
+  <script src="./app.js"></script>
+
+</body>
+</html>

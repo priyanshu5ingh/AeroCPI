@@ -14,7 +14,14 @@ import {
   PublicationReadinessResponse,
   ValidationBenchmark,
   ValidationRun,
-  ValidationMetric
+  ValidationMetric,
+  AeroGuideAnalyzeRequest,
+  AeroGuideAnalyzeResponse,
+  ForecastingReadinessResponse,
+  RouteUniverseItem,
+  AirlineRegistryItem,
+  SourceCapabilityItem,
+  SourceHealthItem
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -172,3 +179,50 @@ export const fetchMeasurementTrace = async (runId: string) => {
   const response = await axios.get(`${API_BASE}/index-runs/${runId}/trace`); 
   return response.data; 
 };
+
+// ==========================================
+// AeroGuide Consumer Intelligence APIs
+// ==========================================
+
+export const analyzeAirfare = async (payload: AeroGuideAnalyzeRequest): Promise<AeroGuideAnalyzeResponse> => {
+  const response = await axios.post<AeroGuideAnalyzeResponse>(`${API_BASE}/aeroguide/analyze`, payload);
+  return response.data;
+};
+
+export const fetchForecastingReadiness = async (): Promise<ForecastingReadinessResponse> => {
+  const response = await axios.get<ForecastingReadinessResponse>(`${API_BASE}/aeroguide/readiness`);
+  return response.data;
+};
+
+export const fetchRouteUniverse = async (tier?: string): Promise<RouteUniverseItem[]> => {
+  const response = await axios.get<RouteUniverseItem[]>(`${API_BASE}/aeroguide/routes`, {
+    params: { tier }
+  });
+  return response.data;
+};
+
+export const fetchAirlines = async (): Promise<AirlineRegistryItem[]> => {
+  const response = await axios.get<AirlineRegistryItem[]>(`${API_BASE}/aeroguide/airlines`);
+  return response.data;
+};
+
+export const fetchSourceCapabilities = async (): Promise<SourceCapabilityItem[]> => {
+  const response = await axios.get<SourceCapabilityItem[]>(`${API_BASE}/aeroguide/sources`);
+  return response.data;
+};
+
+export const fetchSourceHealth = async (): Promise<SourceHealthItem[]> => {
+  const response = await axios.get<SourceHealthItem[]>(`${API_BASE}/aeroguide/source-health`);
+  return response.data;
+};
+
+export const fetchModelStatus = async () => {
+  const response = await axios.get(`${API_BASE}/aeroguide/model-status`);
+  return response.data;
+};
+
+export const fetchCollectionStatus = async () => {
+  const response = await axios.get(`${API_BASE}/aeroguide/collection-status`);
+  return response.data;
+};
+

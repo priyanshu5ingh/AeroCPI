@@ -15,6 +15,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { pageVariants } from './lib/motion';
 import { Header, PlatformTab } from './components/Header';
 import { OverviewPage } from './pages/OverviewPage';
+import { AeroGuidePage } from './pages/AeroGuidePage';
 import { LiveMarketPage } from './pages/LiveMarketPage';
 import { RoutesPage } from './pages/RoutesPage';
 import { HorizonAnalysisPage } from './pages/HorizonAnalysisPage';
@@ -164,6 +165,10 @@ export default function App() {
               onSelectRoute={setSelectedRouteId}
               onOpenAuditModal={() => setIsAuditModalOpen(true)}
             />
+          )}
+
+          {activeTab === 'aeroguide' && (
+            <AeroGuidePage />
           )}
 
           {activeTab === 'live-market' && (

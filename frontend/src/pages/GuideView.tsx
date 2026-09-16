@@ -71,6 +71,7 @@ export const GuideView: React.FC<GuideViewProps> = ({
 
   // Trace Drawer State
   const [isTraceDrawerOpen, setIsTraceDrawerOpen] = useState(false);
+  const [showAirlineBreakdown, setShowAirlineBreakdown] = useState(false);
 
   // Initial Load
   useEffect(() => {
@@ -183,6 +184,9 @@ export const GuideView: React.FC<GuideViewProps> = ({
               <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white font-sans">
                 Should you book this flight?
               </h1>
+              <p className="text-xs md:text-sm text-slate-300 max-w-2xl font-sans">
+                Evidence-gated consumer airfare intelligence. Evaluates current observed fares against historical corridor percentiles and the sovereign AeroCPI benchmark.
+              </p>
             </div>
 
             {/* Quick Evidence Live Status */}
@@ -194,6 +198,39 @@ export const GuideView: React.FC<GuideViewProps> = ({
               <span>17,244 Live Observations</span>
               <span className="text-slate-600">&bull;</span>
               <span className="text-cyan-400">SHA-256 Verified</span>
+            </div>
+          </div>
+
+          {/* 3-Minute Executive Comprehension Bar */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+            <div className="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/90 flex items-center gap-3">
+              <div className="w-7 h-7 rounded-xl bg-blue-500/20 text-blue-300 font-bold flex items-center justify-center text-xs shrink-0 font-mono border border-blue-500/30">
+                01
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white font-sans">Sovereign Airfare Index</div>
+                <div className="text-[11px] text-slate-400 font-mono">DGCA passenger-weighted macro benchmark</div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/90 flex items-center gap-3">
+              <div className="w-7 h-7 rounded-xl bg-indigo-500/20 text-indigo-300 font-bold flex items-center justify-center text-xs shrink-0 font-mono border border-indigo-500/30">
+                02
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white font-sans">Evidence-Gated AI Outlook</div>
+                <div className="text-[11px] text-slate-400 font-mono">Strict 7-day targets &bull; Zero fake probabilities</div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/90 flex items-center gap-3">
+              <div className="w-7 h-7 rounded-xl bg-cyan-500/20 text-cyan-300 font-bold flex items-center justify-center text-xs shrink-0 font-mono border border-cyan-500/30">
+                03
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white font-sans">11-Node Verifiable Trace</div>
+                <div className="text-[11px] text-slate-400 font-mono">Cryptographic SHA-256 provenance on every quote</div>
+              </div>
             </div>
           </div>
 
@@ -425,10 +462,10 @@ export const GuideView: React.FC<GuideViewProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>AI Price Outlook</span>
+                        <span>AI OUTLOOK</span>
                       </span>
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
-                        Evidence Limited
+                        {analysis.model_probabilities ? 'READY' : 'INSUFFICIENT_DATA'}
                       </span>
                     </div>
 
@@ -452,18 +489,28 @@ export const GuideView: React.FC<GuideViewProps> = ({
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-2">
-                        <div className="text-xs font-bold text-slate-200 font-mono flex items-center gap-1.5">
-                          <Lock className="w-3.5 h-3.5 text-amber-400" />
+                      <div className="space-y-2.5">
+                        <div className="text-xs font-bold text-amber-300 font-mono flex items-center gap-1.5">
+                          <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                           <span>COLLECTING LONGITUDINAL EVIDENCE</span>
+                        </div>
+                        <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1 text-xs font-mono">
+                          <div className="flex justify-between text-slate-300">
+                            <span>Valid Targets:</span>
+                            <strong className="text-amber-400">0 / 7 valid 7-day targets</strong>
+                          </div>
+                          <div className="flex justify-between text-slate-400 text-[11px]">
+                            <span>Model State:</span>
+                            <span className="text-slate-300">INSUFFICIENT_DATA</span>
+                          </div>
+                          <div className="flex justify-between text-slate-400 text-[11px]">
+                            <span>Status:</span>
+                            <span className="text-amber-300 font-bold">Forecast unavailable</span>
+                          </div>
                         </div>
                         <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
                           Zero manufactured probabilities. Forward predictive forecasting strictly locks until empirical 7-day longitudinal target pairs accumulate.
                         </p>
-                        <div className="pt-1 flex items-center justify-between text-[10px] font-mono text-slate-500 border-t border-slate-800/80">
-                          <span>7-Day Pairs: <strong>0 / 7</strong></span>
-                          <span>Training Gate: <strong className="text-amber-400">LOCKED</strong></span>
-                        </div>
                       </div>
                     )}
                   </div>
@@ -582,55 +629,61 @@ export const GuideView: React.FC<GuideViewProps> = ({
               </div>
             )}
 
-            {/* 4. COMPACT AIRLINE OPTIONS MATRIX */}
+            {/* 4. COLLAPSIBLE AIRLINE OPTIONS MATRIX */}
             {analysis.airline_alternatives && analysis.airline_alternatives.length > 0 && (
               <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4 backdrop-blur-xl">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <h3 className="text-lg font-black text-white font-sans flex items-center gap-2">
                       <Plane className="w-5 h-5 text-cyan-400" />
-                      Airline Options &amp; Multi-Carrier Intelligence
+                      Multi-Carrier Airfare Distribution
                     </h3>
                     <p className="text-xs text-slate-400 font-sans">
                       Observed carrier offerings for {origin} ➔ {destination} on {analysis.travel_date}.
                     </p>
                   </div>
-                  <span className="text-xs font-mono text-slate-400">
-                    {analysis.airline_alternatives.length} Scheduled Carriers Quoted
-                  </span>
+                  <button
+                    onClick={() => setShowAirlineBreakdown(!showAirlineBreakdown)}
+                    className="px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 text-xs font-mono text-cyan-300 font-bold flex items-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <span>{showAirlineBreakdown ? 'Collapse Carriers' : `View ${analysis.airline_alternatives.length} Carrier Quotes`}</span>
+                    <ChevronDown className={`w-4 h-4 transform transition-transform ${showAirlineBreakdown ? 'rotate-180' : ''}`} />
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  {analysis.airline_alternatives.map((a, idx) => (
-                    <div
-                      key={a.carrier_code + idx}
-                      className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-slate-700 transition-all space-y-2"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="text-sm font-extrabold text-white font-sans">
-                            {a.airline_name}
+                {showAirlineBreakdown && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+                    {analysis.airline_alternatives.map((a, idx) => (
+                      <div
+                        key={a.carrier_code + idx}
+                        className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-slate-700 transition-all space-y-2"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="text-sm font-extrabold text-white font-sans">
+                              {a.airline_name}
+                            </div>
+                            <div className="text-[11px] font-mono text-slate-400">
+                              Carrier: {a.carrier_code}
+                            </div>
                           </div>
-                          <div className="text-[11px] font-mono text-slate-400">
-                            Carrier: {a.carrier_code}
-                          </div>
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-cyan-300 border border-blue-500/30">
+                            {a.stops === 0 ? 'Non-Stop' : `${a.stops} Stop`}
+                          </span>
                         </div>
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-cyan-300 border border-blue-500/30">
-                          {a.stops === 0 ? 'Non-Stop' : `${a.stops} Stop`}
-                        </span>
-                      </div>
 
-                      <div className="text-2xl font-black text-white font-mono">
-                        ₹{a.observed_fare.toLocaleString('en-IN')}
-                      </div>
+                        <div className="text-2xl font-black text-white font-mono">
+                          ₹{a.observed_fare.toLocaleString('en-IN')}
+                        </div>
 
-                      <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-900">
-                        <span>Duration: ~{Math.floor(a.duration_minutes / 60)}h {a.duration_minutes % 60}m</span>
-                        <span className="text-emerald-400">● Observed</span>
+                        <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-900">
+                          <span>Duration: ~{Math.floor(a.duration_minutes / 60)}h {a.duration_minutes % 60}m</span>
+                          <span className="text-emerald-400">● Observed</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

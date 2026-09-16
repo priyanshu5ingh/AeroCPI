@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck, Database, FileCode, CheckCircle2, AlertCircle, Clock,
   Layers, Lock, ExternalLink, RefreshCw, Filter, Search, Terminal,
-  Check, X, FileText, ChevronRight, Hash, Compass
+  Check, X, FileText, ChevronRight, ChevronDown, Hash, Compass
 } from 'lucide-react';
 import {
   IndexDashboardResponse,
@@ -37,6 +37,7 @@ export const ProofView: React.FC<ProofViewProps> = ({
   const [routeCoverage, setRouteCoverage] = useState<RouteCoverageItem[]>([]);
   const [selectedTier, setSelectedTier] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [showRouteTable, setShowRouteTable] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -65,7 +66,7 @@ export const ProofView: React.FC<ProofViewProps> = ({
 
   return (
     <div className="space-y-8 pb-16 font-sans text-slate-100">
-      {/* 1. Header Card */}
+      {/* 1. Header Card with Credibility Narrative */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
         <div className="absolute -right-20 -top-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -left-20 -bottom-20 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -86,7 +87,7 @@ export const ProofView: React.FC<ProofViewProps> = ({
               </p>
             </div>
 
-            {/* Quick Audit Action */}
+            {/* Quick Audit Actions */}
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={onOpenAuditModal}
@@ -98,8 +99,47 @@ export const ProofView: React.FC<ProofViewProps> = ({
             </div>
           </div>
 
+          {/* 4-Step Credibility Narrative Strip */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-blue-400">
+                <span className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-[10px]">1</span>
+                <span>DATA</span>
+              </div>
+              <div className="text-sm font-bold text-white font-sans">17,244 Observations</div>
+              <div className="text-[11px] text-slate-400 font-mono">4 distribution source adapters</div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-[10px]">2</span>
+                <span>MEASUREMENT</span>
+              </div>
+              <div className="text-sm font-bold text-white font-sans">Jevons Geometric</div>
+              <div className="text-[11px] text-slate-400 font-mono">DGCA passenger-weighted index</div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-indigo-400">
+                <span className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center text-[10px]">3</span>
+                <span>PROVENANCE</span>
+              </div>
+              <div className="text-sm font-bold text-white font-sans">SHA-256 Hashes</div>
+              <div className="text-[11px] text-slate-400 font-mono">Raw HTML capture fingerprints</div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px]">4</span>
+                <span>AUDIT</span>
+              </div>
+              <div className="text-sm font-bold text-white font-sans">11-Node Decision Traces</div>
+              <div className="text-[11px] text-slate-400 font-mono">5B manifest &amp; lock verification</div>
+            </div>
+          </div>
+
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
             <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
               <div className="text-[10px] font-mono text-slate-400 uppercase">Total Observations</div>
               <div className="text-2xl font-black text-white font-mono">{readiness?.total_observations || 17244}</div>
@@ -262,82 +302,94 @@ export const ProofView: React.FC<ProofViewProps> = ({
             </p>
           </div>
 
-          {/* Search & Tier Filter */}
-          <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-            <input
-              type="text"
-              placeholder="Search route (e.g. DEL-BOM)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-1.5 focus:outline-none focus:border-cyan-500"
-            />
-            <select
-              value={selectedTier}
-              onChange={(e) => setSelectedTier(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer"
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search & Tier Filter */}
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+              <input
+                type="text"
+                placeholder="Search route (e.g. DEL-BOM)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-1.5 focus:outline-none focus:border-cyan-500"
+              />
+              <select
+                value={selectedTier}
+                onChange={(e) => setSelectedTier(e.target.value)}
+                className="bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer"
+              >
+                <option value="ALL">All 4 Tiers ({routeCoverage.length})</option>
+                <option value="TIER_1_DGCA_CORE">Tier 1: DGCA Core (10)</option>
+                <option value="TIER_2_NATIONAL_HIGH_TRAFFIC">Tier 2: National (10)</option>
+                <option value="TIER_3_REGIONAL_CONNECTIVITY">Tier 3: Regional / UDAN (8)</option>
+                <option value="TIER_4_DYNAMIC_DISCOVERY">Tier 4: Dynamic Discovery (5)</option>
+              </select>
+            </div>
+
+            <button
+              onClick={() => setShowRouteTable(!showRouteTable)}
+              className="px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 text-xs font-mono text-cyan-300 font-bold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <option value="ALL">All 4 Tiers ({routeCoverage.length})</option>
-              <option value="TIER_1_DGCA_CORE">Tier 1: DGCA Core (10)</option>
-              <option value="TIER_2_NATIONAL_HIGH_TRAFFIC">Tier 2: National (10)</option>
-              <option value="TIER_3_REGIONAL_CONNECTIVITY">Tier 3: Regional / UDAN (8)</option>
-              <option value="TIER_4_DYNAMIC_DISCOVERY">Tier 4: Dynamic Discovery (5)</option>
-            </select>
+              <span>{showRouteTable ? 'Collapse Table' : `View 33-Route Universe`}</span>
+              <ChevronDown className={`w-4 h-4 transform transition-transform ${showRouteTable ? 'rotate-180' : ''}`} />
+            </button>
           </div>
         </div>
 
         {/* Coverage Table */}
-        <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950">
-          <table className="w-full text-left text-xs font-mono">
-            <thead>
-              <tr className="border-b border-slate-800 text-slate-400 bg-slate-900/50">
-                <th className="p-3.5">Route</th>
-                <th className="p-3.5">Tier</th>
-                <th className="p-3.5">Airlines Observed</th>
-                <th className="p-3.5">Sources Active</th>
-                <th className="p-3.5 text-right">Observations</th>
-                <th className="p-3.5">Coverage Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-900 text-slate-300">
-              {filteredRoutes.slice(0, 15).map((r) => (
-                <tr key={r.route_id} className="hover:bg-slate-900/40 transition-colors">
-                  <td className="p-3.5 font-bold text-white">
-                    {r.origin} ➔ {r.destination}
-                  </td>
-                  <td className="p-3.5 text-[11px] text-slate-400">
-                    {r.tier.replace('TIER_', 'T').replace('_', ' ')}
-                  </td>
-                  <td className="p-3.5">
-                    {r.airlines_observed.length > 0 ? (
-                      <span className="text-cyan-300 font-bold">{r.airlines_observed.join(', ')}</span>
-                    ) : (
-                      <span className="text-slate-600">Pending sweep</span>
-                    )}
-                  </td>
-                  <td className="p-3.5">
-                    {r.sources_collected.length > 0 ? (
-                      <span className="text-emerald-400">{r.sources_collected.length} Sources</span>
-                    ) : (
-                      <span className="text-slate-600">Standby</span>
-                    )}
-                  </td>
-                  <td className="p-3.5 text-right font-bold text-white">
-                    {r.observations_count.toLocaleString('en-IN')}
-                  </td>
-                  <td className="p-3.5">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      r.coverage_status === 'ACTIVE_OBSERVED'
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-slate-800 text-slate-400'
-                    }`}>
-                      {r.coverage_status}
-                    </span>
-                  </td>
+        {showRouteTable && (
+          <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950">
+            <table className="w-full text-left text-xs font-mono">
+              <thead>
+                <tr className="border-b border-slate-800 text-slate-400 bg-slate-900/50">
+                  <th className="p-3.5">Route</th>
+                  <th className="p-3.5">Tier</th>
+                  <th className="p-3.5">Airlines Observed</th>
+                  <th className="p-3.5">Sources Active</th>
+                  <th className="p-3.5 text-right">Observations</th>
+                  <th className="p-3.5">Coverage Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-900 text-slate-300">
+                {filteredRoutes.map((r) => (
+                  <tr key={r.route_id} className="hover:bg-slate-900/40 transition-colors">
+                    <td className="p-3.5 font-bold text-white">
+                      {r.origin} ➔ {r.destination}
+                    </td>
+                    <td className="p-3.5 text-[11px] text-slate-400">
+                      {r.tier.replace('TIER_', 'T').replace('_', ' ')}
+                    </td>
+                    <td className="p-3.5">
+                      {r.airlines_observed.length > 0 ? (
+                        <span className="text-cyan-300 font-bold">{r.airlines_observed.join(', ')}</span>
+                      ) : (
+                        <span className="text-slate-600">Pending sweep</span>
+                      )}
+                    </td>
+                    <td className="p-3.5">
+                      {r.sources_collected.length > 0 ? (
+                        <span className="text-emerald-400">{r.sources_collected.length} Sources</span>
+                      ) : (
+                        <span className="text-slate-600">Standby</span>
+                      )}
+                    </td>
+                    <td className="p-3.5 text-right font-bold text-white">
+                      {r.observations_count.toLocaleString('en-IN')}
+                    </td>
+                    <td className="p-3.5">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        r.coverage_status === 'ACTIVE_OBSERVED'
+                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          : 'bg-slate-800 text-slate-400'
+                      }`}>
+                        {r.coverage_status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

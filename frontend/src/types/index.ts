@@ -466,22 +466,19 @@ export interface FlexibleDateOption {
 }
 
 export interface DecisionTraceNode {
-  step_number: number;
+  stage_number: number;
   stage_name: string;
-  timestamp_utc: string;
   status: 'VERIFIED' | 'PASSED' | 'COLLECTED' | 'EVALUATED' | 'DECIDED' | string;
-  input_summary: string;
-  computation_summary: string;
-  verdict_detail: string;
-  data_provenance_id: string;
+  evidence_summary: string;
+  structured_payload: Record<string, any>;
 }
 
 export interface GroundedExplanation {
-  headline: string;
-  market_context: string;
-  carrier_comparison: string;
-  timing_recommendation: string;
-  evidence_anchor: Record<string, any>;
+  headline?: string;
+  market_context?: string;
+  carrier_comparison?: string;
+  timing_recommendation?: string;
+  evidence_anchor?: Record<string, any>;
 }
 
 export interface LongitudinalReadinessInfo {
@@ -526,7 +523,7 @@ export interface AeroGuideAnalyzeResponse {
   flexible_dates: FlexibleDateOption[];
   sources_available: string[];
   decision_trace: DecisionTraceNode[];
-  grounded_explanation: GroundedExplanation;
+  grounded_explanation: string;
   longitudinal_readiness: LongitudinalReadinessInfo;
 }
 
@@ -603,5 +600,71 @@ export interface SourceHealthItem {
   health_status: string;
   availability_rate: number;
   median_response_time_ms: number | null;
+}
+
+export interface CarrierQuotePoint {
+  carrier_code: string;
+  airline_name: string;
+  fare: number;
+  stops: number;
+  duration_minutes: number;
+}
+
+export interface TrajectorySearchPoint {
+  search_date: string;
+  search_timestamp: string | null;
+  days_to_departure: number;
+  median_fare: number;
+  min_fare: number;
+  max_fare: number;
+  carrier_quotes: CarrierQuotePoint[];
+}
+
+export interface MatchedCarrierTarget {
+  carrier_code: string;
+  airline_name: string;
+  prediction_fare: number;
+  future_fare: number;
+  delta_fare: number;
+  delta_pct: number;
+  direction: 'UP' | 'DOWN' | 'STABLE' | string;
+}
+
+export interface TrajectoryTargetEvaluation {
+  prediction_search_date: string;
+  future_search_date: string;
+  days_gap: number;
+  is_valid_7d_target: boolean;
+  is_valid_14d_target: boolean;
+  prediction_median_fare: number;
+  future_median_fare: number;
+  delta_fare: number;
+  delta_pct: number;
+  direction: 'UP' | 'DOWN' | 'STABLE' | string;
+  market_target?: {
+    prediction_median: number;
+    future_median: number;
+    delta_fare: number;
+    delta_pct: number;
+    direction: string;
+  };
+  carrier_composition_status: 'IDENTICAL' | 'PARTIAL_OVERLAP' | 'DISJOINT' | string;
+  matched_carriers_count: number;
+  matched_carrier_mean_delta_fare: number | null;
+  matched_carrier_mean_delta_pct: number | null;
+  matched_carrier_targets: MatchedCarrierTarget[];
+}
+
+export interface TrajectoryDetailResponse {
+  route_id: string;
+  origin: string;
+  destination: string;
+  travel_date: string;
+  search_dates_count: number;
+  observations_count: number;
+  search_points: TrajectorySearchPoint[];
+  target_evaluations: TrajectoryTargetEvaluation[];
+  has_7_day_pair: boolean;
+  status: string;
 }
 

@@ -149,7 +149,40 @@ SOURCE_CAPABILITY_MATRIX: List[Dict[str, Any]] = [
         "median_response_time_ms": 520.0
     },
     {
-        "source_id": "SRC_INDIGO_NDC",
+        "source_id": "SRC_WEB_TRIP",
+        "source_name": "Trip.com Web Ingestion (Scrapy)",
+        "source_type": "OTA_AFFILIATE",
+        "access_status": "ACTIVE_SEARCH",
+        "is_public_unrestricted": True,
+        "fare_breakdown_supported": True,
+        "health_status": "HEALTHY",
+        "availability_rate": 1.0,
+        "median_response_time_ms": 480.0
+    },
+    {
+        "source_id": "SRC_WEB_EASEMYTRIP",
+        "source_name": "EaseMyTrip Web Ingestion (Scrapy)",
+        "source_type": "OTA_AFFILIATE",
+        "access_status": "ACTIVE_SEARCH",
+        "is_public_unrestricted": True,
+        "fare_breakdown_supported": False,
+        "health_status": "HEALTHY",
+        "availability_rate": 1.0,
+        "median_response_time_ms": 550.0
+    },
+    {
+        "source_id": "SRC_DUFFEL",
+        "source_name": "Duffel API v2 (GDS / Aggregator)",
+        "source_type": "GDS_DIRECT",
+        "access_status": "CREDENTIALS_REQUIRED",
+        "is_public_unrestricted": False,
+        "fare_breakdown_supported": True,
+        "health_status": "CONFIGURED_STANDBY",
+        "availability_rate": 1.0,
+        "median_response_time_ms": 320.0
+    },
+    {
+        "source_id": "SRC_NDC_INDIGO",
         "source_name": "IndiGo NDC Direct API",
         "source_type": "AIRLINE_DIRECT_NDC",
         "access_status": "DOCUMENTED_UNACCESSIBLE",
@@ -160,7 +193,7 @@ SOURCE_CAPABILITY_MATRIX: List[Dict[str, Any]] = [
         "median_response_time_ms": None
     },
     {
-        "source_id": "SRC_AIR_INDIA_NDC",
+        "source_id": "SRC_NDC_AIRINDIA",
         "source_name": "Air India NDC Direct API",
         "source_type": "AIRLINE_DIRECT_NDC",
         "access_status": "DOCUMENTED_UNACCESSIBLE",

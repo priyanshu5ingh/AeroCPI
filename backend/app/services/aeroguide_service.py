@@ -15,7 +15,10 @@ from app.schemas.aeroguide import (
     AeroGuideAnalyzeResponse,
     AirlineAlternative,
     FlexibleDateOption,
-    ForecastingReadinessResponse
+    ForecastingReadinessResponse,
+    SourceFareMetric,
+    PairwiseSourceComparison,
+    RouteSourceAgreementResponse
 )
 from app.services.decision_trace_service import build_decision_trace
 from app.services.llm_grounding_service import generate_grounded_explanation
@@ -222,7 +225,11 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
     }
     grounded_exp = generate_grounded_explanation(explanation_payload)
 
-    # 6. Build 11-Node Verifiable Decision Trace
+    # 6. Source Agreement & Multi-Source Intelligence
+    source_agreement = get_route_source_agreement(db, route_id, req_date_str, request.cabin)
+    active_sources_list = [s.source_id for s in source_agreement.sources] if source_agreement.sources else ["SRC_GOOGLE_FLIGHTS"]
+
+    # 7. Build 11-Node Verifiable Decision Trace
     trace = build_decision_trace(
         origin=origin,
         destination=destination,
@@ -233,7 +240,7 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
         route_max=route_max,
         days_to_departure=days_to_departure,
         airline_count=len(airline_alternatives),
-        source_count=1,
+        source_count=source_agreement.sources_count or 1,
         flexible_options_count=len(flexible_dates),
         decision_policy_version=ACTIVE_DECISION_POLICY.policy_version,
         decision=booking_guidance,
@@ -241,6 +248,7 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
         readiness=readiness,
         national_index=national_index,
         national_delta=national_delta,
+        source_agreement_status=source_agreement.overall_agreement,
         grounded_summary=grounded_exp
     )
 
@@ -266,11 +274,166 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
         decision_policy_version=ACTIVE_DECISION_POLICY.policy_version,
         airline_alternatives=airline_alternatives,
         flexible_dates=flexible_dates,
-        sources_available=["SRC_GOOGLE_FLIGHTS"],
+        sources_available=active_sources_list,
         decision_trace=trace,
         grounded_explanation=grounded_exp,
-        longitudinal_readiness=readiness
+        longitudinal_readiness=readiness,
+        source_agreement=source_agreement
     )
+
+SOURCE_NAMES = {
+    "SRC_GOOGLE_FLIGHTS": "Google Flights",
+    "SRC_WEB_EASEMYTRIP": "EaseMyTrip",
+    "SRC_DUFFEL": "Duffel",
+    "SRC_WEB_TRIP": "Trip.com",
+    "SRC_INDIGO_NDC": "IndiGo NDC",
+    "SRC_AIR_INDIA_NDC": "Air India NDC",
+}
+
+def get_route_source_agreement(
+    db: Session,
+    route_id: str,
+    travel_date: str,
+    cabin: str = "ECONOMY"
+) -> RouteSourceAgreementResponse:
+    """Calculates cross-source agreement metrics, median spreads, and pairwise concordance for a given route and travel date."""
+    r_id = route_id.strip().upper()
+    c_clean = cabin.strip().upper()
+
+    obs_list = db.query(Observation).filter(
+        Observation.route_id == r_id,
+        Observation.travel_date == travel_date,
+        Observation.validation_status != "REJECT"
+    ).all()
+
+    if not obs_list:
+        return RouteSourceAgreementResponse(
+            route_id=r_id,
+            travel_date=travel_date,
+            cabin=c_clean,
+            sources_count=0,
+            overall_agreement="INSUFFICIENT_DATA",
+            overall_median_difference_pct=None,
+            sources=[],
+            pairwise_comparisons=[],
+            summary=f"No multi-source observations recorded for {r_id} on {travel_date}.",
+            provenance_hashes_count=0
+        )
+
+    source_map: Dict[str, List[float]] = {}
+    for o in obs_list:
+        sid = o.source_id or "UNKNOWN"
+        fare_val = float(o.total_fare) if o.total_fare is not None else 0.0
+        if fare_val > 0:
+            source_map.setdefault(sid, []).append(fare_val)
+
+    sources_metrics: List[SourceFareMetric] = []
+    active_sources: List[tuple[str, str, float]] = []
+
+    for sid, fares in sorted(source_map.items()):
+        med = float(statistics.median(fares))
+        s_name = SOURCE_NAMES.get(sid, sid)
+        sources_metrics.append(SourceFareMetric(
+            source_id=sid,
+            source_name=s_name,
+            median_fare=round(med, 2),
+            min_fare=round(float(min(fares)), 2),
+            max_fare=round(float(max(fares)), 2),
+            observation_count=len(fares),
+            data_status="OBSERVED"
+        ))
+        active_sources.append((sid, s_name, med))
+
+    pairwise: List[PairwiseSourceComparison] = []
+    pct_diffs: List[float] = []
+
+    for i in range(len(active_sources)):
+        for j in range(i + 1, len(active_sources)):
+            s_a_id, s_a_name, med_a = active_sources[i]
+            s_b_id, s_b_name, med_b = active_sources[j]
+
+            diff_inr = abs(med_a - med_b)
+            base_ref = min(med_a, med_b) if min(med_a, med_b) > 0 else 1.0
+            pct_diff = round((diff_inr / base_ref) * 100.0, 2)
+            pct_diffs.append(pct_diff)
+
+            if pct_diff <= 5.0:
+                agreement_lvl = "HIGH"
+                rule_desc = "<= 5% median difference"
+            elif pct_diff <= 15.0:
+                agreement_lvl = "MODERATE"
+                rule_desc = "5% - 15% median difference"
+            else:
+                agreement_lvl = "LOW"
+                rule_desc = "> 15% median difference (Dispersed)"
+
+            pairwise.append(PairwiseSourceComparison(
+                source_a=s_a_name,
+                source_b=s_b_name,
+                median_a=round(med_a, 2),
+                median_b=round(med_b, 2),
+                median_difference_inr=round(diff_inr, 2),
+                median_difference_pct=pct_diff,
+                agreement=agreement_lvl,
+                agreement_rule=rule_desc
+            ))
+
+    if len(active_sources) <= 1:
+        overall_agr = "SINGLE_SOURCE" if len(active_sources) == 1 else "INSUFFICIENT_DATA"
+        overall_pct = None
+        summary = f"Single source observed ({active_sources[0][1] if active_sources else 'None'}). Cross-source agreement unavailable."
+    else:
+        overall_pct = round(statistics.median(pct_diffs), 2)
+        if overall_pct <= 5.0:
+            overall_agr = "HIGH"
+            summary = f"HIGH SOURCE AGREEMENT: {overall_pct}% median fare difference across observed sources."
+        elif overall_pct <= 15.0:
+            overall_agr = "MODERATE"
+            summary = f"MODERATE SOURCE SPREAD: {overall_pct}% median fare difference across observed sources."
+        else:
+            overall_agr = "LOW"
+            summary = f"DISPERSED MARKET REPRESENTATION: {overall_pct}% median fare difference across independent sources."
+
+    provenance_count = sum(1 for o in obs_list if getattr(o, "stored_file_sha256", None) or getattr(o, "raw_payload_sha256", None))
+
+    return RouteSourceAgreementResponse(
+        route_id=r_id,
+        travel_date=travel_date,
+        cabin=c_clean,
+        sources_count=len(active_sources),
+        overall_agreement=overall_agr,
+        overall_median_difference_pct=overall_pct,
+        sources=sources_metrics,
+        pairwise_comparisons=pairwise,
+        summary=summary,
+        provenance_hashes_count=provenance_count
+    )
+
+def get_all_source_agreements(db: Session, limit: int = 50) -> List[RouteSourceAgreementResponse]:
+    """Returns cross-source agreement evaluations for trajectories with multi-source coverage."""
+    from sqlalchemy import func
+    rows = db.query(
+        Observation.route_id,
+        Observation.travel_date,
+        func.count(Observation.source_id.distinct()).label("src_cnt")
+    ).filter(
+        Observation.validation_status != "REJECT"
+    ).group_by(
+        Observation.route_id,
+        Observation.travel_date
+    ).having(
+        func.count(Observation.source_id.distinct()) >= 2
+    ).order_by(
+        Observation.travel_date.asc(),
+        Observation.route_id.asc()
+    ).limit(limit).all()
+
+    results = []
+    for r_id, t_date, _ in rows:
+        td_str = t_date.isoformat() if hasattr(t_date, "isoformat") else str(t_date)
+        agreement = get_route_source_agreement(db, r_id, td_str)
+        results.append(agreement)
+    return results
 
 def get_forecasting_readiness(db: Session) -> ForecastingReadinessResponse:
     metrics = calculate_readiness_metrics(db)

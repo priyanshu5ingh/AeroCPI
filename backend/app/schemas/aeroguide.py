@@ -85,6 +85,38 @@ class AeroGuideAnalyzeResponse(BaseModel):
     decision_trace: List[DecisionTraceNode] = Field(default_factory=list)
     grounded_explanation: str
     longitudinal_readiness: Dict[str, Any] = Field(default_factory=dict)
+    source_agreement: Optional["RouteSourceAgreementResponse"] = None
+
+class SourceFareMetric(BaseModel):
+    source_id: str
+    source_name: str
+    median_fare: float
+    min_fare: float
+    max_fare: float
+    observation_count: int
+    data_status: str = "OBSERVED"
+
+class PairwiseSourceComparison(BaseModel):
+    source_a: str
+    source_b: str
+    median_a: float
+    median_b: float
+    median_difference_inr: float
+    median_difference_pct: float
+    agreement: str # "HIGH", "MODERATE", "LOW"
+    agreement_rule: str # e.g. "<= 5% difference"
+
+class RouteSourceAgreementResponse(BaseModel):
+    route_id: str
+    travel_date: str
+    cabin: str = "ECONOMY"
+    sources_count: int
+    overall_agreement: str # "HIGH", "MODERATE", "LOW", "SINGLE_SOURCE", "INSUFFICIENT_DATA"
+    overall_median_difference_pct: Optional[float] = None
+    sources: List[SourceFareMetric] = Field(default_factory=list)
+    pairwise_comparisons: List[PairwiseSourceComparison] = Field(default_factory=list)
+    summary: str
+    provenance_hashes_count: int = 0
 
 class ForecastingReadinessResponse(BaseModel):
     dataset_classification: str # INSUFFICIENT_LONGITUDINAL_HISTORY, READY_FOR_MODEL

@@ -1,0 +1,732 @@
+<USER_REQUEST>
+UPDATE THE EXISTING SMART INDIA HACKATHON 2026 PITCH DECK.
+
+IMPORTANT:
+This is an UPDATE of our existing 6-slide SIH deck, NOT a new presentation from scratch.
+
+Use the existing AeroCPI / BuzzCodeX SIH deck as the visual/template foundation.
+
+STRICTLY PRESERVE:
+- Official SIH 2026 six-slide structure
+- Existing slide dimensions
+- Existing SIH logo placement/style
+- Existing mint/light background language
+- Large serif slide headings
+- Blue / green / orange / purple visual system
+- Infographic-driven layout
+- Professional academic/government-hackathon appearance
+- Existing overall visual identity of BuzzCodeX
+
+DO NOT redesign this into a generic startup pitch deck.
+DO NOT turn it into a dark futuristic SaaS presentation.
+DO NOT use excessive gradients, neon, 3D glassmorphism, AI-generated aviation stock imagery, or generic airplane renders.
+
+The futuristic/glassmorphism visual style belongs to the PROTOTYPE UI, not the SIH PPT.
+
+The final PPT must look like:
+OFFICIAL SIH TEMPLATE
++
+HIGH-END INFOGRAPHIC DESIGN
++
+REAL AEROGUIDE PROTOTYPE EVIDENCE.
+
+========================================================
+PROJECT IDENTITY
+========================================================
+
+Project:
+AeroCPI + AeroGuide
+
+Problem Statement:
+SIH26056
+
+Theme:
+Smart Automation
+
+Category:
+Software
+
+Team:
+BuzzCodeX
+
+Core identity:
+AeroCPI = experimental airfare measurement layer
+AeroGuide = consumer airfare intelligence layer
+
+Core phrase:
+MEASURE. EXPLAIN. VERIFY.
+
+Primary product story:
+Measure the airfare market.
+Explain what moved it.
+Help a traveller understand the current fare.
+Verify every important result through provenance and auditability.
+
+CRITICAL BOUNDARY:
+AeroCPI is an independent prototype measurement system.
+It is NOT official CPI.
+It does NOT replace official MoSPI CPI.
+Do not write "official AeroCPI", "sovereign index", "government benchmark", or equivalent claims.
+
+========================================================
+JUDGE FEEDBACK TO SOLVE
+========================================================
+
+The judges previously said:
+
+1. The earlier prototype did not create enough "wow".
+2. Scraping and calculating an index alone is easy for another team to replicate.
+3. There was no visible AI/consumer intelligence layer.
+4. The prototype was difficult to understand in 3–4 minutes.
+5. There were too many screens, options and technical details.
+6. Judges wanted something useful for travellers.
+7. They specifically suggested helping users understand when to book.
+
+The updated pitch must visibly solve these problems.
+
+The deck must communicate:
+
+DATA COLLECTION
+→ MULTI-SOURCE MEASUREMENT
+→ AIRFARE INDEX
+→ SOURCE AGREEMENT
+→ CONSUMER INTELLIGENCE
+→ AUDITABLE DECISION.
+
+========================================================
+CURRENT IMPLEMENTATION FACTS
+========================================================
+
+Use ONLY verified/current project facts.
+
+Current real source situation:
+
+- Google Flights: live observed source
+- EaseMyTrip: live observed Scrapy web source
+- Duffel: real API pilot / credential-gated source
+- Trip.com: adapter implemented but current live surface CAPTCHA-gated
+- IndiGo NDC: partner-access gated
+- Air India NDC: partner-access gated
+
+Do NOT portray Trip.com, IndiGo NDC or Air India NDC as currently contributing live observations.
+
+Current longitudinal forecasting state:
+
+- AI forecasting pipeline implemented
+- Forecast gate remains LOCKED / INSUFFICIENT_DATA
+- No fabricated probabilities
+- Current valid 7-day longitudinal pairs: 0 / 7 required minimum
+
+This must be presented as a deliberate scientific safeguard, NOT a failure.
+
+Current multi-source result:
+
+- 100% Tier-1 panel multi-source coverage
+- Defined as 140/140 panel cells having at least 2 observed sources
+- This is NOT "100% national coverage"
+
+Current source-agreement examples:
+
+DEL-BOM:
+Google Flights median ≈ ₹6,600
+Duffel median ≈ ₹6,535
+EaseMyTrip median ≈ ₹6,960
+
+Google ↔ Duffel:
+0.98% median difference
+HIGH AGREEMENT
+
+Google ↔ EaseMyTrip:
+5.45% median difference
+MODERATE SPREAD
+
+Other observed examples show source dispersion can become substantially larger.
+
+IMPORTANT:
+Never convert median difference into "accuracy", "concordance", or "confidence".
+Call it:
+MEDIAN FARE DIFFERENCE
+or
+SOURCE AGREEMENT / SOURCE SPREAD.
+
+OBSERVATION COUNT:
+Do NOT hardcode an old observation count.
+Use the latest canonical persisted observation count from the actual project/backend.
+If a live backend count cannot be obtained during slide generation, use:
+"36K+ persisted observations"
+instead of a stale exact number.
+
+========================================================
+FINAL SIX-SLIDE STORY
+========================================================
+
+The six slides must form one continuous narrative.
+
+--------------------------------------------------------
+SLIDE 1 — TITLE / PROBLEM
+--------------------------------------------------------
+
+KEEP THE EXISTING OFFICIAL SIH TITLE-SLIDE VISUAL LANGUAGE.
+
+Title:
+
+REAL-TIME AIRFARE PRICE INDEX
+FOR INDIA
+
+Subtitle / framing:
+
+AeroCPI + AeroGuide
+
+Problem Statement ID:
+SIH26056
+
+Team:
+BuzzCodeX
+
+Add a compact supporting line:
+
+MEASURE THE MARKET. EXPLAIN THE MOVEMENT. GUIDE THE DECISION.
+
+Do NOT clutter this slide.
+
+The purpose is:
+WHO
+WHAT
+WHY.
+
+Keep official SIH branding dominant.
+
+--------------------------------------------------------
+SLIDE 2 — PROPOSED SOLUTION
+--------------------------------------------------------
+
+THIS IS THE MOST IMPORTANT CONTENT SLIDE.
+
+Replace the old generic "airfare pipeline" story with a stronger solution narrative.
+
+Title:
+
+AEROCPI + AEROGUIDE
+PROPOSED SOLUTION
+
+LEFT SIDE:
+Problem
+
+Use only 3 concise points:
+
+• Airfares vary by route, airline, travel date, booking horizon and source.
+• Different sources can show materially different fare populations.
+• A useful airfare measure must be comparable, explainable and auditable.
+
+CENTER:
+Create the visual pipeline:
+
+OBSERVE
+↓
+NORMALIZE
+↓
+MEASURE
+↓
+COMPARE
+↓
+GUIDE
+↓
+VERIFY
+
+Show source icons/logos:
+
+Google Flights
+EaseMyTrip
+Duffel
+Airline / NDC adapters
+
+Then:
+
+RAW FARE
+→ CANONICAL OBSERVATION
+→ QUALITY CONTROL
+→ AEROCPI INDEX
+→ AEROGUIDE DECISION
+
+RIGHT SIDE:
+Use a REAL screenshot/mockup of the current AeroGuide GUIDE screen.
+
+Highlight:
+
+BLR → DEL
+₹10,495
+WATCH FARE
+
+Then small supporting labels:
+
+SOURCE AGREEMENT
+AI FORECAST — EVIDENCE-GATED
+WHY THIS DECISION
+
+At the bottom use three small visual pillars:
+
+MEASURE
+National airfare movement
+
+EXPLAIN
+Route + source drivers
+
+VERIFY
+Provenance + audit trail
+
+The key message of this slide:
+
+We did not stop at scraping and indexing.
+We built a measurement layer AND a consumer intelligence layer.
+
+--------------------------------------------------------
+SLIDE 3 — TECHNICAL APPROACH
+--------------------------------------------------------
+
+Title:
+
+TECHNICAL APPROACH
+
+Subtitle:
+
+MULTI-SOURCE DATA → AUDITABLE AIRFARE INTELLIGENCE
+
+Create one clean horizontal architecture rather than a giant vertical flowchart.
+
+Stage 1:
+SOURCE COLLECTION
+
+Google Flights
+Scrapy / EaseMyTrip
+Duffel API
+NDC adapters
+
+Stage 2:
+CANONICAL OBSERVATION
+
+Route
+Travel date
+Search timestamp
+Airline
+Cabin
+Fare
+Stops
+Duration
+Source
+
+Stage 3:
+VALIDATION + PROVENANCE
+
+Deduplication
+Comparability
+Quality checks
+SHA-256 raw capture
+Quote fingerprint
+
+Stage 4:
+MEASUREMENT
+
+DGCA-derived route basket
+Jevons geometric aggregation
+AeroCPI headline
+5A log-linear attribution
+
+Stage 5:
+AEROGUIDE
+
+Source Agreement
+Airline intelligence
+Flexible dates
+Decision policy
+Decision trace
+
+Stage 6:
+EVIDENCE
+
+Audit
+Provenance
+Model-readiness gate
+Reproducibility
+
+Use actual technology logos where available:
+
+Python
+FastAPI
+React
+SQLAlchemy
+SQLite/PostgreSQL-compatible architecture
+Scrapy
+Playwright / browser tooling where actually used
+
+Do NOT overload the bottom with 15 logos.
+
+Add one small mathematical visual:
+
+I_h = 100 · exp(Σ w_r ln(J_r,h / 100))
+
+Do NOT fill the slide with equations.
+
+Use a real screenshot of the Decision Trace or Source Agreement panel as a supporting visual.
+
+Bottom statement:
+
+ONE CANONICAL OBSERVATION MODEL.
+MULTIPLE ACQUISITION PATHS.
+ONE AUDITABLE MEASUREMENT CHAIN.
+
+--------------------------------------------------------
+SLIDE 4 — FEASIBILITY & VIABILITY
+--------------------------------------------------------
+
+Title:
+
+FEASIBILITY & VIABILITY
+
+Left section:
+
+WHY IT IS BUILDABLE
+
+✓ Multiple operational data-acquisition paths
+✓ Canonical normalization pipeline
+✓ Source-isolated collection
+✓ Scheduled/repeatable collection
+✓ Cryptographic provenance
+✓ Frozen/versioned methodology
+✓ Evidence-gated forecasting
+
+Middle section:
+
+REAL CURRENT EVIDENCE
+
+Use actual verified project figures.
+
+Show:
+
+36K+ persisted observations
+140 Tier-1 panel cells
+100% Tier-1 panel multi-source coverage
+3 observed providers in the current pilot architecture
+
+Be precise:
+
+Google Flights
+EaseMyTrip
+Duffel pilot
+
+Then a small badge:
+
+FORECAST:
+LOCKED — INSUFFICIENT LONGITUDINAL DEPTH
+
+Frame this as scientific discipline.
+
+Right section:
+
+RISKS → MITIGATIONS
+
+Website changes
+→ Modular adapters
+
+Dynamic pricing
+→ Fixed comparison specifications
+
+Source disagreement
+→ Cross-source agreement analysis
+
+Data quality
+→ Validation + provenance
+
+Insufficient temporal depth
+→ Evidence-gated ML
+
+Access restrictions
+→ Permission-aware collection
+
+BOTTOM:
+Potential sustainability / institutional model:
+
+Freemium consumer intelligence
+→ paid analytics
+→ institutional dashboards
+→ research / API access
+
+Do NOT make revenue claims about actual customers.
+
+Footer:
+
+SCALABLE BY ADDING ROUTES, SOURCES AND COLLECTION FREQUENCY.
+
+--------------------------------------------------------
+SLIDE 5 — IMPACT & BENEFITS
+--------------------------------------------------------
+
+This slide should now be much more consumer-facing.
+
+Title:
+
+IMPACT & BENEFITS
+
+Use three large stakeholder panels.
+
+01 POLICY / STATISTICAL AGENCIES
+
+AeroCPI provides:
+• high-frequency airfare observations
+• standardized route-level measurement
+• explainable attribution
+• reproducible audit trail
+
+02 TRAVELLERS
+
+AeroGuide provides:
+• current observed fare context
+• source agreement
+• nearby observed fare alternatives
+• explainable BOOK / WAIT / WATCH / FLEX DATE
+
+03 RESEARCH / INDUSTRY
+
+Provides:
+• multi-source airfare intelligence
+• route-level market dispersion
+• longitudinal panel construction
+• reproducible measurement artifacts
+
+CENTER / HERO:
+Place an actual screenshot of AeroGuide GUIDE + a small MARKET screenshot.
+
+Then a horizontal flow:
+
+OBSERVE
+→
+UNDERSTAND
+→
+DECIDE
+→
+VERIFY
+
+Bottom statement:
+
+NOT JUST THE PRICE.
+THE SIGNAL — THE REASON — THE EVIDENCE.
+
+Avoid unsupported claims such as:
+"fairer prices"
+"guaranteed savings"
+"best fares"
+"cheapest"
+"environmental benefits"
+unless specifically demonstrated.
+
+--------------------------------------------------------
+SLIDE 6 — RESEARCH & REFERENCES
+--------------------------------------------------------
+
+Title:
+
+RESEARCH & REFERENCES
+
+Preserve the strong structure from the existing reference slide.
+
+Use five reference groups:
+
+01
+MoSPI / PIB
+Official CPI framework and airfare context
+
+02
+DGCA
+Domestic city-pair passenger traffic / route reference
+
+03
+SIH 2026
+SIH26056 problem statement + official template
+
+04
+Methodological precedents
+BLS / international airfare-index methodology
+
+05
+AeroCPI internal evidence
+Versioned methodology
+validation rules
+test suite
+calculation manifests
+audit artifacts
+
+Use REAL QR codes / URLs already prepared for:
+MoSPI
+DGCA
+SIH
+
+Keep the methodology boundary prominently visible:
+
+AeroCPI is an independent prototype measurement system — not official CPI.
+
+Final footer:
+
+AUDIT PRINCIPLE:
+NEVER FABRICATE MISSING EVIDENCE.
+
+========================================================
+VISUAL DESIGN RULES
+========================================================
+
+PRESERVE THE ORIGINAL SIH DECK'S VISUAL LANGUAGE.
+
+Background:
+light mint / pale aqua
+
+Primary:
+SIH navy / deep blue
+
+Supporting:
+green
+orange
+purple
+
+Typography:
+large serif headers
+clean sans-serif body text
+
+Use:
+soft rounded infographic blocks
+thin outlines
+clear visual hierarchy
+small icons
+real screenshots
+simple diagrams
+
+Do NOT use:
+dark SaaS backgrounds
+full-screen glassmorphism
+neon cyan
+AI-generated airplane renders
+generic stock photos
+huge 3D objects
+excessive gradients
+excessive text
+
+The futuristic glassmorphism design belongs to the AeroGuide PRODUCT UI.
+
+The PPT itself should remain:
+OFFICIAL SIH + PREMIUM INFOGRAPHIC.
+
+========================================================
+VISUAL STORYTELLING
+========================================================
+
+Every slide must contain a clear visual anchor.
+
+Slide 1:
+SIH identity
+
+Slide 2:
+AeroGuide real UI + Observe→Measure→Guide flow
+
+Slide 3:
+technical pipeline
+
+Slide 4:
+real implementation evidence + risk mitigation
+
+Slide 5:
+consumer + institutional impact + real UI
+
+Slide 6:
+research credibility
+
+Do not put five unrelated diagrams on one slide.
+
+========================================================
+IMPORTANT COPY RULES
+========================================================
+
+Use:
+"experimental airfare measurement layer"
+"observed fare"
+"source agreement"
+"multi-source observations"
+"evidence-gated forecasting"
+"auditable"
+"provenance"
+"reproducible"
+"DGCA-derived route basket"
+
+Avoid:
+"official CPI"
+"sovereign index"
+"government-approved"
+"guaranteed savings"
+"guaranteed prediction"
+"cheapest"
+"best fare"
+"100% national coverage"
+
+========================================================
+FINAL JUDGE NARRATIVE
+========================================================
+
+The six slides must tell this story:
+
+SLIDE 1
+Here is the problem.
+
+SLIDE 2
+Here is what we built beyond simple scraping.
+
+SLIDE 3
+Here is how the system works.
+
+SLIDE 4
+Here is why it is technically feasible and evidence-backed.
+
+SLIDE 5
+Here is who benefits and what they can actually do with it.
+
+SLIDE 6
+Here is the evidence and methodological basis.
+
+The judge should be able to understand:
+
+WHAT IS IT?
+WHY IS IT DIFFERENT?
+HOW DOES IT WORK?
+IS IT REAL?
+WHY SHOULD I TRUST IT?
+
+within 60–90 seconds of looking at the deck.
+
+========================================================
+FINAL QUALITY CONTROL
+========================================================
+
+Before finishing:
+
+1. Compare every slide with the original official SIH template.
+2. Preserve official SIH logo / branding treatment.
+3. Verify Problem Statement ID = SIH26056.
+4. Verify team name = BuzzCodeX.
+5. Remove any obsolete 2025/old data.
+6. Do not invent data.
+7. Do not use old prototype values if newer verified values exist.
+8. Use screenshots from the latest AeroGuide prototype.
+9. Make sure all QR codes work.
+10. Ensure no text overlaps.
+11. Ensure no paragraph is too small to read during a live presentation.
+12. Keep each slide explainable in approximately 15–30 seconds.
+13. Use actual project UI screenshots as proof instead of generic illustrations.
+14. Keep the deck visually rich but not crowded.
+15. Maintain the six-slide official SIH structure.
+
+FINAL DESIGN PRINCIPLE:
+
+THE PPT SHOULD SELL THE STORY.
+
+THE PROTOTYPE SHOULD PROVE THE STORY.
+
+THE AUDIT LAYER SHOULD DEFEND THE STORY.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-17T02:12:08+05:30.
+</ADDITIONAL_METADATA>

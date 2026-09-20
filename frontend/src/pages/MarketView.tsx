@@ -101,7 +101,7 @@ export const MarketView: React.FC<MarketViewProps> = ({
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
                 <BarChart2 className="w-3.5 h-3.5 text-blue-400" />
-                <span>AEROCPI &bull; SOVEREIGN STATISTICAL MEASUREMENT</span>
+                <span>AEROCPI &bull; AIRFARE INDEX</span>
               </div>
               <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white font-sans">
                 India Airfare Market
@@ -264,7 +264,7 @@ export const MarketView: React.FC<MarketViewProps> = ({
             </p>
           </div>
           <span className="text-xs font-mono text-slate-400 bg-slate-950 px-3 py-1 rounded-full border border-slate-800">
-            10 Sovereign DGCA Core Corridors
+            10 DGCA Core Basket Corridors
           </span>
         </div>
 

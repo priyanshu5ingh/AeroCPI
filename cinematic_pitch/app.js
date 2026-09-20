@@ -1,6 +1,6 @@
 /**
- * AeroCPI Cinematic Pitch — Master Application Controller
- * Handles scene lifecycle, Canvas particle background, keyboard shortcuts, and HUD telemetry.
+ * AeroCPI + AeroGuide — Cinematic Pitch Film Application Controller
+ * Team: BuzzCodeX | Problem Statement: SIH26056 | Theme: Smart Automation
  */
 
 class CinematicPitchApp {
@@ -9,16 +9,13 @@ class CinematicPitchApp {
     this.currentIndex = 0;
     this.isPlaying = true;
     this.isMuted = false;
-    this.timer = null;
-    this.sceneStartTime = 0;
-    this.sceneDuration = 0;
+    this.sceneStartTime = performance.now();
+    this.sceneDuration = 12000;
     this.rafId = null;
 
     // DOM Elements
     this.viewport = document.getElementById('app-viewport');
     this.scenesContainer = document.getElementById('scenes-container');
-    this.canvas = document.getElementById('fx-canvas');
-    this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
     this.hudSceneCounter = document.getElementById('hud-scene-counter');
     this.hudSceneTitle = document.getElementById('hud-scene-title');
     this.progressBar = document.getElementById('timeline-progress-bar');
@@ -26,11 +23,16 @@ class CinematicPitchApp {
     this.btnPlayPause = document.getElementById('btn-play-pause');
     this.btnMute = document.getElementById('btn-mute');
     this.btnFullscreen = document.getElementById('btn-fullscreen');
+    this.btnDownloadPptx = document.getElementById('btn-download-pptx');
+    this.btnPrev = document.getElementById('btn-prev');
+    this.btnNext = document.getElementById('btn-next');
     this.sceneDrawer = document.getElementById('scene-drawer');
     this.preloader = document.getElementById('preloader');
     this.btnStart = document.getElementById('btn-start-film');
 
-    // Particle Background State
+    // Canvas FX
+    this.canvas = document.getElementById('fx-canvas');
+    this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
     this.particles = [];
     this.streamlines = [];
     this.gridOffset = 0;
@@ -39,14 +41,25 @@ class CinematicPitchApp {
   }
 
   init() {
-    this.buildSceneContainers();
-    this.buildDrawerItems();
-    this.initCanvas();
-    this.initEventListeners();
+    this.setupCanvas();
+    this.buildScenes();
+    this.buildDrawer();
+    this.initParticles();
     this.startParticleLoop();
+    this.initEventListeners();
   }
 
-  buildSceneContainers() {
+  setupCanvas() {
+    if (!this.canvas) return;
+    const resize = () => {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+  }
+
+  buildScenes() {
     if (!this.scenesContainer) return;
     this.scenesContainer.innerHTML = '';
 
@@ -59,54 +72,42 @@ class CinematicPitchApp {
     });
   }
 
-  buildDrawerItems() {
+  buildDrawer() {
     if (!this.sceneDrawer) return;
     this.sceneDrawer.innerHTML = '';
 
     this.scenes.forEach((scene, idx) => {
       const item = document.createElement('div');
       item.className = `drawer-scene-item ${idx === 0 ? 'active' : ''}`;
-      item.textContent = (idx + 1 < 10 ? '0' : '') + (idx + 1);
+      item.textContent = idx + 1;
       item.title = `Scene ${idx + 1}: ${scene.title}`;
-      item.addEventListener('click', () => {
-        this.goToScene(idx);
-      });
+      item.addEventListener('click', () => this.goToScene(idx));
       this.sceneDrawer.appendChild(item);
     });
   }
 
-  initCanvas() {
-    if (!this.canvas) return;
-    const resize = () => {
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', resize);
-    resize();
 
-    // Create background floating stars / telemetry data points
-    const count = 120;
+  initParticles() {
     this.particles = [];
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < 45; i++) {
       this.particles.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
         size: Math.random() * 2 + 0.5,
-        speedX: (Math.random() - 0.5) * 0.2,
-        speedY: (Math.random() - 0.5) * 0.2,
-        alpha: Math.random() * 0.5 + 0.1
+        speedX: (Math.random() - 0.5) * 0.25,
+        speedY: (Math.random() - 0.5) * 0.25,
+        alpha: Math.random() * 0.5 + 0.15
       });
     }
 
-    // Aerodynamic streamlines
     this.streamlines = [];
     for (let i = 0; i < 6; i++) {
       this.streamlines.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
         len: Math.random() * 300 + 150,
-        speed: Math.random() * 2 + 1.5,
-        alpha: Math.random() * 0.25 + 0.05
+        speed: Math.random() * 2.5 + 1.5,
+        alpha: Math.random() * 0.25 + 0.08
       });
     }
   }
@@ -116,9 +117,9 @@ class CinematicPitchApp {
       if (this.ctx && this.canvas) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // 1. Draw subtle 3D coordinate grid lines
+        // 1. Coordinate grid lines
         this.gridOffset = (this.gridOffset + 0.2) % 60;
-        this.ctx.strokeStyle = 'rgba(6, 182, 212, 0.035)';
+        this.ctx.strokeStyle = 'rgba(6, 182, 212, 0.04)';
         this.ctx.lineWidth = 1;
         
         for (let x = -this.gridOffset; x < this.canvas.width; x += 60) {
@@ -128,7 +129,7 @@ class CinematicPitchApp {
           this.ctx.stroke();
         }
 
-        // 2. Draw Floating Telemetry Particles
+        // 2. Telemetry Particles
         this.particles.forEach(p => {
           p.x += p.speedX;
           p.y += p.speedY;
@@ -143,7 +144,7 @@ class CinematicPitchApp {
           this.ctx.fill();
         });
 
-        // 3. Draw Aerodynamic Streamlines
+        // 3. Aerodynamic Streamlines
         this.streamlines.forEach(s => {
           s.x += s.speed;
           if (s.x > this.canvas.width + s.len) {
@@ -188,7 +189,6 @@ class CinematicPitchApp {
     if (index < 0 || index >= this.scenes.length) return;
 
     const allSceneEls = document.querySelectorAll('.scene');
-    const prevIndex = this.currentIndex;
     this.currentIndex = index;
 
     allSceneEls.forEach((el, idx) => {
@@ -210,7 +210,9 @@ class CinematicPitchApp {
     const curNum = (this.currentIndex + 1 < 10 ? '0' : '') + (this.currentIndex + 1);
     const totalNum = (this.scenes.length < 10 ? '0' : '') + this.scenes.length;
     if (this.hudSceneCounter) this.hudSceneCounter.textContent = `${curNum} / ${totalNum}`;
-    if (this.hudSceneTitle) this.hudSceneTitle.textContent = this.scenes[this.currentIndex].title;
+    if (this.hudSceneTitle && this.scenes[this.currentIndex]) {
+      this.hudSceneTitle.textContent = this.scenes[this.currentIndex].title;
+    }
 
     // Update Global Progress Bar
     const globalPct = ((this.currentIndex + 1) / this.scenes.length) * 100;
@@ -222,7 +224,7 @@ class CinematicPitchApp {
     if (this.timerSubbar) this.timerSubbar.style.width = '0%';
 
     // Trigger Scene onEnter Lifecycle with Audio
-    if (this.scenes[this.currentIndex].onEnter && window.cinematicAudio) {
+    if (this.scenes[this.currentIndex] && this.scenes[this.currentIndex].onEnter && window.cinematicAudio) {
       this.scenes[this.currentIndex].onEnter(window.cinematicAudio);
     }
   }
@@ -231,7 +233,6 @@ class CinematicPitchApp {
     if (this.currentIndex < this.scenes.length - 1) {
       this.goToScene(this.currentIndex + 1);
     } else {
-      // Loop or stop
       this.goToScene(0);
     }
   }
@@ -298,6 +299,19 @@ class CinematicPitchApp {
     if (this.btnFullscreen) {
       this.btnFullscreen.addEventListener('click', () => this.toggleFullscreen());
     }
+    if (this.btnDownloadPptx) {
+      this.btnDownloadPptx.addEventListener('click', () => {
+        window.open('/AeroCPI_SIH2026_Pitch_Deck.pptx', '_blank');
+      });
+    }
+
+    // Footer buttons
+    if (this.btnPrev) {
+      this.btnPrev.addEventListener('click', () => this.prevScene());
+    }
+    if (this.btnNext) {
+      this.btnNext.addEventListener('click', () => this.nextScene());
+    }
 
     // Keyboard Shortcuts
     window.addEventListener('keydown', (e) => {
@@ -306,13 +320,13 @@ class CinematicPitchApp {
         e.preventDefault();
         this.togglePlayPause();
       }
-      // Right Arrow / Page Down / Key L
-      else if (e.code === 'ArrowRight' || e.code === 'PageDown' || e.code === 'KeyL') {
+      // Right Arrow / Page Down
+      else if (e.code === 'ArrowRight' || e.code === 'PageDown') {
         e.preventDefault();
         this.nextScene();
       }
-      // Left Arrow / Page Up / Key H
-      else if (e.code === 'ArrowLeft' || e.code === 'PageUp' || e.code === 'KeyH') {
+      // Left Arrow / Page Up
+      else if (e.code === 'ArrowLeft' || e.code === 'PageUp') {
         e.preventDefault();
         this.prevScene();
       }
@@ -331,10 +345,10 @@ class CinematicPitchApp {
         e.preventDefault();
         this.toggleMute();
       }
-      // Tab: Toggle Drawer
-      else if (e.code === 'Tab') {
+      // P: Download PPTX
+      else if (e.code === 'KeyP') {
         e.preventDefault();
-        if (this.sceneDrawer) this.sceneDrawer.classList.toggle('visible');
+        window.open('/AeroCPI_SIH2026_Pitch_Deck.pptx', '_blank');
       }
       // Number keys 1-9 & 0
       else if (e.key >= '1' && e.key <= '9') {

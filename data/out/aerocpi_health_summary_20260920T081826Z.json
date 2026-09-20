@@ -1,0 +1,20 @@
+{
+  "collection_date": "2026-09-20",
+  "events_attempted": 50,
+  "events_succeeded": 46,
+  "events_failed": 4,
+  "events_skipped_duplicate": 0,
+  "observations_collected": 2554,
+  "observations_accepted": 0,
+  "observations_flagged": 2554,
+  "observations_rejected": 0,
+  "duplicate_payloads": 0,
+  "summary_file": "C:\\Users\\priya\\Downloads\\AeroCPI\\data\\out\\aerocpi_observations_20260920T081826Z.jsonl",
+  "log_file": "C:\\Users\\priya\\Downloads\\AeroCPI\\backend\\logs\\collection_scheduler.log",
+  "errors": [
+    "FAIL DEL-BOM APW01: TimeoutError: error decoding response body > request or response body error > operation timed out",
+    "FAIL DEL-HYD APW07: TimeoutError: error decoding response body > request or response body error > operation timed out",
+    "FAIL DEL-HYD APW30: RequestError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTAtMjBqBRIDREVMcgUSA0hZREIBAUgBmAEC&hl=&curr=INR) > peer closed connection without sending TLS close_notify: https://docs.rs/rustls/latest/rustls/manual/_03_howto/index.html#unexpected-eof",
+    "FAIL DEL-CCU APW07: RequestError: error sending request for url (https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMDktMjdqBRIDREVMcgUSA0NDVUIBAUgBmAEC&hl=&curr=INR) > peer closed connection without sending TLS close_notify: https://docs.rs/rustls/latest/rustls/manual/_03_howto/index.html#unexpected-eof"
+  ]
+}

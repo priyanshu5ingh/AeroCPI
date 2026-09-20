@@ -122,3 +122,66 @@ def test_07_temporal_data_leakage_safety():
     data = response.json()
     assert data["training_gate"] == "LOCKED_AWAITING_LONGITUDINAL_DATA"
     assert data["synthetic_predictions_allowed"] is False
+
+def test_08_source_agreement_route_endpoint():
+    """Tests the GET /api/v1/aeroguide/source-agreement/{route_id}/{travel_date} endpoint."""
+    response = client.get("/api/v1/aeroguide/source-agreement/DEL-BOM/2026-10-01")
+    assert response.status_code == 200
+    data = response.json()
+    
+    assert data["route_id"] == "DEL-BOM"
+    assert data["travel_date"] == "2026-10-01"
+    assert data["sources_count"] >= 2
+    assert data["overall_agreement"] in ["HIGH", "MODERATE", "LOW"]
+    assert isinstance(data["sources"], list)
+    assert len(data["sources"]) >= 2
+    
+    for s in data["sources"]:
+        assert "source_id" in s
+        assert "source_name" in s
+        assert s["median_fare"] > 0
+        assert s["observation_count"] > 0
+        
+    assert isinstance(data["pairwise_comparisons"], list)
+    assert len(data["pairwise_comparisons"]) >= 1
+    for p in data["pairwise_comparisons"]:
+        assert "source_a" in p
+        assert "source_b" in p
+        assert p["median_difference_inr"] >= 0
+        assert p["median_difference_pct"] >= 0
+        assert p["agreement"] in ["HIGH", "MODERATE", "LOW"]
+
+def test_09_all_source_agreements_summary():
+    """Tests the GET /api/v1/aeroguide/source-agreement summary endpoint."""
+    response = client.get("/api/v1/aeroguide/source-agreement?limit=20")
+    assert response.status_code == 200
+    data = response.json()
+    
+    assert isinstance(data, list)
+    assert len(data) > 0
+    first = data[0]
+    assert "route_id" in first
+    assert "travel_date" in first
+    assert first["sources_count"] >= 2
+
+def test_10_analyze_includes_source_agreement():
+    """Tests that analyze response contains populated source_agreement payload."""
+    payload = {
+        "origin": "DEL",
+        "destination": "BOM",
+        "travel_date": "2026-10-01",
+        "flexibility_days": 2,
+        "priority": "CHEAPEST",
+        "adults": 1,
+        "cabin": "ECONOMY"
+    }
+    response = client.post("/api/v1/aeroguide/analyze", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    
+    assert "source_agreement" in data
+    assert data["source_agreement"] is not None
+    assert data["source_agreement"]["route_id"] == "DEL-BOM"
+    assert data["source_agreement"]["sources_count"] >= 2
+    assert len(data["sources_available"]) >= 2
+

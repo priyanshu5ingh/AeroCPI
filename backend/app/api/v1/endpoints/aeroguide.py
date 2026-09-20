@@ -11,11 +11,14 @@ from app.db.session import get_db
 from app.schemas.aeroguide import (
     AeroGuideAnalyzeRequest,
     AeroGuideAnalyzeResponse,
-    ForecastingReadinessResponse
+    ForecastingReadinessResponse,
+    RouteSourceAgreementResponse
 )
 from app.services.aeroguide_service import (
     analyze_airfare_request,
-    get_forecasting_readiness
+    get_forecasting_readiness,
+    get_route_source_agreement,
+    get_all_source_agreements
 )
 from app.services.longitudinal_service import (
     execute_longitudinal_pilot_collection,
@@ -39,6 +42,24 @@ from app.core.aeroguide_registry import (
 )
 
 router = APIRouter(prefix="/aeroguide", tags=["AeroGuide Consumer Intelligence"])
+
+@router.get("/source-agreement/{route_id}/{travel_date}", response_model=RouteSourceAgreementResponse)
+def get_source_agreement(
+    route_id: str,
+    travel_date: str,
+    cabin: str = "ECONOMY",
+    db: Session = Depends(get_db)
+):
+    """Returns multi-source intelligence, descriptive distributions, and pairwise concordance metrics for a route/date."""
+    return get_route_source_agreement(db, route_id, travel_date, cabin=cabin)
+
+@router.get("/source-agreement", response_model=List[RouteSourceAgreementResponse])
+def get_all_source_agreements_summary(
+    limit: int = 50,
+    db: Session = Depends(get_db)
+):
+    """Returns cross-source agreement evaluations for all trajectories with multi-source coverage."""
+    return get_all_source_agreements(db, limit=limit)
 
 @router.post("/analyze", response_model=AeroGuideAnalyzeResponse)
 def analyze_fare(request: AeroGuideAnalyzeRequest, db: Session = Depends(get_db)):

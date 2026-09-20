@@ -90,9 +90,12 @@ export const DataQualityPage: React.FC<DataQualityPageProps> = ({
                 <span className="text-[10px] font-mono font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200/80 uppercase">
                   Decomposed Diagnostics
                 </span>
+                <span className="text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200/80 uppercase">
+                  Cross-Source Agreement Lab
+                </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                How trustworthy is the measurement at the observation, route, source, and run levels? Decomposed diagnostics without synthetic scores.
+                How trustworthy is the measurement at the observation, route, source, and run levels? Multi-source agreement and decomposed diagnostics without synthetic scores.
               </p>
             </div>
           </div>

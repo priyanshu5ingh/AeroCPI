@@ -12,11 +12,6 @@ from app.services.source_adapters.base import (
     SourceStatus,
     SourceTelemetry
 )
-from app.services.source_adapters.google_flights_adapter import GoogleFlightsSourceAdapter
-from app.services.source_adapters.duffel_source_adapter import DuffelSourceAdapter
-from app.services.source_adapters.ndc_adapters import IndiGoNDCAdapter, AirIndiaNDCAdapter
-
-
 class MultiSourceRegistry:
     """Singleton registry coordinating all AeroCPI observation sources."""
 
@@ -33,7 +28,16 @@ class MultiSourceRegistry:
         return cls._instance
 
     def _register_default_adapters(self):
+        from app.services.source_adapters.google_flights_adapter import GoogleFlightsSourceAdapter
+        from app.services.source_adapters.duffel_source_adapter import DuffelSourceAdapter
+        from app.services.source_adapters.ndc_adapters import IndiGoNDCAdapter, AirIndiaNDCAdapter
+        from app.services.scrapy.adapters.scrapy_source_adapter import ScrapySourceAdapter
+        from app.services.scrapy.spiders.trip_com_spider import TripComFlightSpider
+        from app.services.scrapy.spiders.easemytrip_spider import EaseMyTripFlightSpider
+
         self.register(GoogleFlightsSourceAdapter())
+        self.register(ScrapySourceAdapter(TripComFlightSpider()))
+        self.register(ScrapySourceAdapter(EaseMyTripFlightSpider()))
         self.register(DuffelSourceAdapter())
         self.register(IndiGoNDCAdapter())
         self.register(AirIndiaNDCAdapter())

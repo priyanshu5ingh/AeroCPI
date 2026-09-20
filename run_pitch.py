@@ -57,11 +57,11 @@ def main():
     url = f"http://127.0.0.1:{port}/index.html"
     
     print("============================================================")
-    print("  [AeroCPI] Cinematic Third-Screen Film (SIH 2026)")
-    print("  Team BUZZCODEX | Problem Code SIH26056")
-    print(f"  Live at: {url}")
-    print("  Keyboard: [Space] Pause | [<- / ->] Navigate | [F] Fullscreen | [M] Mute")
-    print("  Press Ctrl+C to terminate.")
+    print("  [AeroCPI + AeroGuide] Official SIH 2026 Pitch Presentation")
+    print("  Team BUZZCODEX | Problem Statement: SIH26056 | Smart Automation")
+    print(f"  Live Presentation at: {url}")
+    print("  Keyboard: [<- / ->] Navigate | [1-6] Jump | [F] Fullscreen | [P] Download PPTX")
+    print("  Press Ctrl+C to stop the runner.")
     print("============================================================")
 
     server_thread = threading.Thread(target=httpd.serve_forever, daemon=True)

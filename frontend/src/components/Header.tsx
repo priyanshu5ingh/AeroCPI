@@ -27,6 +27,7 @@ interface HeaderProps {
   onSelectTab?: (tab: PlatformTab) => void;
   trustStatus?: string;
   onOpenTrace?: () => void;
+  persistedObservations?: number;
 }
 
 const PRIMARY_MODES: { id: PlatformTab; number: string; label: string; sub: string; icon: React.FC<{ className?: string }> }[] = [
@@ -43,6 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectTab,
   trustStatus = 'HIGH_CONFIDENCE',
   onOpenTrace,
+  persistedObservations = 36606,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -88,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span>17,244 Live Observations</span>
+            <span>{persistedObservations.toLocaleString('en-IN')} PERSISTED OBSERVATIONS</span>
           </div>
         </div>
 

@@ -9,7 +9,8 @@ import {
   fetchDashboard,
   fetchExplanation,
   fetchAudit,
-  fetchIndexRuns
+  fetchIndexRuns,
+  fetchForecastingReadiness
 } from './services/api';
 import { Header, PlatformTab } from './components/Header';
 import { GuideView } from './pages/GuideView';
@@ -35,6 +36,7 @@ export default function App() {
   const [dashboard, setDashboard] = useState<IndexDashboardResponse | null>(null);
   const [explanation, setExplanation] = useState<IndexExplanationResponse | null>(null);
   const [audit, setAudit] = useState<IndexAuditResponse | null>(null);
+  const [persistedObservations, setPersistedObservations] = useState<number>(36606);
 
   const normalizeTab = (rawTab: string | null): PlatformTab => {
     if (!rawTab) return 'guide';
@@ -83,11 +85,18 @@ export default function App() {
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
 
-  // Initial load of index runs list
+  // Initial load of index runs list and readiness count
   useEffect(() => {
     fetchIndexRuns()
       .then((data) => setRuns(data))
       .catch((err) => console.warn('Could not fetch index runs list:', err));
+    fetchForecastingReadiness()
+      .then((res) => {
+        if (res?.total_observations) {
+          setPersistedObservations(res.total_observations);
+        }
+      })
+      .catch((err) => console.warn('Could not fetch forecasting readiness:', err));
   }, []);
 
   // Fetch full dashboard, 5A explanation, and 5B audit for active runId
@@ -167,6 +176,7 @@ export default function App() {
           onSelectTab={handleSelectTab}
           trustStatus={dashboard.trust.trust_status}
           onOpenTrace={() => handleSelectTab('proof')}
+          persistedObservations={persistedObservations}
         />
 
         {/* Main Experience Canvas */}
@@ -176,6 +186,7 @@ export default function App() {
             <GuideView
               onNavigateToMarket={() => handleSelectTab('market')}
               onNavigateToProof={() => handleSelectTab('proof')}
+              persistedObservations={persistedObservations}
             />
           )}
 
@@ -196,6 +207,7 @@ export default function App() {
               onOpenAuditModal={() => setIsAuditModalOpen(true)}
               onNavigateToMethodology={() => handleSelectTab('methodology')}
               onNavigateToValidation={() => handleSelectTab('validation')}
+              persistedObservations={persistedObservations}
             />
           )}
 

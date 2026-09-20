@@ -22,7 +22,8 @@ import {
   AirlineRegistryItem,
   SourceCapabilityItem,
   SourceHealthItem,
-  RouteCoverageItem
+  RouteCoverageItem,
+  RouteSourceAgreementResponse
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -260,6 +261,26 @@ export const fetchModelEvaluation = async () => {
 
 export const fetchRouteCoverage = async (): Promise<RouteCoverageItem[]> => {
   const response = await axios.get<RouteCoverageItem[]>(`${API_BASE}/aeroguide/route-coverage`);
+  return response.data;
+};
+
+export const fetchSourceAgreement = async (
+  routeId: string,
+  travelDate: string,
+  cabin: string = 'ECONOMY'
+): Promise<RouteSourceAgreementResponse> => {
+  const response = await axios.get<RouteSourceAgreementResponse>(
+    `${API_BASE}/aeroguide/source-agreement/${routeId}/${travelDate}`,
+    { params: { cabin } }
+  );
+  return response.data;
+};
+
+export const fetchAllSourceAgreements = async (limit = 50): Promise<RouteSourceAgreementResponse[]> => {
+  const response = await axios.get<RouteSourceAgreementResponse[]>(
+    `${API_BASE}/aeroguide/source-agreement`,
+    { params: { limit } }
+  );
   return response.data;
 };
 

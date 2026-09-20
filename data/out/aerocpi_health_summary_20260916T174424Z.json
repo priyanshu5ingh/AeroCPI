@@ -1,0 +1,15 @@
+{
+  "collection_date": "2026-09-16",
+  "events_attempted": 1,
+  "events_succeeded": 1,
+  "events_failed": 0,
+  "events_skipped_duplicate": 0,
+  "observations_collected": 1,
+  "observations_accepted": 0,
+  "observations_flagged": 0,
+  "observations_rejected": 0,
+  "duplicate_payloads": 0,
+  "summary_file": "C:\\Users\\priya\\Downloads\\AeroCPI\\data\\out\\aerocpi_observations_20260916T174424Z.jsonl",
+  "log_file": "C:\\Users\\priya\\Downloads\\AeroCPI\\backend\\logs\\collection_scheduler.log",
+  "errors": []
+}

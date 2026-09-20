@@ -1,194 +1,200 @@
 /**
- * AeroCPI Cinematic Pitch — 14 Scene Definitions & Dynamic Animations
- * Crafted for SIH 2026 (Team BUZZCODEX · SIH26056)
+ * AeroCPI + AeroGuide — Cinematic 16:9 Pitch Film Scene Definitions
+ * Problem Statement: SIH26056 | Team: BuzzCodeX | Theme: Smart Automation
  */
 
 const SCENES_DATA = [
   // -------------------------------------------------------------
-  // SCENE 01: Grand Opening
+  // SCENE 01: Cold Open & Radar Hologram
   // -------------------------------------------------------------
   {
     id: 1,
-    title: "Opening & Title",
-    duration: 11000,
+    title: "Opening & Radar Hologram",
+    duration: 12000,
     render: () => `
-      <div class="s01-brand-line"></div>
-      <div class="s01-team-name">TEAM BUZZCODEX</div>
-      <h1 class="s01-sih-title metallic-text">SMART INDIA HACKATHON 2026</h1>
-      <div class="s01-problem-badge glass-pill">
-        <span style="color: var(--saffron-gold);">PROBLEM CODE:</span> SIH26056
+      <div class="s01-brand-badge">
+        <span class="glass-pill">SMART INDIA HACKATHON 2026</span>
+        <span class="glass-pill">PROBLEM STATEMENT SIH26056</span>
+        <span class="glass-pill">SMART AUTOMATION</span>
       </div>
-      <div class="s01-problem-title">
-        "REAL-TIME AIRFARE PRICE INDEX FOR INDIA"
+
+      <h1 class="hero-title s01-title-hero metallic-text">
+        REAL-TIME AIRFARE PRICE INDEX
+      </h1>
+
+      <div class="s01-subtitle-hero">
+        AeroCPI &nbsp;+&nbsp; AeroGuide
       </div>
-      <div style="margin-top: 3rem; display: flex; align-items: center; gap: 1rem; opacity: 0.8;">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-glow)" stroke-width="1.5">
-          <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
-        </svg>
-        <span class="mono-tag" style="letter-spacing: 0.2em;">AEROCPI CINEMATIC OBSERVATORY</span>
+
+      <div class="s01-tagline">
+        MEASURE THE MARKET &nbsp;·&nbsp; EXPLAIN THE MOVEMENT &nbsp;·&nbsp; GUIDE THE DECISION
+      </div>
+
+      <div class="s01-meta-bar">
+        <span><strong>Team:</strong> BuzzCodeX</span>
+        <span>•</span>
+        <span><strong>Canonical Observations:</strong> 36K+ Persisted Quotes</span>
+        <span>•</span>
+        <span><strong>Longitudinal Panel:</strong> 140 Tier-1 Cells</span>
+        <span>•</span>
+        <span><strong>Multi-Source Coverage:</strong> 100% Dual-Source</span>
       </div>
     `,
     onEnter: (audio) => {
       audio.playWhoosh(1.2);
-      setTimeout(() => audio.playMetallicImpact(), 600);
-      setTimeout(() => audio.playDataTick(1600), 1200);
+      setTimeout(() => audio.playMetallicImpact(), 500);
+      setTimeout(() => audio.playHeroChord(), 900);
     }
   },
 
   // -------------------------------------------------------------
-  // SCENE 02: Why Does India Need This?
+  // SCENE 02: The Real-World Market Crisis
   // -------------------------------------------------------------
   {
     id: 2,
-    title: "Why Does India Need This?",
-    duration: 12000,
+    title: "The Airfare Volatility Crisis",
+    duration: 13000,
     render: () => `
-      <div class="glass-pill" style="margin-bottom: 1.5rem;">MACROECONOMIC CONTEXT</div>
-      <h1 class="hero-title metallic-text">WHY DOES INDIA NEED THIS?</h1>
-      
-      <div class="s02-grid" style="margin-top: 2.5rem;">
+      <div class="s02-grid">
         <div class="glass-panel s02-stat-box">
-          <div class="mono-tag" style="color: var(--saffron-gold);">INDIAN DOMESTIC AVIATION</div>
+          <span class="mono-tag neon-rose">THE CONSUMER & POLICY DILEMMA</span>
           <div class="cpi-huge-number">150M+</div>
-          <div style="color: var(--text-dim); font-size: 1.1rem; line-height: 1.6;">
-            Passengers travel across India's domestic skies annually, making airfare a critical component of modern consumer mobility.
+          <div style="font-size: 1.25rem; font-weight: 700; color: #ffffff;">
+            Annual Domestic Passengers in India Face Unpredictable Dynamic Pricing
           </div>
-          <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-            <div class="glass-pill" style="font-size: 0.75rem;">10 DGCA TRUNK CORRIDORS</div>
-            <div class="glass-pill" style="font-size: 0.75rem;">HIGH-FREQUENCY MARKET</div>
+          <div style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.6;">
+            A ticket from Delhi to Bengaluru can swing from <span class="neon-mint">₹4,200</span> to <span class="neon-rose">₹14,500</span> in 48 hours without any structural inflation explanation.
           </div>
         </div>
 
-        <div class="glass-panel s02-stat-box" style="border-color: rgba(56, 189, 248, 0.4);">
-          <div class="mono-tag" style="color: var(--cyan-glow);">THE MEASUREMENT CHALLENGE</div>
-          <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: #ffffff; line-height: 1.3;">
-            "CPI measures changes in the cost of living."
+        <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+          <div class="glass-panel" style="padding: 1.5rem; border-left: 4px solid var(--crimson);">
+            <div class="mono-tag" style="color: var(--crimson);">01. OFFICIAL CPI PUBLICATION LAG</div>
+            <div style="color: #ffffff; font-weight: 600; font-size: 1.05rem; margin-top: 0.3rem;">Monthly Physical Shelf Surveys</div>
+            <div style="color: var(--text-dim); font-size: 0.88rem; margin-top: 0.2rem;">
+              MoSPI CPI tracks static retail baskets with monthly lags. Algorithmic dynamic airfares update every minute.
+            </div>
           </div>
-          <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--coral-red); line-height: 1.3;">
-            "But airfare does not have ONE fixed price."
+
+          <div class="glass-panel" style="padding: 1.5rem; border-left: 4px solid var(--saffron-gold);">
+            <div class="mono-tag" style="color: var(--saffron-gold);">02. CROSS-SOURCE FARE DISPERSION</div>
+            <div style="color: #ffffff; font-weight: 600; font-size: 1.05rem; margin-top: 0.3rem;">5.45% Median Platform Spread</div>
+            <div style="color: var(--text-dim); font-size: 0.88rem; margin-top: 0.2rem;">
+              OTAs and aggregators show diverging fare populations. Single-source scrapers produce biased index numbers.
+            </div>
           </div>
-          <div style="color: var(--text-dim); font-size: 1rem; margin-top: 0.5rem; line-height: 1.6;">
-            Unlike standard consumer goods with fixed shelf prices, airline tariffs change by the minute, by advance horizon, and by carrier algorithm.
+
+          <div class="glass-panel" style="padding: 1.5rem; border-left: 4px solid var(--cyan-bright);">
+            <div class="mono-tag" style="color: var(--cyan-bright);">03. ZERO PRICE EXPLAINABILITY</div>
+            <div style="color: #ffffff; font-weight: 600; font-size: 1.05rem; margin-top: 0.3rem;">Black-Box Flight Scrapers</div>
+            <div style="color: var(--text-dim); font-size: 0.88rem; margin-top: 0.2rem;">
+              Scrapers display prices without explaining why fares spiked or whether travellers should book now or wait.
+            </div>
           </div>
         </div>
       </div>
     `,
     onEnter: (audio) => {
       audio.playWhoosh(1.0);
-      setTimeout(() => audio.playDataTick(900), 400);
-      setTimeout(() => audio.playDataTick(1400), 800);
+      setTimeout(() => audio.playDataTick(1400), 400);
+      setTimeout(() => audio.playDataTick(1600), 800);
     }
   },
 
   // -------------------------------------------------------------
-  // SCENE 03: Airfare is a Moving Market (Dynamic Ticket Morph)
+  // SCENE 03: Flight Price Ticker Morph
   // -------------------------------------------------------------
   {
     id: 3,
-    title: "Airfare is a Moving Market",
-    duration: 13000,
+    title: "Flight Price Ticker Morph",
+    duration: 12000,
     render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem; color: var(--coral-red); border-color: rgba(244,63,94,0.4);">
-        THE VOLATILITY PROBLEM
-      </div>
-      <h1 class="hero-title metallic-text">AIRFARE IS NOT A FIXED PRICE.</h1>
-      <p class="hero-sub">The same seat on the same route shifts continuously based on time and capacity.</p>
+      <div class="s03-stage">
+        <span class="glass-pill" style="margin-bottom: 1.2rem;">DYNAMIC PRICING PHENOMENON</span>
+        <h2 class="hero-title metallic-text" style="font-size: 2.8rem; text-align: center;">
+          WHAT IS HAPPENING TO THIS FARE?
+        </h2>
 
-      <div style="display: flex; gap: 3rem; align-items: center; margin-top: 2.5rem; width: 100%; max-width: 1200px; justify-content: center;">
-        
-        <!-- Ticket Visual -->
-        <div class="glass-panel s03-ticket-card" style="border-color: rgba(56,189,248,0.5);">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 1rem;">
-            <div>
-              <div class="mono-tag" style="color: var(--cyan-glow);">FLIGHT CORRIDOR</div>
-              <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: #ffffff;">DEL ➔ BOM</div>
-            </div>
-            <div style="text-align: right;">
-              <div class="mono-tag">CABIN</div>
-              <div style="font-weight: 700; color: var(--text-dim);">ECONOMY (Y)</div>
-            </div>
+        <div class="glass-panel s03-ticket-card" style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.85rem;">
+            <span style="color: var(--cyan-bright);">BLR ➔ DEL · NON-STOP</span>
+            <span style="color: var(--text-dim);">T+31 DAYS (ECONOMY)</span>
           </div>
 
-          <div>
-            <div class="mono-tag" style="margin-bottom: 0.25rem;">OBSERVED FARE QUOTE</div>
-            <div id="s03-ticket-price" class="s03-price-ticker cyan-metallic">₹6,314</div>
-            <div id="s03-ticker-status" style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--mint-glow);">
-              ● BASELINE QUOTE RECORDED
-            </div>
+          <div class="s03-price-ticker" id="scene3-price-ticker">
+            ₹10,495
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 0.85rem;">
+            <span class="glass-pill" style="color: var(--saffron-gold); border-color: var(--saffron-gold);">WATCH FARE</span>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim);">Historical Median: ₹10,859</span>
           </div>
         </div>
 
-        <!-- 4 Contributing Factors -->
         <div class="s03-chips-grid">
-          <div class="s03-chip glass-panel">
-            <div style="font-size: 1.5rem; color: var(--cyan-glow);">01</div>
+          <div class="s03-chip">
+            <span style="font-size: 1.5rem;">📊</span>
             <div>
-              <div style="font-weight: 700; color: #ffffff;">ROUTE & NETWORK</div>
-              <div style="font-size: 0.85rem; color: var(--text-dim);">Distance, airport charges, corridor density</div>
+              <div style="font-weight: 700; color: #ffffff;">Historical Corridor Baseline</div>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">Currently in P50 median percentile zone.</div>
             </div>
           </div>
-          <div class="s03-chip glass-panel">
-            <div style="font-size: 1.5rem; color: var(--saffron-gold);">02</div>
+          <div class="s03-chip">
+            <span style="font-size: 1.5rem;">⚡</span>
             <div>
-              <div style="font-weight: 700; color: #ffffff;">TRAVEL CALENDAR</div>
-              <div style="font-size: 0.85rem; color: var(--text-dim);">Day of week, seasonal festival spikes</div>
+              <div style="font-weight: 700; color: #ffffff;">Cross-Source Agreement</div>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">0.98% median spread between Google & Duffel.</div>
             </div>
           </div>
-          <div class="s03-chip glass-panel">
-            <div style="font-size: 1.5rem; color: var(--coral-red);">03</div>
+          <div class="s03-chip">
+            <span style="font-size: 1.5rem;">📅</span>
             <div>
-              <div style="font-weight: 700; color: #ffffff;">BOOKING HORIZON</div>
-              <div style="font-size: 0.85rem; color: var(--text-dim);">Lead time: T+1 close-in vs T+45 advance</div>
+              <div style="font-weight: 700; color: #ffffff;">Flexible Date Savings</div>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">Nearby dates indicate potential ₹1,200 savings.</div>
             </div>
           </div>
-          <div class="s03-chip glass-panel">
-            <div style="font-size: 1.5rem; color: var(--mint-glow);">04</div>
+          <div class="s03-chip">
+            <span style="font-size: 1.5rem;">🔒</span>
             <div>
-              <div style="font-weight: 700; color: #ffffff;">DYNAMIC INVENTORY</div>
-              <div style="font-size: 0.85rem; color: var(--text-dim);">Revenue management seat allocation</div>
+              <div style="font-weight: 700; color: #ffffff;">11-Node Explainability</div>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">Complete mathematical audit trace behind advice.</div>
             </div>
           </div>
         </div>
-
       </div>
     `,
     onEnter: (audio) => {
-      audio.playWhoosh(0.9);
-      // Dynamic price ticker morph animation
-      const priceElem = document.getElementById('s03-ticket-price');
-      const statusElem = document.getElementById('s03-ticker-status');
-      if (priceElem && statusElem) {
-        const sequence = [
-          { p: "₹6,314", s: "● BASELINE QUOTE RECORDED", c: "var(--mint-glow)", delay: 0 },
-          { p: "₹6,880", s: "▲ CLOSE-IN SURGE (+8.9%)", c: "var(--coral-red)", delay: 2000 },
-          { p: "₹7,126", s: "▲ SEAT BUCKET EXHAUSTED (+12.8%)", c: "var(--coral-red)", delay: 4500 },
-          { p: "₹8,025", s: "▲ PEAK DEMAND ALGORITHM (+27.1%)", c: "var(--coral-red)", delay: 7000 }
-        ];
-
-        sequence.forEach(item => {
-          setTimeout(() => {
-            if (!document.getElementById('s03-ticket-price')) return;
-            priceElem.textContent = item.p;
-            statusElem.textContent = item.s;
-            statusElem.style.color = item.c;
-            audio.playDataTick(item.delay === 0 ? 1200 : 1800);
-          }, item.delay);
-        });
-      }
+      audio.playWhoosh(1.1);
+      const prices = ["₹4,890", "₹7,250", "₹14,990", "₹10,495"];
+      let pIdx = 0;
+      const interval = setInterval(() => {
+        const el = document.getElementById('scene3-price-ticker');
+        if (el && pIdx < prices.length) {
+          el.textContent = prices[pIdx];
+          audio.playDataTick(900 + pIdx * 200);
+          pIdx++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 700);
     }
   },
 
   // -------------------------------------------------------------
-  // SCENE 04: Booking Horizon Term Structure
+  // SCENE 04: Advance Purchase Horizons (T+1 to T+60)
   // -------------------------------------------------------------
   {
     id: 4,
-    title: "Booking Horizon Term Structure",
-    duration: 13000,
+    title: "Advance Purchase Horizons (T+1 to T+60)",
+    duration: 12000,
     render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem;">ADVANCE PURCHASE HORIZONS</div>
-      <h1 class="hero-title metallic-text">TIMING CHANGES THE PRICE.</h1>
-      <p class="hero-sub">Airfares follow a deterministic lead-time curve across purchase windows.</p>
+      <span class="glass-pill" style="margin-bottom: 1rem;">TEMPORAL MEASUREMENT AXIS</span>
+      <h1 class="hero-title metallic-text" style="font-size: 3rem;">
+        ADVANCE PURCHASE HORIZONS
+      </h1>
+      <p class="hero-sub">
+        Standardized statistical sampling across 6 distinct purchasing windows captures airline yield curves.
+      </p>
 
       <div class="s04-timeline-wrapper">
         <div class="s04-spline-line"></div>
@@ -196,584 +202,111 @@ const SCENES_DATA = [
           
           <div class="s04-node-item">
             <div class="s04-node-dot">T+1</div>
-            <div style="text-align: center;">
-              <div style="font-weight: 700; color: #ffffff;">Next-Day</div>
-              <div style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--coral-red); font-weight: 700;">63.50</div>
-              <div class="mono-tag" style="font-size: 0.7rem; color: var(--text-muted);">-36.50 pts</div>
-            </div>
+            <div class="mono-tag" style="color: var(--crimson);">EMERGENCY</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Next-Day Spike</div>
           </div>
 
           <div class="s04-node-item">
             <div class="s04-node-dot">T+7</div>
-            <div style="text-align: center;">
-              <div style="font-weight: 700; color: #ffffff;">1-Week</div>
-              <div style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--cyan-glow); font-weight: 700;">99.86</div>
-              <div class="mono-tag" style="font-size: 0.7rem; color: var(--text-muted);">-0.14 pts</div>
-            </div>
+            <div class="mono-tag" style="color: var(--saffron-gold);">TACTICAL</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Weekly Business</div>
           </div>
 
           <div class="s04-node-item anchor">
-            <div class="s04-node-dot" style="background: var(--saffron-gold); color: #030712;">T+15</div>
-            <div style="text-align: center;">
-              <div style="font-weight: 800; color: var(--saffron-gold);">HEADLINE ANCHOR</div>
-              <div style="font-family: var(--font-display); font-size: 1.5rem; color: #ffffff; font-weight: 800;">96.21</div>
-              <div class="mono-tag" style="font-size: 0.75rem; color: var(--saffron-gold); font-weight: 700;">-3.79 pts</div>
-            </div>
+            <div class="s04-node-dot" style="background: #f59e0b; color: #030712;">T+15</div>
+            <div class="mono-tag" style="color: var(--saffron-gold); font-weight: 800;">★ HEADLINE ANCHOR</div>
+            <div style="font-size: 0.78rem; color: #ffffff;">Primary CPI Baseline</div>
           </div>
 
           <div class="s04-node-item">
             <div class="s04-node-dot">T+30</div>
-            <div style="text-align: center;">
-              <div style="font-weight: 700; color: #ffffff;">1-Month</div>
-              <div style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--cyan-glow); font-weight: 700;">90.60</div>
-              <div class="mono-tag" style="font-size: 0.7rem; color: var(--text-muted);">-9.40 pts</div>
-            </div>
+            <div class="mono-tag" style="color: var(--cyan-bright);">STANDARD</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Monthly Leisure</div>
           </div>
 
           <div class="s04-node-item">
             <div class="s04-node-dot">T+45</div>
-            <div style="text-align: center;">
-              <div style="font-weight: 700; color: #ffffff;">45-Day Advance</div>
-              <div style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--cyan-glow); font-weight: 700;">88.95</div>
-              <div class="mono-tag" style="font-size: 0.7rem; color: var(--text-muted);">-11.05 pts</div>
-            </div>
+            <div class="mono-tag" style="color: var(--mint-bright);">ADVANCE</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Early Vacation</div>
+          </div>
+
+          <div class="s04-node-item">
+            <div class="s04-node-dot">T+60</div>
+            <div class="mono-tag" style="color: var(--indigo-bright);">FAR HORIZON</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Deep Booking</div>
           </div>
 
         </div>
       </div>
 
-      <div class="glass-panel" style="padding: 1.25rem 2.5rem; border-color: rgba(245,158,11,0.5); margin-top: 1.5rem;">
-        <span style="font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: #ffffff;">
-          "So which price do we measure?"
-        </span>
-        <span style="color: var(--text-dim); margin-left: 1rem;">
-          A single quote cannot represent air travel inflation. We must measure the full term structure.
-        </span>
+      <div class="glass-panel" style="padding: 1.2rem 2.5rem; margin-top: 2rem; display: flex; gap: 3rem; align-items: center;">
+        <div>
+          <span class="mono-tag neon-gold">ANCHOR STANDARD:</span>
+          <span style="color: #ffffff; font-weight: 600; margin-left: 0.5rem;">T+15 is the official Headline Anchor for national inflation reporting.</span>
+        </div>
+        <div style="border-left: 1px solid var(--glass-border); padding-left: 2rem;">
+          <span class="mono-tag neon-cyan">PANEL SCALE:</span>
+          <span style="color: #ffffff; font-weight: 600; margin-left: 0.5rem;">140 cells (10 routes × 14 dates) tracked continuously.</span>
+        </div>
       </div>
     `,
     onEnter: (audio) => {
-      audio.playWhoosh(1.1);
-      setTimeout(() => audio.playDataTick(1200), 500);
-      setTimeout(() => audio.playDataTick(1500), 1000);
-      setTimeout(() => audio.playMetallicImpact(), 2000);
+      audio.playWhoosh(1.0);
+      setTimeout(() => audio.playLaserSweep(), 600);
     }
   },
 
   // -------------------------------------------------------------
-  // SCENE 05: The Data is Fragmented
+  // SCENE 05: The Paradigm Shift (AeroCPI + AeroGuide)
   // -------------------------------------------------------------
   {
     id: 5,
-    title: "Data Fragmentation to Canonical Observation",
+    title: "The Paradigm Shift: AeroCPI + AeroGuide",
     duration: 13000,
     render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem;">MULTI-CHANNEL INGESTION</div>
-      <h1 class="hero-title metallic-text">THE DATA IS FRAGMENTED.</h1>
-      <p class="hero-sub">Airfares are scattered across proprietary airline channels, OTAs, and aggregators.</p>
-
-      <div class="s05-channels-stage" style="margin-top: 2.5rem;">
+      <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+        <span class="glass-pill" style="margin-bottom: 0.5rem;">THE DUAL-LAYER BREAKTHROUGH</span>
         
-        <!-- Fragmented Raw Feeds -->
-        <div style="display: flex; flex-direction: column; gap: 1rem; flex: 1;">
-          <div class="glass-panel s05-stream-card" style="border-left: 4px solid var(--blue-electric);">
-            <div style="color: var(--cyan-glow); font-weight: 700;">CHANNEL A: AIRLINE DIRECT API</div>
-            <div style="color: var(--text-muted);">{"flight": "6E-204", "fare": 6880, "tax": 1120, "baggage": "15kg"}</div>
-          </div>
-          <div class="glass-panel s05-stream-card" style="border-left: 4px solid var(--saffron-gold);">
-            <div style="color: var(--saffron-gold); font-weight: 700;">CHANNEL B: OTA AGGREGATOR FEED</div>
-            <div style="color: var(--text-muted);">{"carrier": "AI-805", "total_inr": "7126.00", "seat_left": 3}</div>
-          </div>
-          <div class="glass-panel s05-stream-card" style="border-left: 4px solid var(--coral-red);">
-            <div style="color: var(--coral-red); font-weight: 700;">CHANNEL C: COMMERCIAL GDS ADAPTER</div>
-            <div style="color: var(--text-muted);">{"itin": "DEL-BOM", "tariff": 8025, "class": "Y", "stops": 0}</div>
-          </div>
-        </div>
+        <h1 class="s05-huge-title">
+          MEASURE &nbsp;·&nbsp; EXPLAIN &nbsp;·&nbsp; GUIDE &nbsp;·&nbsp; VERIFY
+        </h1>
 
-        <!-- Convergence Arrow -->
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-          <div class="mono-tag" style="color: var(--cyan-bright); font-weight: 700;">CANONICALIZATION</div>
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-bright)" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </div>
-
-        <!-- Structured Observation -->
-        <div class="glass-panel s05-canonical-box">
-          <div class="mono-tag" style="color: var(--mint-glow); margin-bottom: 0.75rem;">
-            ✓ CANONICAL STRUCTURED OBSERVATION (N=5,332)
-          </div>
-          <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #ffffff; line-height: 1.8;">
-            <div>• <strong>CORRIDOR:</strong> DEL ↔ BOM (DGCA Top 10)</div>
-            <div>• <strong>TRAVEL DATE:</strong> 2026-09-27 (Horizon T+15)</div>
-            <div>• <strong>WINDOW:</strong> 10:00 - 18:00 IST (Locked Non-stop)</div>
-            <div>• <strong>CURRENCY:</strong> INR Normalized (Base + Taxes)</div>
-            <div>• <strong>PROVENANCE:</strong> Google Flights Ingestion Adapter</div>
-            <div>• <strong>INTEGRITY:</strong> Schema Sealed & Timestamped</div>
-          </div>
-        </div>
-
-      </div>
-    `,
-    onEnter: (audio) => {
-      audio.playWhoosh(1.0);
-      setTimeout(() => audio.playDataTick(1200), 300);
-      setTimeout(() => audio.playDataTick(1400), 600);
-      setTimeout(() => audio.playLaserSweep(), 1200);
-    }
-  },
-
-  // -------------------------------------------------------------
-  // SCENE 06: Hero Pivot (AeroCPI Reveal)
-  // -------------------------------------------------------------
-  {
-    id: 6,
-    title: "From Observation to Measurement (AeroCPI Reveal)",
-    duration: 13000,
-    render: () => `
-      <div style="text-align: center; max-width: 1000px;">
-        <div style="font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 700; color: var(--text-dim); margin-bottom: 1rem;">
-          "THE PROBLEM IS NOT FINDING A PRICE."
-        </div>
-        <div style="font-family: var(--font-display); font-size: clamp(2.5rem, 4.5vw, 4.2rem); font-weight: 800; color: #ffffff; margin-bottom: 2.5rem;">
-          "IT IS MEASURING THE MARKET."
-        </div>
-
-        <div class="s06-huge-aerocpi">AeroCPI</div>
-
-        <div class="s06-motto" style="justify-content: center; margin-top: 1.5rem;">
-          <span style="color: var(--cyan-glow);">MEASURE.</span>
-          <span style="color: #ffffff;">EXPLAIN.</span>
-          <span style="color: var(--mint-glow);">VERIFY.</span>
-        </div>
-
-        <p style="color: var(--text-dim); font-size: 1.25rem; margin-top: 2rem;">
-          India's sovereign, high-frequency, scientifically rigorous airfare measurement observatory.
+        <p class="hero-sub">
+          We did not stop at web scraping. We engineered a national airfare measurement system AND an explainable consumer decision cockpit.
         </p>
-      </div>
-    `,
-    onEnter: (audio) => {
-      audio.playWhoosh(1.5);
-      setTimeout(() => audio.playMetallicImpact(), 500);
-      setTimeout(() => audio.playHeroChord(), 800);
-    }
-  },
 
-  // -------------------------------------------------------------
-  // SCENE 07: AeroCPI 4-Stage Architecture
-  // -------------------------------------------------------------
-  {
-    id: 7,
-    title: "4-Stage Architecture Journey",
-    duration: 14000,
-    render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem;">END-TO-END METHODOLOGY PIPELINE</div>
-      <h1 class="hero-title metallic-text">THE MEASUREMENT ENGINE</h1>
-      <p class="hero-sub">A continuous, four-stage transformation from raw web quotes into sovereign measurement.</p>
-
-      <div class="s07-arch-track" style="margin-top: 3rem;">
-        
-        <div class="glass-panel s07-node active-stage">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="mono-tag" style="color: var(--cyan-glow);">STAGE 01</div>
-            <div style="font-size: 1.2rem;">📡</div>
+        <div class="s05-four-pillars">
+          <div class="glass-panel s05-pillar-card" style="border-top: 3px solid var(--mint-bright);">
+            <div class="mono-tag neon-mint">01. MEASURE</div>
+            <div style="font-weight: 700; color: #ffffff; font-size: 1.05rem;">National Airfare Index</div>
+            <div style="color: var(--text-dim); font-size: 0.84rem; line-height: 1.45;">
+              Jevons geometric aggregation weighted by DGCA annual passenger traffic across 10 trunk routes.
+            </div>
           </div>
-          <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: #ffffff;">OBSERVE</div>
-          <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); line-height: 1.6;">
-            • 5,332 Raw Quotes<br>
-            • 10 DGCA Corridors<br>
-            • 5 Horizons (T+1..T+45)<br>
-            • Multi-source Adapters
+
+          <div class="glass-panel s05-pillar-card" style="border-top: 3px solid var(--cyan-bright);">
+            <div class="mono-tag neon-cyan">02. EXPLAIN</div>
+            <div style="font-weight: 700; color: #ffffff; font-size: 1.05rem;">5A Econometric Model</div>
+            <div style="color: var(--text-dim); font-size: 0.84rem; line-height: 1.45;">
+              Decomposes price fluctuations into Carrier Strategy, Horizon Urgency, Day of Week, and Corridor.
+            </div>
           </div>
-        </div>
 
-        <div class="glass-panel s07-node active-stage">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="mono-tag" style="color: var(--saffron-gold);">STAGE 02</div>
-            <div style="font-size: 1.2rem;">🛡️</div>
+          <div class="glass-panel s05-pillar-card" style="border-top: 3px solid var(--saffron-gold);">
+            <div class="mono-tag neon-gold">03. GUIDE</div>
+            <div style="font-weight: 700; color: #ffffff; font-size: 1.05rem;">AeroGuide Cockpit</div>
+            <div style="color: var(--text-dim); font-size: 0.84rem; line-height: 1.45;">
+              Advises travellers to BOOK NOW, WATCH FARE, or FLEX DATES with an 11-node explainability trace.
+            </div>
           </div>
-          <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: #ffffff;">VALIDATE</div>
-          <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); line-height: 1.6;">
-            • Tukey 1.5× IQR Outliers<br>
-            • Currency Normalization<br>
-            • 10:00-18:00 IST Window<br>
-            • Total-Only Policy
+
+          <div class="glass-panel s05-pillar-card" style="border-top: 3px solid var(--purple-neon);">
+            <div class="mono-tag neon-purple">04. VERIFY</div>
+            <div style="font-weight: 700; color: #ffffff; font-size: 1.05rem;">Audit & Provenance</div>
+            <div style="color: var(--text-dim); font-size: 0.84rem; line-height: 1.45;">
+              Every quote backed by immutable SHA-256 payload fingerprints and reproducible JSON manifests.
+            </div>
           </div>
-        </div>
-
-        <div class="glass-panel s07-node active-stage">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="mono-tag" style="color: var(--mint-glow);">STAGE 03</div>
-            <div style="font-size: 1.2rem;">📐</div>
-          </div>
-          <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: #ffffff;">MEASURE</div>
-          <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); line-height: 1.6;">
-            • Jevons Elementary Geometric<br>
-            • DGCA Passenger Weights<br>
-            • Active Weight Norm (w*)<br>
-            • Geometric Aggregation
-          </div>
-        </div>
-
-        <div class="glass-panel s07-node active-stage">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="mono-tag" style="color: var(--blue-electric);">STAGE 04</div>
-            <div style="font-size: 1.2rem;">🔍</div>
-          </div>
-          <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: #ffffff;">EXPLAIN</div>
-          <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); line-height: 1.6;">
-            • 5A Log-Linear Attribution<br>
-            • Zero Residual Error<br>
-            • 9-Stage Trace Tree<br>
-            • SHA-256 Manifest
-          </div>
-        </div>
-
-      </div>
-    `,
-    onEnter: (audio) => {
-      audio.playWhoosh(1.1);
-      setTimeout(() => audio.playDataTick(1000), 400);
-      setTimeout(() => audio.playDataTick(1400), 800);
-      setTimeout(() => audio.playDataTick(1800), 1200);
-      setTimeout(() => audio.playLaserSweep(), 1600);
-    }
-  },
-
-  // -------------------------------------------------------------
-  // SCENE 08: DGCA India Route Network
-  // -------------------------------------------------------------
-  {
-    id: 8,
-    title: "DGCA-Informed Route Basket",
-    duration: 13000,
-    render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem;">SPATIAL COVERAGE & BASKET WEIGHTS</div>
-      <h1 class="hero-title metallic-text">DGCA-TRAFFIC-INFORMED BASKET</h1>
-      <p class="hero-sub">The top 10 domestic corridors represent over 91.5% of high-density domestic passenger flow.</p>
-
-      <div class="s08-network-grid" style="margin-top: 2rem;">
-        
-        <!-- Stylized India Route Map SVG -->
-        <div class="glass-panel" style="padding: 1.5rem; display: flex; justify-content: center; align-items: center;">
-          <svg class="s08-map-svg" viewBox="0 0 500 450">
-            <!-- Background Map Grid -->
-            <defs>
-              <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#38bdf8" />
-                <stop offset="100%" stop-color="#10b981" />
-              </linearGradient>
-            </defs>
-
-            <!-- Airport Nodes -->
-            <!-- DEL (220, 120) -->
-            <!-- BOM (150, 260) -->
-            <!-- BLR (210, 360) -->
-            <!-- HYD (225, 280) -->
-            <!-- CCU (380, 210) -->
-            <!-- MAA (240, 375) -->
-            <!-- GOI (160, 310) -->
-            <!-- PAT (340, 160) -->
-
-            <!-- Animated Route Arcs -->
-            <path d="M 220 120 Q 170 190 150 260" fill="none" stroke="url(#routeGrad)" stroke-width="3" stroke-dasharray="6,6"/>
-            <path d="M 210 360 Q 200 240 220 120" fill="none" stroke="url(#routeGrad)" stroke-width="2.5"/>
-            <path d="M 210 360 Q 170 310 150 260" fill="none" stroke="url(#routeGrad)" stroke-width="2.5"/>
-            <path d="M 220 120 Q 230 200 225 280" fill="none" stroke="url(#routeGrad)" stroke-width="2.5"/>
-            <path d="M 220 120 Q 300 160 380 210" fill="none" stroke="url(#routeGrad)" stroke-width="2.5"/>
-            <path d="M 240 375 Q 230 250 220 120" fill="none" stroke="url(#routeGrad)" stroke-width="2"/>
-            <path d="M 160 310 Q 150 280 150 260" fill="none" stroke="url(#routeGrad)" stroke-width="2"/>
-            <path d="M 210 360 Q 220 320 225 280" fill="none" stroke="url(#routeGrad)" stroke-width="2"/>
-            <path d="M 220 120 Q 280 140 340 160" fill="none" stroke="url(#routeGrad)" stroke-width="2"/>
-            <path d="M 210 360 Q 300 290 380 210" fill="none" stroke="url(#routeGrad)" stroke-width="2"/>
-
-            <!-- Airport Markers -->
-            <g transform="translate(220, 120)"><circle r="7" fill="#06b6d4"/><text x="12" y="5" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold">DEL</text></g>
-            <g transform="translate(150, 260)"><circle r="7" fill="#06b6d4"/><text x="-35" y="5" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold">BOM</text></g>
-            <g transform="translate(210, 360)"><circle r="7" fill="#06b6d4"/><text x="-35" y="5" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold">BLR</text></g>
-            <g transform="translate(225, 280)"><circle r="6" fill="#38bdf8"/><text x="10" y="5" fill="#ffffff" font-family="monospace" font-size="11">HYD</text></g>
-            <g transform="translate(380, 210)"><circle r="6" fill="#38bdf8"/><text x="10" y="5" fill="#ffffff" font-family="monospace" font-size="11">CCU</text></g>
-            <g transform="translate(240, 375)"><circle r="5" fill="#38bdf8"/><text x="10" y="5" fill="#ffffff" font-family="monospace" font-size="11">MAA</text></g>
-            <g transform="translate(160, 310)"><circle r="5" fill="#38bdf8"/><text x="-32" y="5" fill="#ffffff" font-family="monospace" font-size="11">GOI</text></g>
-            <g transform="translate(340, 160)"><circle r="5" fill="#38bdf8"/><text x="10" y="5" fill="#ffffff" font-family="monospace" font-size="11">PAT</text></g>
-          </svg>
-        </div>
-
-        <!-- Corridors Ranking Strip -->
-        <div class="s08-corridor-list">
-          <div class="s08-corridor-row" style="border-left: 3px solid var(--cyan-bright);">
-            <span>DEL ↔ BOM</span>
-            <span style="color: var(--cyan-glow); font-weight: 700;">17.8% Weight</span>
-          </div>
-          <div class="s08-corridor-row">
-            <span>BLR ↔ DEL</span>
-            <span style="color: var(--text-dim);">14.1% Weight</span>
-          </div>
-          <div class="s08-corridor-row">
-            <span>BLR ↔ BOM</span>
-            <span style="color: var(--text-dim);">11.6% Weight</span>
-          </div>
-          <div class="s08-corridor-row">
-            <span>DEL ↔ HYD</span>
-            <span style="color: var(--mint-glow); font-weight: 700;">10.3% (+1.07 pts)</span>
-          </div>
-          <div class="s08-corridor-row">
-            <span>DEL ↔ CCU</span>
-            <span style="color: var(--text-dim);">9.9% Weight</span>
-          </div>
-          <div class="s08-corridor-row">
-            <span>MAA ↔ DEL</span>
-            <span style="color: var(--text-dim);">8.2% Weight</span>
-          </div>
-          <div class="s08-corridor-row">
-            <span>GOI ↔ BOM</span>
-            <span style="color: var(--coral-red); font-weight: 700;">8.0% (-4.74 pts)</span>
-          </div>
-          <div class="s08-corridor-row">
-            <span>BLR ↔ HYD / PAT / CCU</span>
-            <span style="color: var(--text-dim);">20.1% Combined</span>
-          </div>
-        </div>
-
-      </div>
-    `,
-    onEnter: (audio) => {
-      audio.playWhoosh(1.0);
-      setTimeout(() => audio.playDataTick(1100), 400);
-      setTimeout(() => audio.playDataTick(1500), 800);
-    }
-  },
-
-  // -------------------------------------------------------------
-  // SCENE 09: Real AeroCPI Product Observatory
-  // -------------------------------------------------------------
-  {
-    id: 9,
-    title: "The Real Measurement Observatory",
-    duration: 14000,
-    render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem;">VERIFIED PRODUCTION RUN</div>
-      <h1 class="hero-title metallic-text">THE MEASUREMENT OBSERVATORY</h1>
-      <p class="hero-sub">High-density visual interface backed by certified FastAPI endpoints and immutable data runs.</p>
-
-      <div class="s09-screenshot-frame" style="margin-top: 2rem;">
-        <img class="s09-screenshot-img" src="./assets/01_overview_main_desktop.png" alt="AeroCPI Overview">
-        
-        <!-- Live Callout Badges over the UI -->
-        <div style="position: absolute; top: 1.5rem; left: 2rem;" class="glass-panel">
-          <div style="padding: 0.8rem 1.4rem;">
-            <div class="mono-tag" style="color: var(--saffron-gold);">HEADLINE INDEX (T+15)</div>
-            <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 800; color: #ffffff;">96.21</div>
-            <div style="color: var(--coral-red); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;">-3.791 pts vs Baseline 100.00</div>
-          </div>
-        </div>
-
-        <div style="position: absolute; bottom: 1.5rem; right: 2rem;" class="glass-panel">
-          <div style="padding: 0.8rem 1.4rem; font-family: var(--font-mono); font-size: 0.85rem;">
-            <div style="color: var(--cyan-glow);">RUN ID: e1c05338-bc7a-4e2f</div>
-            <div style="color: var(--text-dim);">POPULATION: N = 5,332 Obs</div>
-            <div style="color: var(--mint-glow);">COVERAGE: 100% (10/10 Routes)</div>
-          </div>
-        </div>
-      </div>
-    `,
-    onEnter: (audio) => {
-      audio.playWhoosh(1.2);
-      setTimeout(() => audio.playMetallicImpact(), 600);
-      setTimeout(() => audio.playDataTick(1600), 1200);
-    }
-  },
-
-  // -------------------------------------------------------------
-  // SCENE 10: Explainability / Route Contributions
-  // -------------------------------------------------------------
-  {
-    id: 10,
-    title: "Route Attribution & Explainability",
-    duration: 14000,
-    render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem;">EXACT LOG-LINEAR ATTRIBUTION</div>
-      <h1 class="hero-title metallic-text">WHERE DID THE MOVEMENT COME FROM?</h1>
-      <p class="hero-sub">AeroCPI provides mathematically exact decomposition of index movement into route contributions.</p>
-
-      <div class="s10-contrib-chart" style="margin-top: 2.5rem;">
-        
-        <!-- Row 1: DEL-HYD (+1.0675) -->
-        <div class="s10-bar-row">
-          <div style="font-weight: 700; color: #ffffff;">DEL ↔ HYD</div>
-          <div class="s10-bar-left"></div>
-          <div class="s10-bar-right">
-            <div class="s10-bar-fill pos" style="width: 140px;"></div>
-          </div>
-          <div style="color: var(--mint-glow); font-weight: 700; text-align: right;">+1.0675</div>
-        </div>
-
-        <!-- Row 2: BLR-CCU (+0.3269) -->
-        <div class="s10-bar-row">
-          <div style="font-weight: 700; color: #ffffff;">BLR ↔ CCU</div>
-          <div class="s10-bar-left"></div>
-          <div class="s10-bar-right">
-            <div class="s10-bar-fill pos" style="width: 45px;"></div>
-          </div>
-          <div style="color: var(--mint-glow); font-weight: 700; text-align: right;">+0.3269</div>
-        </div>
-
-        <!-- Row 3: BLR-HYD (+0.2805) -->
-        <div class="s10-bar-row">
-          <div style="font-weight: 700; color: #ffffff;">BLR ↔ HYD</div>
-          <div class="s10-bar-left"></div>
-          <div class="s10-bar-right">
-            <div class="s10-bar-fill pos" style="width: 38px;"></div>
-          </div>
-          <div style="color: var(--mint-glow); font-weight: 700; text-align: right;">+0.2805</div>
-        </div>
-
-        <!-- Row 4: MAA-DEL (-0.2993) -->
-        <div class="s10-bar-row">
-          <div style="font-weight: 700; color: #ffffff;">MAA ↔ DEL</div>
-          <div class="s10-bar-left">
-            <div class="s10-bar-fill neg" style="width: 40px;"></div>
-          </div>
-          <div class="s10-bar-right"></div>
-          <div style="color: var(--coral-red); font-weight: 700; text-align: right;">-0.2993</div>
-        </div>
-
-        <!-- Row 5: BLR-DEL (-0.7875) -->
-        <div class="s10-bar-row">
-          <div style="font-weight: 700; color: #ffffff;">BLR ↔ DEL</div>
-          <div class="s10-bar-left">
-            <div class="s10-bar-fill neg" style="width: 105px;"></div>
-          </div>
-          <div class="s10-bar-right"></div>
-          <div style="color: var(--coral-red); font-weight: 700; text-align: right;">-0.7875</div>
-        </div>
-
-        <!-- Row 6: GOI-BOM (-4.7391) -->
-        <div class="s10-bar-row">
-          <div style="font-weight: 700; color: #ffffff;">GOI ↔ BOM</div>
-          <div class="s10-bar-left">
-            <div class="s10-bar-fill neg" style="width: 260px;"></div>
-          </div>
-          <div class="s10-bar-right"></div>
-          <div style="color: var(--coral-red); font-weight: 700; text-align: right;">-4.7391</div>
-        </div>
-
-      </div>
-
-      <div class="glass-pill" style="margin-top: 2rem; border-color: rgba(56,189,248,0.5);">
-        Σ ROUTE CONTRIBUTIONS = -3.791 pts = HEADLINE INDEX CHANGE (96.209 - 100.000) · ZERO RESIDUAL
-      </div>
-    `,
-    onEnter: (audio) => {
-      audio.playWhoosh(1.0);
-      setTimeout(() => audio.playDataTick(1200), 300);
-      setTimeout(() => audio.playDataTick(1600), 700);
-    }
-  },
-
-  // -------------------------------------------------------------
-  // SCENE 11: Trust, Audit & Trace Lineage
-  // -------------------------------------------------------------
-  {
-    id: 11,
-    title: "Trust, Audit & Trace Lineage",
-    duration: 13000,
-    render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem;">CRYPTOGRAPHIC LINEAGE & AUDITABILITY</div>
-      <h1 class="hero-title metallic-text">MEASUREMENT ASSURANCE</h1>
-      <p class="hero-sub">"Trust does not change the index. Trust explains the health of the measurement."</p>
-
-      <div class="s11-trace-pipeline" style="margin-top: 3rem;">
-        
-        <div class="glass-panel s11-trace-node">
-          <div class="mono-tag" style="color: var(--cyan-glow);">RUN</div>
-          <div style="font-weight: 700; color: #ffffff;">e1c05338</div>
-        </div>
-
-        <div style="display: flex; align-items: center; color: var(--text-muted);">➔</div>
-
-        <div class="glass-panel s11-trace-node">
-          <div class="mono-tag" style="color: var(--cyan-glow);">CONFIG</div>
-          <div style="font-weight: 700; color: #ffffff;">2026.1.0</div>
-        </div>
-
-        <div style="display: flex; align-items: center; color: var(--text-muted);">➔</div>
-
-        <div class="glass-panel s11-trace-node">
-          <div class="mono-tag" style="color: var(--cyan-glow);">HORIZONS</div>
-          <div style="font-weight: 700; color: #ffffff;">5 Windows</div>
-        </div>
-
-        <div style="display: flex; align-items: center; color: var(--text-muted);">➔</div>
-
-        <div class="glass-panel s11-trace-node">
-          <div class="mono-tag" style="color: var(--cyan-glow);">CORRIDORS</div>
-          <div style="font-weight: 700; color: #ffffff;">10 DGCA</div>
-        </div>
-
-        <div style="display: flex; align-items: center; color: var(--text-muted);">➔</div>
-
-        <div class="glass-panel s11-trace-node">
-          <div class="mono-tag" style="color: var(--cyan-glow);">FARES</div>
-          <div style="font-weight: 700; color: #ffffff;">Representative</div>
-        </div>
-
-        <div style="display: flex; align-items: center; color: var(--text-muted);">➔</div>
-
-        <div class="glass-panel s11-trace-node">
-          <div class="mono-tag" style="color: var(--cyan-glow);">EVIDENCE</div>
-          <div style="font-weight: 700; color: #ffffff;">5,332 Obs</div>
-        </div>
-
-        <div style="display: flex; align-items: center; color: var(--text-muted);">➔</div>
-
-        <div class="glass-panel s11-trace-node" style="border-color: var(--mint-glow);">
-          <div class="mono-tag" style="color: var(--mint-glow);">SHA-256 HASH</div>
-          <div style="font-weight: 700; color: var(--mint-glow);">cacd4054...</div>
-        </div>
-
-      </div>
-
-      <div class="glass-panel" style="padding: 1.5rem 3rem; margin-top: 2.5rem; text-align: center;">
-        <div class="mono-tag" style="color: var(--mint-glow); margin-bottom: 0.5rem;">STATUTORY PROVENANCE SEAL</div>
-        <div style="font-family: var(--font-mono); font-size: 0.95rem; color: #ffffff;">
-          Immutable Calculation Hash: <code>cacd4054e1c05338bc7a4e2f8b81f855ca54c3be928a6f4e22301f7823901b0</code>
-        </div>
-      </div>
-    `,
-    onEnter: (audio) => {
-      audio.playWhoosh(1.1);
-      setTimeout(() => audio.playDataTick(1200), 400);
-      setTimeout(() => audio.playLaserSweep(), 900);
-    }
-  },
-
-  // -------------------------------------------------------------
-  // SCENE 12: Final Result & Seal
-  // -------------------------------------------------------------
-  {
-    id: 12,
-    title: "Final Headline Result (96.21)",
-    duration: 13000,
-    render: () => `
-      <div style="text-align: center;">
-        <div class="glass-pill" style="margin-bottom: 1.5rem;">FROZEN PRODUCTION RESULT</div>
-        
-        <div class="s12-headline-result">96.21</div>
-        
-        <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: #ffffff; margin-top: 0.5rem;">
-          AeroCPI Headline · Horizon T+15
-        </div>
-
-        <div style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 2rem;">
-          <div class="glass-pill">10 / 10 ACTIVE ROUTES</div>
-          <div class="glass-pill">ACTIVE WEIGHT 1.000</div>
-          <div class="glass-pill">MATCHED COVERAGE 100%</div>
-        </div>
-
-        <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 2.5rem; font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800;">
-          <span style="color: var(--cyan-glow);">MEASURE.</span>
-          <span style="color: #ffffff;">EXPLAIN.</span>
-          <span style="color: var(--mint-glow);">VERIFY.</span>
         </div>
       </div>
     `,
@@ -785,66 +318,514 @@ const SCENES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SCENE 13: Research Literature & Validation
+  // SCENE 06: Multi-Source Data Ingestion Engine
   // -------------------------------------------------------------
   {
-    id: 13,
-    title: "Scientific Literature & Governance",
-    duration: 12000,
+    id: 6,
+    title: "Multi-Source Data Ingestion Engine",
+    duration: 13000,
     render: () => `
-      <div class="glass-pill" style="margin-bottom: 1rem;">SCIENTIFIC FOUNDATIONS</div>
-      <h1 class="hero-title metallic-text">METHODOLOGICAL RIGOR</h1>
-      <p class="hero-sub">Grounded in established international price index literature and empirical aviation economics.</p>
+      <span class="glass-pill" style="margin-bottom: 1rem;">DATA ACQUISITION ARCHITECTURE</span>
+      <h1 class="hero-title metallic-text" style="font-size: 3rem;">
+        GENUINE MULTI-SOURCE INGESTION
+      </h1>
+      <p class="hero-sub">
+        100% Dual-Source coverage across all 140 Tier-1 panel cells. No artificial single-source vulnerability.
+      </p>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%; max-width: 1200px; margin-top: 2.5rem;">
-        
-        <div class="glass-panel" style="padding: 2rem; display: flex; flex-direction: column; gap: 1rem;">
-          <div class="mono-tag" style="color: var(--saffron-gold);">01. MoSPI CPI CONTEXT & LIMITS</div>
-          <div style="font-weight: 700; font-size: 1.2rem; color: #ffffff;">Augmentation, Not Replacement</div>
-          <div style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.6;">
-            AeroCPI is an independent high-frequency airfare observatory. It clarifies statutory boundaries and does not claim official MoSPI statistical equivalence.
+      <div class="s06-sources-grid">
+        <div class="glass-panel s06-source-card" style="border-left: 4px solid var(--cyan-bright);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="mono-tag neon-cyan">SOURCE 01</span>
+            <span class="glass-pill" style="color: var(--mint-bright); border-color: var(--mint-bright);">● LIVE WEB</span>
+          </div>
+          <div style="font-size: 1.3rem; font-weight: 800; color: #ffffff;">Google Flights</div>
+          <div style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5;">
+            High-frequency public search parser extracting multi-carrier economy flight populations and base fare structures.
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--cyan-bright); margin-top: auto;">
+            17,492+ Observations Logged
           </div>
         </div>
 
-        <div class="glass-panel" style="padding: 2rem; display: flex; flex-direction: column; gap: 1rem;">
-          <div class="mono-tag" style="color: var(--cyan-glow);">02. JEVONS GEOMETRIC FORMULATION</div>
-          <div style="font-weight: 700; font-size: 1.2rem; color: #ffffff;">Axiomatic Elementary Indices</div>
-          <div style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.6;">
-            Satisfies Time Reversal, Proportionality, Commensurability, and Monotonicity invariants across all 50 corridor-horizon cells.
+        <div class="glass-panel s06-source-card" style="border-left: 4px solid var(--saffron-gold);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="mono-tag neon-gold">SOURCE 02</span>
+            <span class="glass-pill" style="color: var(--mint-bright); border-color: var(--mint-bright);">● SCRAPY SPIDER</span>
+          </div>
+          <div style="font-size: 1.3rem; font-weight: 800; color: #ffffff;">EaseMyTrip Spider</div>
+          <div style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5;">
+            Dedicated Scrapy crawler spider capturing unauthenticated OTA flight cards with GZIP raw HTML persistence.
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--saffron-gold); margin-top: auto;">
+            18,806+ Observations Logged
           </div>
         </div>
 
+        <div class="glass-panel s06-source-card" style="border-left: 4px solid var(--purple-neon);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="mono-tag neon-purple">SOURCE 03</span>
+            <span class="glass-pill" style="color: var(--cyan-bright); border-color: var(--cyan-bright);">● REST API PILOT</span>
+          </div>
+          <div style="font-size: 1.3rem; font-weight: 800; color: #ffffff;">Duffel REST API</div>
+          <div style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5;">
+            Credential-gated GDS aggregator verifying direct carrier wholesale feeds against consumer OTA search results.
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--purple-neon); margin-top: auto;">
+            0.98% Median Diff on DEL-BOM
+          </div>
+        </div>
       </div>
     `,
     onEnter: (audio) => {
-      audio.playWhoosh(1.0);
+      audio.playWhoosh(1.1);
       setTimeout(() => audio.playDataTick(1200), 400);
+      setTimeout(() => audio.playLaserSweep(), 800);
     }
   },
 
   // -------------------------------------------------------------
-  // SCENE 14: Thank You & Grand Curtain
+  // SCENE 07: 10-Field Canonical Normalization
+  // -------------------------------------------------------------
+  {
+    id: 7,
+    title: "10-Field Canonical Normalization",
+    duration: 12000,
+    render: () => `
+      <span class="glass-pill" style="margin-bottom: 1rem;">DATA STANDARDIZATION</span>
+      <h1 class="hero-title metallic-text" style="font-size: 3rem;">
+        CANONICAL OBSERVATION PIPELINE
+      </h1>
+      <p class="hero-sub">
+        Every quote passes through strict typing, arithmetic checks, and SHA-256 fingerprinting before database entry.
+      </p>
+
+      <div class="s07-pipeline-flow">
+        <div class="glass-panel s07-pipe-card" style="border-left: 3px solid var(--cyan-bright);">
+          <span class="mono-tag neon-cyan">STEP 1</span>
+          <div style="font-weight: 700; color: #ffffff;">Raw Capture</div>
+          <div style="color: var(--text-dim); font-size: 0.82rem;">GZIP payload storage with SHA-256 hash.</div>
+        </div>
+
+        <div style="color: var(--text-muted); font-size: 1.2rem;">➔</div>
+
+        <div class="glass-panel s07-pipe-card" style="border-left: 3px solid var(--mint-bright);">
+          <span class="mono-tag neon-mint">STEP 2</span>
+          <div style="font-weight: 700; color: #ffffff;">10-Field Schema</div>
+          <div style="color: var(--text-dim); font-size: 0.82rem;">Route, date, timestamp, airline, fare, APW.</div>
+        </div>
+
+        <div style="color: var(--text-muted); font-size: 1.2rem;">➔</div>
+
+        <div class="glass-panel s07-pipe-card" style="border-left: 3px solid var(--saffron-gold);">
+          <span class="mono-tag neon-gold">STEP 3</span>
+          <div style="font-weight: 700; color: #ffffff;">Validation Rules</div>
+          <div style="color: var(--text-dim); font-size: 0.82rem;">Non-stop filter, duplicate removal, price bounds.</div>
+        </div>
+
+        <div style="color: var(--text-muted); font-size: 1.2rem;">➔</div>
+
+        <div class="glass-panel s07-pipe-card" style="border-left: 3px solid var(--purple-neon);">
+          <span class="mono-tag neon-purple">STEP 4</span>
+          <div style="font-weight: 700; color: #ffffff;">Harmonization</div>
+          <div style="color: var(--text-dim); font-size: 0.82rem;">Jevons cell grouping & cross-source mapping.</div>
+        </div>
+      </div>
+
+      <div class="glass-panel" style="padding: 1.2rem 2.5rem; margin-top: 2rem; width: 100%; max-width: 1350px; display: flex; justify-content: space-around; font-family: var(--font-mono); font-size: 0.85rem;">
+        <div><strong>Database Quotes:</strong> 36,862 Persisted</div>
+        <div>•</div>
+        <div><strong>Deduplication Loss:</strong> &lt;0.04%</div>
+        <div>•</div>
+        <div><strong>Schema Strictness:</strong> 100% Verified</div>
+        <div>•</div>
+        <div><strong>Pytest Suite:</strong> 301/301 Passed</div>
+      </div>
+    `,
+    onEnter: (audio) => {
+      audio.playWhoosh(1.0);
+      setTimeout(() => audio.playDataTick(1600), 500);
+    }
+  },
+
+  // -------------------------------------------------------------
+  // SCENE 08: Jevons Geometric Index & DGCA Route Network
+  // -------------------------------------------------------------
+  {
+    id: 8,
+    title: "Jevons Geometric Index & DGCA Route Network",
+    duration: 13000,
+    render: () => `
+      <div class="s08-network-grid">
+        <!-- India Route Map SVG -->
+        <div class="glass-panel" style="padding: 1.5rem; position: relative;">
+          <div class="mono-tag neon-cyan" style="margin-bottom: 0.75rem;">TOP 10 DGCA TRUNK CORRIDORS (&gt;45% OF INDIA PASSENGER TRAFFIC)</div>
+          
+          <svg class="s08-map-svg" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Map Grid -->
+            <path d="M50 50 H450 M50 150 H450 M50 250 H450 M50 350 H450" stroke="rgba(56, 189, 248, 0.08)" stroke-width="1" />
+            <path d="M100 20 V380 M200 20 V380 M300 20 V380 M400 20 V380" stroke="rgba(56, 189, 248, 0.08)" stroke-width="1" />
+
+            <!-- Flight Route Arcs -->
+            <!-- DEL to BOM -->
+            <path d="M220 90 Q 180 180 160 230" stroke="#06b6d4" stroke-width="3" stroke-dasharray="6 3" filter="drop-shadow(0 0 6px #06b6d4)" />
+            <!-- DEL to BLR -->
+            <path d="M220 90 Q 230 200 230 320" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6 3" filter="drop-shadow(0 0 6px #38bdf8)" />
+            <!-- BOM to BLR -->
+            <path d="M160 230 Q 190 280 230 320" stroke="#10b981" stroke-width="3" stroke-dasharray="6 3" filter="drop-shadow(0 0 6px #10b981)" />
+            <!-- DEL to HYD -->
+            <path d="M220 90 Q 230 160 240 240" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="4 2" />
+            <!-- DEL to CCU -->
+            <path d="M220 90 Q 300 130 380 180" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="4 2" />
+
+            <!-- City Nodes -->
+            <!-- DEL -->
+            <circle cx="220" cy="90" r="7" fill="#f59e0b" filter="drop-shadow(0 0 10px #f59e0b)" />
+            <text x="232" y="95" fill="#ffffff" font-family="JetBrains Mono" font-size="12" font-weight="800">DEL (28.4%)</text>
+
+            <!-- BOM -->
+            <circle cx="160" cy="230" r="6" fill="#06b6d4" filter="drop-shadow(0 0 8px #06b6d4)" />
+            <text x="95" y="235" fill="#ffffff" font-family="JetBrains Mono" font-size="11" font-weight="700">BOM (21.2%)</text>
+
+            <!-- BLR -->
+            <circle cx="230" cy="320" r="6" fill="#10b981" filter="drop-shadow(0 0 8px #10b981)" />
+            <text x="245" y="325" fill="#ffffff" font-family="JetBrains Mono" font-size="11" font-weight="700">BLR (17.5%)</text>
+
+            <!-- HYD -->
+            <circle cx="240" cy="240" r="5" fill="#38bdf8" />
+            <text x="252" y="245" fill="#94a3b8" font-family="JetBrains Mono" font-size="10">HYD</text>
+
+            <!-- CCU -->
+            <circle cx="380" cy="180" r="5" fill="#a855f7" />
+            <text x="392" y="185" fill="#94a3b8" font-family="JetBrains Mono" font-size="10">CCU</text>
+          </svg>
+        </div>
+
+        <!-- Formula and Route List -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="glass-panel" style="padding: 1.5rem; text-align: center;">
+            <div class="mono-tag neon-gold" style="margin-bottom: 0.5rem;">JEVONS GEOMETRIC FORMULA</div>
+            <div style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: #ffffff; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 6px; border: 1px solid var(--glass-border);">
+              I<sub>h</sub> = 100 · exp( &Sigma; w<sub>r</sub> · ln( J<sub>r,h</sub> / 100 ) )
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem;">
+              Satisfies Transitivity, Homogeneity, and Time Reversal axioms without substitution bias.
+            </div>
+          </div>
+
+          <div class="s08-corridor-list">
+            <div class="s08-corridor-row"><span>DEL ↔ BOM (Mumbai Trunk)</span><strong class="neon-cyan">Weight: 0.284</strong></div>
+            <div class="s08-corridor-row"><span>BLR ↔ DEL (Tech Corridor)</span><strong class="neon-mint">Weight: 0.175</strong></div>
+            <div class="s08-corridor-row"><span>BOM ↔ BLR (South Trunk)</span><strong class="neon-gold">Weight: 0.142</strong></div>
+            <div class="s08-corridor-row"><span>DEL ↔ HYD (Capital Run)</span><strong class="neon-purple">Weight: 0.098</strong></div>
+          </div>
+        </div>
+      </div>
+    `,
+    onEnter: (audio) => {
+      audio.playWhoosh(1.2);
+      setTimeout(() => audio.playDataTick(1100), 400);
+      setTimeout(() => audio.playDataTick(1400), 700);
+    }
+  },
+
+  // -------------------------------------------------------------
+  // SCENE 09: 5A Econometric Price Driver Attribution
+  // -------------------------------------------------------------
+  {
+    id: 9,
+    title: "5A Econometric Attribution Model",
+    duration: 13000,
+    render: () => `
+      <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+        <span class="glass-pill" style="margin-bottom: 0.5rem;">PRICE DRIVER DECOMPOSITION</span>
+        <h1 class="hero-title metallic-text" style="font-size: 2.8rem;">
+          WHY DID THE AIRFARE CHANGE?
+        </h1>
+        <p class="hero-sub">
+          The 5A Log-Linear Econometric Model isolates exact market forces driving price index movement.
+        </p>
+
+        <div class="glass-panel s09-contrib-chart">
+          <div class="s09-bar-row">
+            <div style="font-weight: 700; color: #ffffff;">Carrier Pricing</div>
+            <div class="s09-bar-left"></div>
+            <div class="s09-bar-right"><div class="s09-bar-fill pos" style="width: 65%;"></div></div>
+            <div style="color: var(--mint-bright); font-weight: 800;">+2.85 pts</div>
+          </div>
+
+          <div class="s09-bar-row">
+            <div style="font-weight: 700; color: #ffffff;">Horizon Urgency</div>
+            <div class="s09-bar-left"><div class="s09-bar-fill neg" style="width: 45%;"></div></div>
+            <div class="s09-bar-right"></div>
+            <div style="color: var(--crimson); font-weight: 800;">-1.45 pts</div>
+          </div>
+
+          <div class="s09-bar-row">
+            <div style="font-weight: 700; color: #ffffff;">Day of Week (Sun)</div>
+            <div class="s09-bar-left"></div>
+            <div class="s09-bar-right"><div class="s09-bar-fill pos" style="width: 35%;"></div></div>
+            <div style="color: var(--mint-bright); font-weight: 800;">+0.92 pts</div>
+          </div>
+
+          <div class="s09-bar-row">
+            <div style="font-weight: 700; color: #ffffff;">Corridor Specific</div>
+            <div class="s09-bar-left"><div class="s09-bar-fill neg" style="width: 25%;"></div></div>
+            <div class="s09-bar-right"></div>
+            <div style="color: var(--crimson); font-weight: 800;">-0.65 pts</div>
+          </div>
+
+          <div class="s09-bar-row" style="border-top: 1px dashed var(--glass-border); padding-top: 0.6rem;">
+            <div style="font-weight: 800; color: var(--cyan-bright);">Net Index Shift</div>
+            <div class="s09-bar-left"></div>
+            <div class="s09-bar-right"><div class="s09-bar-fill pos" style="width: 40%; background: var(--cyan-bright);"></div></div>
+            <div style="color: var(--cyan-bright); font-weight: 800;">+1.67 pts</div>
+          </div>
+        </div>
+      </div>
+    `,
+    onEnter: (audio) => {
+      audio.playWhoosh(1.0);
+      setTimeout(() => audio.playDataTick(1200), 300);
+      setTimeout(() => audio.playDataTick(1500), 600);
+      setTimeout(() => audio.playDataTick(1800), 900);
+    }
+  },
+
+  // -------------------------------------------------------------
+  // SCENE 10: AeroGuide Live Consumer Experience
+  // -------------------------------------------------------------
+  {
+    id: 10,
+    title: "AeroGuide Live Consumer Experience",
+    duration: 14000,
+    render: () => `
+      <div style="text-align: center; display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <span class="glass-pill" style="color: var(--mint-bright); border-color: var(--mint-bright);">● LIVE CONSUMER PROTOTYPE</span>
+          <span class="glass-pill">BLR ➔ DEL · ₹10,495 · WATCH FARE</span>
+        </div>
+
+        <h2 class="hero-title metallic-text" style="font-size: 2.5rem; margin-top: 0.4rem;">
+          AEROGUIDE DECISION COCKPIT
+        </h2>
+
+        <div class="s10-screenshot-frame">
+          <img src="./assets/01_GUIDE.png" alt="AeroGuide Live Hero Screenshot" class="s10-screenshot-img">
+        </div>
+
+        <div style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.84rem;">
+          <span class="glass-pill" style="color: var(--cyan-bright);">36K+ Canonical Observations</span>
+          <span class="glass-pill" style="color: var(--saffron-gold);">0.98% Median Diff</span>
+          <span class="glass-pill" style="color: var(--mint-bright);">±2 Days Smart Search Matrix</span>
+          <span class="glass-pill" style="color: var(--purple-neon);">11-Node Explainability</span>
+        </div>
+      </div>
+    `,
+    onEnter: (audio) => {
+      audio.playWhoosh(1.2);
+      setTimeout(() => audio.playMetallicImpact(), 400);
+    }
+  },
+
+  // -------------------------------------------------------------
+  // SCENE 11: 11-Node Explainable Decision Trace
+  // -------------------------------------------------------------
+  {
+    id: 11,
+    title: "11-Node Explainable Decision Trace",
+    duration: 14000,
+    render: () => `
+      <span class="glass-pill" style="margin-bottom: 0.6rem;">FULL MATHEMATICAL EXPLAINABILITY</span>
+      <h1 class="hero-title metallic-text" style="font-size: 2.8rem;">
+        11-NODE DECISION AUDIT TRACE
+      </h1>
+      <p class="hero-sub">
+        Every traveller recommendation is derived through an auditable, deterministic inference chain.
+      </p>
+
+      <div class="s11-trace-pipeline">
+        <div class="glass-panel s11-trace-node">
+          <div class="mono-tag neon-cyan">01. QUERY</div>
+          <div style="color: #ffffff; font-weight: 700;">BLR-DEL</div>
+        </div>
+        <div style="color: var(--text-muted);">➔</div>
+        <div class="glass-panel s11-trace-node">
+          <div class="mono-tag neon-cyan">02. APW</div>
+          <div style="color: #ffffff; font-weight: 700;">T+31 Days</div>
+        </div>
+        <div style="color: var(--text-muted);">➔</div>
+        <div class="glass-panel s11-trace-node">
+          <div class="mono-tag neon-cyan">03. FARE</div>
+          <div style="color: #ffffff; font-weight: 700;">₹10,495</div>
+        </div>
+        <div style="color: var(--text-muted);">➔</div>
+        <div class="glass-panel s11-trace-node">
+          <div class="mono-tag neon-gold">04. MEDIAN</div>
+          <div style="color: #ffffff; font-weight: 700;">₹10,859</div>
+        </div>
+        <div style="color: var(--text-muted);">➔</div>
+        <div class="glass-panel s11-trace-node">
+          <div class="mono-tag neon-gold">05. P-RANK</div>
+          <div style="color: #ffffff; font-weight: 700;">P50 Zone</div>
+        </div>
+        <div style="color: var(--text-muted);">➔</div>
+        <div class="glass-panel s11-trace-node">
+          <div class="mono-tag neon-mint">06. SPREAD</div>
+          <div style="color: #ffffff; font-weight: 700;">0.98% Diff</div>
+        </div>
+        <div style="color: var(--text-muted);">➔</div>
+        <div class="glass-panel s11-trace-node" style="border-color: var(--saffron-gold);">
+          <div class="mono-tag neon-gold">07. ACTION</div>
+          <div style="color: var(--saffron-gold); font-weight: 800;">WATCH FARE</div>
+        </div>
+      </div>
+
+      <div class="s10-screenshot-frame" style="height: 280px; margin-top: 1.5rem;">
+        <img src="./assets/02_WHY_TRACE.png" alt="11-Node Trace Drawer Screenshot" class="s10-screenshot-img">
+      </div>
+    `,
+    onEnter: (audio) => {
+      audio.playWhoosh(1.1);
+      setTimeout(() => audio.playLaserSweep(), 500);
+      setTimeout(() => audio.playDataTick(1400), 900);
+    }
+  },
+
+  // -------------------------------------------------------------
+  // SCENE 12: Cross-Source Agreement Lab & Empirical Dispersion
+  // -------------------------------------------------------------
+  {
+    id: 12,
+    title: "Cross-Source Agreement Lab & Dispersion",
+    duration: 13000,
+    render: () => `
+      <span class="glass-pill" style="margin-bottom: 0.6rem;">CROSS-SOURCE TRUTH</span>
+      <h1 class="hero-title metallic-text" style="font-size: 2.8rem;">
+        SOURCE AGREEMENT LAB
+      </h1>
+      <p class="hero-sub">
+        Empirical measurement of cross-platform airfare dispersion across Google Flights, EaseMyTrip, and Duffel API.
+      </p>
+
+      <div class="s12-dispersion-grid">
+        <div class="glass-panel" style="padding: 1.8rem; border-left: 4px solid var(--mint-bright);">
+          <div class="mono-tag neon-mint">HIGH AGREEMENT (&le; 5% SPREAD)</div>
+          <div style="font-size: 2.5rem; font-weight: 900; color: #ffffff; margin: 0.4rem 0;">0.98%</div>
+          <div style="font-weight: 700; color: #ffffff;">DEL-BOM Duffel Pilot vs Google Flights</div>
+          <div style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.4rem;">
+            Direct API quotes closely track aggregator medians with just ₹65 absolute median difference.
+          </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 1.8rem; border-left: 4px solid var(--saffron-gold);">
+          <div class="mono-tag neon-gold">MODERATE SPREAD (5 - 15% SPREAD)</div>
+          <div style="font-size: 2.5rem; font-weight: 900; color: #ffffff; margin: 0.4rem 0;">5.45%</div>
+          <div style="font-weight: 700; color: #ffffff;">Google Flights vs EaseMyTrip Spiders</div>
+          <div style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.4rem;">
+            Reflects OTA convenience fee inclusions and airline promotional coupon differences.
+          </div>
+        </div>
+      </div>
+
+      <div class="s10-screenshot-frame" style="height: 250px; margin-top: 1.2rem;">
+        <img src="./assets/05_SOURCE_AGREEMENT.png" alt="Source Agreement Lab Screenshot" class="s10-screenshot-img">
+      </div>
+    `,
+    onEnter: (audio) => {
+      audio.playWhoosh(1.0);
+      setTimeout(() => audio.playDataTick(1300), 400);
+    }
+  },
+
+  // -------------------------------------------------------------
+  // SCENE 13: Scientific Safeguards & Evidence-Gated ML
+  // -------------------------------------------------------------
+  {
+    id: 13,
+    title: "Scientific Safeguards & Evidence Gates",
+    duration: 13000,
+    render: () => `
+      <span class="glass-pill" style="margin-bottom: 0.6rem;">INTEGRITY & TRUST GATES</span>
+      <h1 class="hero-title metallic-text" style="font-size: 2.8rem;">
+        EVIDENCE-GATED SCIENTIFIC RIGOR
+      </h1>
+      <p class="hero-sub">
+        We refuse to fabricate artificial predictions. Predictive AI is strictly locked until longitudinal depth accumulates.
+      </p>
+
+      <div class="s13-safeguards-grid">
+        <div class="glass-panel" style="padding: 1.8rem; border: 1.5px solid var(--crimson);">
+          <div class="mono-tag" style="color: var(--crimson);">🔒 ML FORECAST GATE: LOCKED</div>
+          <div style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-top: 0.5rem;">0 / 7 Target Pairs</div>
+          <div style="color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin-top: 0.4rem;">
+            Predictive AI model is hard-gated with <code>INSUFFICIENT_DATA</code> status. Zero fabricated forward curves.
+          </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 1.8rem; border: 1.5px solid var(--cyan-bright);">
+          <div class="mono-tag neon-cyan">SHA-256 RAW PROVENANCE</div>
+          <div style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-top: 0.5rem;">Immutable Cryptographic Ledger</div>
+          <div style="color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin-top: 0.4rem;">
+            Every raw web capture and API response is stored in GZIP with an immutable SHA-256 digest on disk.
+          </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 1.8rem; border: 1.5px solid var(--mint-bright);">
+          <div class="mono-tag neon-mint">DETERMINISTIC AUDIT CLI</div>
+          <div style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-top: 0.5rem;">301/301 Pytest Verified</div>
+          <div style="color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin-top: 0.4rem;">
+            100% reproducible calculation manifests generated via <code>python -m app.cli audit</code>.
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel" style="padding: 1rem 2.5rem; margin-top: 1.8rem; width: 100%; max-width: 1300px; text-align: center;">
+        <span class="mono-tag" style="color: var(--saffron-gold);">STATUTORY BOUNDARY:</span>
+        <span style="color: #ffffff; font-size: 0.88rem; margin-left: 0.5rem;">AeroCPI is an independent experimental airfare measurement system for SIH 2026. It is not official MoSPI CPI.</span>
+      </div>
+    `,
+    onEnter: (audio) => {
+      audio.playWhoosh(1.1);
+      setTimeout(() => audio.playMetallicImpact(), 400);
+    }
+  },
+
+  // -------------------------------------------------------------
+  // SCENE 14: Grand Finale & Sovereign Vision
   // -------------------------------------------------------------
   {
     id: 14,
-    title: "Thank You & Pitch Closing",
-    duration: 20000,
+    title: "Grand Finale: Sovereign Airfare Intelligence",
+    duration: 25000,
     render: () => `
       <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
         <div class="s14-emblem">✈</div>
         
-        <h1 class="hero-title metallic-text" style="font-size: clamp(3.5rem, 8vw, 7rem);">THANK YOU</h1>
+        <div class="glass-pill" style="margin-bottom: 0.6rem;">FROZEN PRODUCTION RESULT · T+15 HEADLINE</div>
         
-        <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--cyan-glow); margin-top: 1rem;">
-          TEAM BUZZCODEX
+        <div class="s14-headline-result">96.21</div>
+        
+        <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: #ffffff; margin-top: 0.4rem;">
+          AeroCPI &nbsp;+&nbsp; AeroGuide
         </div>
 
-        <div style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--saffron-gold); margin-top: 0.5rem; letter-spacing: 0.1em;">
-          SMART INDIA HACKATHON 2026 · PROBLEM SIH26056
+        <div style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 1.2rem;">
+          <div class="glass-pill">36K+ OBSERVATIONS</div>
+          <div class="glass-pill">140 TIER-1 CELLS</div>
+          <div class="glass-pill">100% DUAL-SOURCE</div>
+          <div class="glass-pill">301/301 TESTS PASSED</div>
         </div>
 
-        <div style="margin-top: 2rem; padding: 0.6rem 1.8rem; border-radius: 9999px; background: rgba(15,23,42,0.8); border: 1px solid rgba(56,189,248,0.4); font-family: var(--font-mono); font-size: 0.9rem; letter-spacing: 0.25em; color: #ffffff;">
-          MEASURE · EXPLAIN · VERIFY
+        <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 2rem; font-family: var(--font-mono); font-size: 1.3rem; font-weight: 800;">
+          <span class="neon-cyan">MEASURE.</span>
+          <span style="color: #ffffff;">EXPLAIN.</span>
+          <span class="neon-gold">GUIDE.</span>
+          <span class="neon-mint">VERIFY.</span>
+        </div>
+
+        <div style="font-family: var(--font-mono); font-size: 0.95rem; color: var(--text-dim); margin-top: 1.5rem;">
+          Smart India Hackathon 2026 · Team BuzzCodeX · Problem Statement SIH26056
         </div>
       </div>
     `,
@@ -856,4 +837,6 @@ const SCENES_DATA = [
   }
 ];
 
-window.SCENES_DATA = SCENES_DATA;
+if (typeof window !== 'undefined') {
+  window.SCENES_DATA = SCENES_DATA;
+}

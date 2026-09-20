@@ -525,6 +525,41 @@ export interface AeroGuideAnalyzeResponse {
   decision_trace: DecisionTraceNode[];
   grounded_explanation: string;
   longitudinal_readiness: LongitudinalReadinessInfo;
+  source_agreement?: RouteSourceAgreementResponse;
+}
+
+export interface SourceFareMetric {
+  source_id: string;
+  source_name: string;
+  median_fare: number;
+  min_fare: number;
+  max_fare: number;
+  observation_count: number;
+  data_status: string;
+}
+
+export interface PairwiseSourceComparison {
+  source_a: string;
+  source_b: string;
+  median_a: number;
+  median_b: number;
+  median_difference_inr: number;
+  median_difference_pct: number;
+  agreement: 'HIGH' | 'MODERATE' | 'LOW' | string;
+  agreement_rule: string;
+}
+
+export interface RouteSourceAgreementResponse {
+  route_id: string;
+  travel_date: string;
+  cabin: string;
+  sources_count: number;
+  overall_agreement: 'HIGH' | 'MODERATE' | 'LOW' | 'SINGLE_SOURCE' | 'INSUFFICIENT_DATA' | string;
+  overall_median_difference_pct: number | null;
+  sources: SourceFareMetric[];
+  pairwise_comparisons: PairwiseSourceComparison[];
+  summary: string;
+  provenance_hashes_count: number;
 }
 
 export interface ForecastingReadinessResponse {

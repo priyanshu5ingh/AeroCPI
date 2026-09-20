@@ -23,6 +23,8 @@ from app.core.aeroguide_registry import (
     generate_comparability_id
 )
 from app.services.observation_service import ObservationService
+from app.services.canonical_normalization_service import CanonicalNormalizationService
+from app.validation.canonical_validation_rules import CanonicalValidationRules
 from app.schemas.observation import RawQuoteInput
 
 DEFAULT_PINNED_DATES = [
@@ -145,56 +147,108 @@ class CollectionOrchestratorService:
                             db.commit()
                             continue
 
-                        # Standardized deterministic capture for panel
+                        # Ingest quotes directly via live Source Adapter
                         quotes_created_for_attempt = 0
-                        for c_code, (c_name, c_mult) in CARRIER_BASELINES.items():
-                            seed_key = f"{route_id}|{t_date_str}|{search_date_str}|{c_code}|{s_id}"
-                            h_val = int(hashlib.sha256(seed_key.encode("utf-8")).hexdigest()[:8], 16)
-                            variation = ((h_val % 100) / 500.0) - 0.10
-                            apw_factor = 1.0 + max(0, (21 - min(lead_days, 21)) * 0.008)
-                            total_fare = round(base_route_fare * c_mult * apw_factor * (1.0 + variation), -1)
+                        raw_quotes = adapter.fetch_quotes(
+                            origin=origin,
+                            destination=destination,
+                            travel_date=t_date_str,
+                            cabin="ECONOMY",
+                            adults=1
+                        )
+
+                        for raw_quote in raw_quotes:
+                            raw_dict = raw_quote.model_dump() if hasattr(raw_quote, "model_dump") else dict(raw_quote)
+                            raw_dict["search_timestamp"] = now_utc.isoformat()
+                            raw_dict["search_date"] = search_date_str
+                            raw_dict["collected_at"] = now_utc.isoformat()
+
+                            canon_dict = CanonicalNormalizationService.normalize_raw_quote(raw_dict)
+                            val_status, val_reasons = CanonicalValidationRules.evaluate_observation(canon_dict)
+                            index_elig, index_elig_reasons = CanonicalValidationRules.evaluate_index_eligibility(canon_dict, val_status, val_reasons)
+
+                            adv_days = canon_dict.get("advance_purchase_days")
+                            if adv_days is None:
+                                adv_days = lead_days
+                            horizon_days = adv_days if adv_days is not None and adv_days >= 0 else lead_days
+
+                            ObservationService.ensure_reference_entities(
+                                db=db,
+                                source_id=canon_dict["source_id"],
+                                route_id=canon_dict["route_id"],
+                                carrier_id=canon_dict.get("carrier_id") or canon_dict["airline"],
+                                horizon_days=horizon_days
+                            )
 
                             obs_id = str(uuid.uuid4())
-                            raw_payload = f'{{"route": "{route_id}", "travel_date": "{t_date_str}", "search_timestamp": "{now_utc.isoformat()}", "carrier": "{c_code}", "source": "{s_id}", "fare": {total_fare}}}'
-                            raw_sha256 = hashlib.sha256(raw_payload.encode("utf-8")).hexdigest()
-                            quote_fp = hashlib.sha256(f"{route_id}|{t_date_str}|{c_code}|{total_fare}|{raw_sha256[:12]}".encode("utf-8")).hexdigest()
-                            comp_id = generate_comparability_id(origin, destination, t_date_str, "ECONOMY", 0, 135)
+                            comp_id = generate_comparability_id(
+                                origin,
+                                destination,
+                                t_date_str,
+                                canon_dict.get("cabin") or "ECONOMY",
+                                canon_dict.get("stops") or 0,
+                                canon_dict.get("duration_minutes") or 135
+                            )
+
+                            fare_val = float(canon_dict["total_fare"]) if canon_dict.get("total_fare") is not None else 0.0
 
                             obs = Observation(
                                 observation_id=obs_id,
-                                source_id=s_id,
-                                source_name=adapter.display_name,
+                                source_id=canon_dict["source_id"],
+                                source_name=canon_dict.get("source_name") or adapter.display_name,
+                                source_url=canon_dict.get("source_url"),
                                 search_timestamp=now_utc,
                                 search_date=search_date_val,
                                 collected_at=now_utc,
                                 observed_at=now_utc,
                                 travel_date=t_date,
-                                advance_purchase_days=lead_days,
-                                booking_horizon_days=lead_days,
-                                origin_airport=origin,
-                                destination_airport=destination,
-                                route_id=route_id,
-                                carrier_id=c_code,
-                                airline=c_name,
-                                cabin="ECONOMY",
-                                fare_class="STANDARD",
-                                trip_type="ONE_WAY",
-                                stops=0,
-                                stops_status="OBSERVED_NON_STOP",
-                                duration_minutes=135,
-                                total_fare=total_fare,
-                                currency="INR",
-                                raw_payload_sha256=raw_sha256,
-                                quote_fingerprint=quote_fp,
-                                validation_status="ACCEPT",
-                                index_eligibility="ELIGIBLE",
-                                data_status="OBSERVED",
-                                horizon_code=f"T+{lead_days}" if lead_days in [0, 1, 3, 7, 15, 30] else "OFF_HORIZON",
+                                advance_purchase_days=adv_days,
+                                booking_horizon_days=horizon_days,
+                                origin_raw=canon_dict.get("origin_raw") or origin,
+                                destination_raw=canon_dict.get("destination_raw") or destination,
+                                origin_airport=canon_dict.get("origin_airport") or origin,
+                                destination_airport=canon_dict.get("destination_airport") or destination,
+                                route_id=canon_dict.get("route_id") or route_id,
+                                carrier_id=canon_dict.get("carrier_id") or canon_dict.get("airline", "UNKNOWN"),
+                                airline=canon_dict.get("airline", "UNKNOWN"),
+                                flight_number=canon_dict.get("flight_number"),
+                                cabin=canon_dict.get("cabin") or "ECONOMY",
+                                fare_class=canon_dict.get("fare_class") or "STANDARD",
+                                trip_type=canon_dict.get("trip_type") or "ONE_WAY",
+                                stops=canon_dict.get("stops", 0),
+                                stops_status=canon_dict.get("stops_status") or ("OBSERVED_NON_STOP" if canon_dict.get("stops") == 0 else "OBSERVED_STOPS"),
+                                duration_minutes=canon_dict.get("duration_minutes") or 135,
+                                raw_total_fare=canon_dict.get("raw_total_fare"),
+                                raw_base_fare=canon_dict.get("raw_base_fare"),
+                                raw_taxes=canon_dict.get("raw_taxes"),
+                                raw_fees=canon_dict.get("raw_fees"),
+                                base_fare=float(canon_dict["base_fare"]) if canon_dict.get("base_fare") is not None else None,
+                                taxes=float(canon_dict["taxes"]) if canon_dict.get("taxes") is not None else None,
+                                mandatory_fees=float(canon_dict["fees"]) if canon_dict.get("fees") is not None else None,
+                                fees=float(canon_dict["fees"]) if canon_dict.get("fees") is not None else None,
+                                total_fare=fare_val,
+                                currency=canon_dict.get("currency") or "INR",
+                                stop_type="NON_STOP" if (canon_dict.get("stops") == 0 or canon_dict.get("stops") is None) else "ONE_STOP",
+                                raw_payload_hash=canon_dict.get("raw_payload_hash"),
+                                raw_payload_sha256=canon_dict.get("raw_payload_sha256"),
+                                stored_file_sha256=canon_dict.get("stored_file_sha256"),
+                                observation_key=canon_dict.get("observation_key"),
+                                quote_fingerprint=canon_dict.get("quote_fingerprint"),
+                                breakdown_status=canon_dict.get("breakdown_status") or "TOTAL_ONLY",
+                                arithmetic_status=canon_dict.get("arithmetic_status") or "ARITHMETIC_UNCHECKABLE",
+                                horizon_code=canon_dict.get("horizon_code") or (f"T+{lead_days}" if lead_days in [0, 1, 3, 7, 15, 30] else "OFF_HORIZON"),
+                                route_mapping_status=canon_dict.get("route_mapping_status") or "CANONICAL_MAPPED",
+                                basket_status=canon_dict.get("basket_status") or "BASKET_MEMBER",
+                                validation_status=val_status,
+                                validation_reasons=val_reasons,
+                                index_eligibility=index_elig,
+                                index_eligibility_reasons=index_elig_reasons,
+                                data_status="OBSERVED" if val_status != "REJECT" else "REJECTED",
                                 collection_run_id=run_id,
                                 collection_attempt_id=attempt_id,
                                 comparability_id=comp_id,
                                 adapter_version=adapter.adapter_version,
-                                capture_method="ORCHESTRATED_SWEEP",
+                                capture_method="html_fetch:scrapy" if "WEB" in s_id else "API_ORCHESTRATED",
                                 source_status_at_capture=status.value,
                                 created_at=now_utc
                             )
@@ -203,7 +257,7 @@ class CollectionOrchestratorService:
                             quotes_created_for_attempt += 1
 
                         queries_success += 1
-                        
+
                         attempt = CollectionAttempt(
                             attempt_id=attempt_id,
                             run_id=run_id,
@@ -216,18 +270,21 @@ class CollectionOrchestratorService:
                             started_at=t_start,
                             finished_at=dt.datetime.now(dt.timezone.utc),
                             latency_ms=(time.perf_counter() - t0) * 1000.0,
-                            status="SUCCESS",
+                            status="SUCCESS" if quotes_created_for_attempt > 0 else "ZERO_QUOTES_RETURNED",
                             observations_count=quotes_created_for_attempt
                         )
                         db.add(attempt)
 
                         # Update Longitudinal Panel Manifest for this route × date
                         cls._upsert_panel_manifest(db, route_id, t_date, search_date_str, now_utc, quotes_created_for_attempt)
+                        db.commit()
+                        print(f"[{queries_success + queries_failed}/{coll_run.queries_total}] {s_id} {route_id} {t_date_str}: {quotes_created_for_attempt} quotes ({time.perf_counter() - t0:.2f}s)", flush=True)
 
                     except Exception as e:
                         queries_failed += 1
                         err_msg = f"{type(e).__name__}: {str(e)}"
                         errors_by_source[s_id].append(f"{route_id} ({t_date_str}): {err_msg}")
+                        print(f"[{queries_success + queries_failed}/{coll_run.queries_total}] FAILED {s_id} {route_id} {t_date_str}: {err_msg[:80]}", flush=True)
                         
                         attempt = CollectionAttempt(
                             attempt_id=attempt_id,

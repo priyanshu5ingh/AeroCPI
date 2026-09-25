@@ -22,8 +22,8 @@ def build_decision_trace(
     decision: str,
     reason: str,
     readiness: Optional[Dict[str, Any]] = None,
-    national_index: float = 96.34,
-    national_delta: float = -3.66,
+    national_index: Optional[float] = None,
+    national_delta: Optional[float] = None,
     source_agreement_status: str = "CONCORDANT_OBSERVATION",
     grounded_summary: Optional[str] = None
 ) -> List[DecisionTraceNode]:
@@ -54,7 +54,7 @@ def build_decision_trace(
             stage_number=2,
             stage_name="Current Market Observations",
             status="OBSERVED",
-            evidence_summary=f"Lowest observed fare across active search channels is ₹{current_fare:,.0f}.",
+            evidence_summary=f"Lowest observed fare across active search channels is ₹{current_fare:,.0f}." if current_fare is not None else "No current market fare observed.",
             structured_payload={"current_fare": current_fare, "currency": "INR", "capture_status": "LIVE_OBSERVED"}
         ),
         DecisionTraceNode(
@@ -68,8 +68,8 @@ def build_decision_trace(
             stage_number=4,
             stage_name="Historical Price Position",
             status="CALCULATED",
-            evidence_summary=f"Corridor baseline median is ₹{route_median:,.0f} (Historical range: ₹{route_min:,.0f} - ₹{route_max:,.0f}).",
-            structured_payload={"median": route_median, "min": route_min, "max": route_max, "ratio": round(current_fare / route_median, 4) if route_median > 0 else 1.0}
+            evidence_summary=f"Corridor baseline median is ₹{route_median:,.0f} (Historical range: ₹{route_min:,.0f} - ₹{route_max:,.0f})." if route_median is not None and route_min is not None and route_max is not None else "Insufficient historical evidence for baseline.",
+            structured_payload={"median": route_median, "min": route_min, "max": route_max, "ratio": round(current_fare / route_median, 4) if route_median and current_fare else 1.0}
         ),
         DecisionTraceNode(
             stage_number=5,
@@ -96,8 +96,8 @@ def build_decision_trace(
             stage_number=8,
             stage_name="National Market Signal",
             status="OBSERVED",
-            evidence_summary=f"National AeroCPI T+15 headline index is {national_index:.2f} ({national_delta:+.2f} pts vs reference period).",
-            structured_payload={"aerocpi_t15_index": national_index, "index_point_change": national_delta, "market_state": "FALLING" if national_delta < -1.0 else ("RISING" if national_delta > 1.0 else "NORMAL")}
+            evidence_summary=f"National AeroCPI T+15 headline index is {national_index:.2f} ({national_delta:+.2f} pts vs reference period)." if national_index is not None and national_delta is not None else "National market signal is unavailable.",
+            structured_payload={"aerocpi_t15_index": national_index, "index_point_change": national_delta, "market_state": "FALLING" if national_delta and national_delta < -1.0 else ("RISING" if national_delta and national_delta > 1.0 else "NORMAL")}
         ),
         DecisionTraceNode(
             stage_number=9,

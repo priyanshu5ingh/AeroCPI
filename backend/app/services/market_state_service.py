@@ -28,9 +28,9 @@ class MarketStateService:
         if not run:
             return {
                 "market_state": "INSUFFICIENT_DATA",
-                "headline_index": 100.0,
-                "point_change": 0.0,
-                "percentage_change": 0.0,
+                "headline_index": None,
+                "point_change": None,
+                "percentage_change": None,
                 "horizon_code": "T+15",
                 "run_id": "NONE",
                 "summary": "No completed AeroCPI index runs found in database.",
@@ -46,7 +46,7 @@ class MarketStateService:
         h_std = statistics.stdev(h_values) if len(h_values) > 1 else 0.0
 
         trust = db.query(TrustEvaluation).filter(TrustEvaluation.index_run_id == run.run_id).first()
-        trust_status = trust.trust_status if trust else "HIGH_CONFIDENCE"
+        trust_status = trust.trust_status if trust else "UNEVALUATED"
 
         # 6-State Classification: NORMAL / RISING / FALLING / VOLATILE / ANOMALOUS / INSUFFICIENT_DATA
         if trust_status == "DEGRADED" or abs(delta) > 30.0:

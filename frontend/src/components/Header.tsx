@@ -9,6 +9,7 @@ export type PlatformTab =
   | 'guide'
   | 'market'
   | 'proof'
+  | 'operations'
   | 'overview'
   | 'aeroguide'
   | 'live-market'
@@ -34,6 +35,7 @@ const PRIMARY_MODES: { id: PlatformTab; number: string; label: string; sub: stri
   { id: 'guide', number: '01', label: 'GUIDE', sub: 'Should I book?', icon: Sparkles },
   { id: 'market', number: '02', label: 'MARKET', sub: 'National Airfare State', icon: BarChart2 },
   { id: 'proof', number: '03', label: 'PROOF', sub: 'Verifiable Lineage', icon: ShieldCheck },
+  { id: 'operations', number: '04', label: 'OPERATIONS', sub: 'Telemetry & Sweeps', icon: Activity },
 ];
 
 export const Header: React.FC<HeaderProps> = ({
@@ -48,10 +50,11 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Normalize active tab to one of the 3 primary modes if legacy alias is provided
+  // Normalize active tab to one of the 4 primary modes if legacy alias is provided
   const getNormalizedMode = (tab: PlatformTab): PlatformTab => {
     if (tab === 'overview' || tab === 'aeroguide' || tab === 'guide') return 'guide';
     if (tab === 'live-market' || tab === 'routes' || tab === 'horizon' || tab === 'market') return 'market';
+    if (tab === 'operations') return 'operations';
     return 'proof';
   };
 

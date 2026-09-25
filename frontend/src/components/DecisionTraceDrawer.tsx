@@ -13,11 +13,11 @@ interface DecisionTraceDrawerProps {
   decisionTrace: DecisionTraceNode[];
   guidance: string;
   guidanceReason?: string;
-  observedFare: number;
+  observedFare: number | null;
   origin: string;
   destination: string;
   travelDate: string;
-  corridorMedian?: number;
+  corridorMedian?: number | null;
   pricePosition?: string;
   daysToDeparture?: number;
   sourceAgreementSummary?: string;
@@ -88,8 +88,8 @@ export const DecisionTraceDrawer: React.FC<DecisionTraceDrawerProps> = ({
   };
 
   const badge = getDecisionBadge(guidance);
-  const fareDiff = observedFare - corridorMedian;
-  const fareDiffPct = Math.round((fareDiff / (corridorMedian || 1)) * 100);
+  const fareDiff = (observedFare != null && corridorMedian != null) ? observedFare - corridorMedian : null;
+  const fareDiffPct = (fareDiff != null && corridorMedian) ? Math.round((fareDiff / corridorMedian) * 100) : null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -121,7 +121,7 @@ export const DecisionTraceDrawer: React.FC<DecisionTraceDrawerProps> = ({
                 11-Node Decision Trace
               </h2>
               <p className="text-xs text-slate-400 font-mono">
-                {origin} ➔ {destination} &bull; {travelDate} &bull; Observed: ₹{observedFare.toLocaleString('en-IN')} &bull; Verdict: <strong className="text-emerald-400">{guidance}</strong>
+                {origin} ➔ {destination} &bull; {travelDate} &bull; Observed: {observedFare != null ? `₹${observedFare.toLocaleString('en-IN')}` : 'N/A'} &bull; Verdict: <strong className="text-emerald-400">{guidance}</strong>
               </p>
             </div>
 
@@ -166,13 +166,15 @@ export const DecisionTraceDrawer: React.FC<DecisionTraceDrawerProps> = ({
                     Fare vs Corridor Median
                   </div>
                   <div className="text-base font-black text-white font-mono flex items-center justify-between">
-                    <span>₹{observedFare.toLocaleString('en-IN')}</span>
-                    <span className={`text-xs font-bold ${fareDiff <= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
-                      {fareDiff <= 0 ? `${fareDiffPct}% below` : `+${fareDiffPct}% above`}
-                    </span>
+                    <span>{observedFare != null ? `₹${observedFare.toLocaleString('en-IN')}` : 'N/A'}</span>
+                    {fareDiff != null && fareDiffPct != null && (
+                      <span className={`text-xs font-bold ${fareDiff <= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        {fareDiff <= 0 ? `${Math.abs(fareDiffPct)}% below` : `+${fareDiffPct}% above`}
+                      </span>
+                    )}
                   </div>
                   <div className="text-[11px] font-mono text-slate-400">
-                    Baseline Median: ₹{corridorMedian.toLocaleString('en-IN')}
+                    Baseline Median: {corridorMedian != null ? `₹${corridorMedian.toLocaleString('en-IN')}` : 'N/A'}
                   </div>
                 </div>
 

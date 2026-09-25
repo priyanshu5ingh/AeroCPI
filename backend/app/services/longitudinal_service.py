@@ -27,27 +27,6 @@ DEFAULT_PINNED_TRAVEL_DATES = [
     "2026-10-13", "2026-10-14"
 ]
 
-CARRIER_BASELINES = {
-    "6E": ("IndiGo", 1.00),
-    "AI": ("Air India", 1.06),
-    "QP": ("Akasa Air", 0.96),
-    "SG": ("SpiceJet", 0.94)
-}
-
-ROUTE_BASELINES = {
-    "DEL-BOM": 6420.0, "BOM-DEL": 6450.0,
-    "BLR-DEL": 6880.0, "DEL-BLR": 6850.0,
-    "BOM-BLR": 4820.0, "BLR-BOM": 4800.0,
-    "DEL-HYD": 5600.0, "HYD-DEL": 5620.0,
-    "DEL-CCU": 6120.0, "CCU-DEL": 6100.0,
-    "DEL-MAA": 6550.0, "MAA-DEL": 6520.0,
-    "BOM-GOI": 3890.0, "GOI-BOM": 3910.0,
-    "BLR-HYD": 3450.0, "HYD-BLR": 3440.0,
-    "DEL-PAT": 5200.0, "PAT-DEL": 5210.0,
-    "BLR-CCU": 6750.0, "CCU-BLR": 6780.0
-}
-
-
 def execute_longitudinal_pilot_collection(
     db: Session,
     pinned_dates: Optional[List[str]] = None,
@@ -56,112 +35,15 @@ def execute_longitudinal_pilot_collection(
     source_id: str = "SRC_GOOGLE_FLIGHTS"
 ) -> Dict[str, Any]:
     """Executes a real longitudinal panel collection across fixed travel dates and persists observations + manifest records."""
-    run_id = str(uuid.uuid4())
-    now_utc = search_timestamp or datetime.now(timezone.utc)
-    search_date_val = now_utc.date()
-    search_date_str = search_date_val.isoformat()
-    
-    target_dates = pinned_dates or DEFAULT_PINNED_TRAVEL_DATES
-    target_routes = routes or TIER_1_DGCA_CORE
-    
-    queries_requested = len(target_routes) * len(target_dates)
-    queries_successful = 0
-    queries_failed = 0
-    observations_created = 0
-    source_failures: List[Dict[str, Any]] = []
-    
-    for origin, destination in target_routes:
-        route_id = f"{origin}-{destination}"
-        base_route_fare = ROUTE_BASELINES.get(route_id, 6000.0)
-        
-        for t_date_str in target_dates:
-            try:
-                t_date = datetime.strptime(t_date_str, "%Y-%m-%d").date()
-                lead_days = (t_date - search_date_val).days
-                if lead_days < 0:
-                    lead_days = 15
-                
-                # Query/Generate standardized quotes for all 4 major scheduled carriers
-                for c_code, (c_name, c_mult) in CARRIER_BASELINES.items():
-                    # Deterministic hash variation based on route + travel_date + search_date + carrier
-                    seed_key = f"{route_id}|{t_date_str}|{search_date_str}|{c_code}"
-                    h_val = int(hashlib.sha256(seed_key.encode("utf-8")).hexdigest()[:8], 16)
-                    variation = ((h_val % 100) / 500.0) - 0.10 # +/- 10%
-                    
-                    # Advance purchase gradient: closer dates slightly more expensive
-                    apw_factor = 1.0 + max(0, (21 - min(lead_days, 21)) * 0.008)
-                    total_fare = round(base_route_fare * c_mult * apw_factor * (1.0 + variation), -1)
-                    
-                    obs_id = str(uuid.uuid4())
-                    raw_payload = f'{{"route": "{route_id}", "travel_date": "{t_date_str}", "search_timestamp": "{now_utc.isoformat()}", "carrier": "{c_code}", "fare": {total_fare}}}'
-                    raw_sha256 = hashlib.sha256(raw_payload.encode("utf-8")).hexdigest()
-                    
-                    obs = Observation(
-                        observation_id=obs_id,
-                        source_id=source_id,
-                        source_name="Google Flights",
-                        search_timestamp=now_utc,
-                        search_date=search_date_val,
-                        collected_at=now_utc,
-                        observed_at=now_utc,
-                        travel_date=t_date,
-                        advance_purchase_days=lead_days,
-                        booking_horizon_days=lead_days,
-                        origin_airport=origin,
-                        destination_airport=destination,
-                        route_id=route_id,
-                        carrier_id=c_code,
-                        airline=c_name,
-                        cabin="ECONOMY",
-                        fare_class="STANDARD",
-                        trip_type="ONE_WAY",
-                        stops=0,
-                        stops_status="OBSERVED_NON_STOP",
-                        duration_minutes=135,
-                        total_fare=total_fare,
-                        currency="INR",
-                        raw_payload_sha256=raw_sha256,
-                        validation_status="ACCEPT",
-                        index_eligibility="ELIGIBLE",
-                        data_status="OBSERVED",
-                        horizon_code=f"T+{lead_days}" if lead_days in [0, 1, 3, 7, 15, 30] else "OFF_HORIZON",
-                        created_at=now_utc
-                    )
-                    db.add(obs)
-                    observations_created += 1
-                
-                queries_successful += 1
-                
-                # Update Longitudinal Panel Manifest for this (route_id, travel_date)
-                _upsert_panel_manifest(db, route_id, t_date, search_date_str, now_utc)
-                
-            except Exception as e:
-                queries_failed += 1
-                source_failures.append({
-                    "route_id": route_id,
-                    "travel_date": t_date_str,
-                    "error": str(e),
-                    "timestamp": now_utc.isoformat()
-                })
-    
-    db.commit()
-    
-    return {
-        "run_id": run_id,
-        "started_at": now_utc.isoformat(),
-        "finished_at": datetime.now(timezone.utc).isoformat(),
-        "routes_requested": len(target_routes),
-        "travel_dates_requested": len(target_dates),
-        "queries_requested": queries_requested,
-        "queries_successful": queries_successful,
-        "queries_failed": queries_failed,
-        "observations_created": observations_created,
-        "observations_skipped": 0,
-        "source_failures": source_failures,
-        "raw_payload_count": observations_created,
-        "run_status": "COMPLETED" if queries_failed == 0 else "PARTIAL_SUCCESS",
-        "pinned_dates": target_dates
-    }
+    from app.services.collection_orchestrator_service import CollectionOrchestratorService
+    return CollectionOrchestratorService.execute_collection_sweep(
+        db=db,
+        routes=routes if routes is not None else TIER_1_DGCA_CORE,
+        travel_dates=pinned_dates if pinned_dates is not None else DEFAULT_PINNED_TRAVEL_DATES,
+        source_ids=[source_id] if source_id else None,
+        run_type="LONGITUDINAL_PANEL",
+        search_timestamp=search_timestamp,
+    )
 
 
 def _upsert_panel_manifest(
@@ -169,7 +51,8 @@ def _upsert_panel_manifest(
     route_id: str,
     travel_date: date,
     search_date_str: str,
-    now_utc: datetime
+    now_utc: datetime,
+    quotes_count: int = 0
 ):
     """Maintains trajectory state and target eligibility flags for a pinned (route_id, travel_date)."""
     manifest_id = f"PANEL_{route_id}_{travel_date.isoformat()}"
@@ -186,7 +69,7 @@ def _upsert_panel_manifest(
             last_observed_at=now_utc,
             search_count=1,
             search_dates=[search_date_str],
-            observation_count=len(CARRIER_BASELINES),
+            observation_count=quotes_count,
             history_span_days=0,
             has_3_searches=False,
             has_7_day_pair=False,
@@ -219,7 +102,7 @@ def _upsert_panel_manifest(
         if first_obs is None or now_naive < first_obs:
             manifest.first_observed_at = now_utc
             
-        manifest.observation_count = (manifest.observation_count or 0) + len(CARRIER_BASELINES)
+        manifest.observation_count = (manifest.observation_count or 0) + quotes_count
         
         # Calculate history span in days
         if len(s_dates) >= 2:

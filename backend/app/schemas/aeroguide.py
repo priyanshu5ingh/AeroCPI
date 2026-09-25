@@ -58,12 +58,12 @@ class AeroGuideAnalyzeResponse(BaseModel):
     days_to_departure: int
     
     # Primary Market Observation
-    current_observed_fare: float
+    current_observed_fare: Optional[float] = None
     currency: str = "INR"
     price_position: str # LOW, TYPICAL, HIGH, INSUFFICIENT_DATA
-    route_historical_median: float
-    route_historical_min: float
-    route_historical_max: float
+    route_historical_median: Optional[float] = None
+    route_historical_min: Optional[float] = None
+    route_historical_max: Optional[float] = None
     observations_in_sample: int
     
     # Model Outlook

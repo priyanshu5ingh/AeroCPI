@@ -284,3 +284,32 @@ export const fetchAllSourceAgreements = async (limit = 50): Promise<RouteSourceA
   return response.data;
 };
 
+export const fetchOperationalSourceHealth = async () => {
+  const response = await axios.get(`${API_BASE}/operations/source-health`);
+  return response.data;
+};
+
+export const fetchOperationalMetrics = async () => {
+  const response = await axios.get(`${API_BASE}/operations/metrics`);
+  return response.data;
+};
+
+export const fetchOperationalAlerts = async () => {
+  const response = await axios.get(`${API_BASE}/operations/alerts`);
+  return response.data;
+};
+
+export const fetchOperationalRuns = async (limit = 30) => {
+  const response = await axios.get(`${API_BASE}/operations/runs`, {
+    params: { limit }
+  });
+  return response.data;
+};
+
+export const triggerCollectionSweep = async (runType = 'LONGITUDINAL_PANEL', sources?: string[]) => {
+  const response = await axios.post(`${API_BASE}/operations/trigger-sweep`, null, {
+    params: { run_type: runType, sources }
+  });
+  return response.data;
+};
+

@@ -405,7 +405,7 @@ export const AeroGuidePage: React.FC = () => {
                   <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-1">
                     <div className="text-slate-400">Current Observed Fare</div>
                     <div className="text-2xl font-extrabold text-white">
-                      ₹{analysis.current_observed_fare.toLocaleString('en-IN')}
+                      ₹{(analysis.current_observed_fare?.toLocaleString('en-IN') ?? 'N/A')}
                     </div>
                     <div className="text-[11px] text-slate-400 font-sans">Lowest standard quote</div>
                   </div>
@@ -413,10 +413,10 @@ export const AeroGuidePage: React.FC = () => {
                   <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-1">
                     <div className="text-slate-400">Route Historical Median</div>
                     <div className="text-2xl font-extrabold text-blue-400">
-                      ₹{analysis.route_historical_median.toLocaleString('en-IN')}
+                      ₹{(analysis.route_historical_median?.toLocaleString('en-IN') ?? 'N/A')}
                     </div>
                     <div className="text-[11px] text-slate-400 font-sans">
-                      Range: ₹{analysis.route_historical_min.toLocaleString('en-IN')} - ₹{analysis.route_historical_max.toLocaleString('en-IN')}
+                      Range: ₹{(analysis.route_historical_min?.toLocaleString('en-IN') ?? 'N/A')} - ₹{(analysis.route_historical_max?.toLocaleString('en-IN') ?? 'N/A')}
                     </div>
                   </div>
 
@@ -477,7 +477,7 @@ export const AeroGuidePage: React.FC = () => {
                     {analysis.grounded_explanation}
                   </p>
                   <ul className="list-disc list-inside space-y-1 text-slate-600 text-[11px] pt-1">
-                    <li>Current fare ₹{analysis.current_observed_fare.toLocaleString('en-IN')} is categorized as {analysis.price_position} relative to corridor baseline.</li>
+                    <li>Current fare ₹{(analysis.current_observed_fare?.toLocaleString('en-IN') ?? 'N/A')} is categorized as {analysis.price_position} relative to corridor baseline.</li>
                     <li>Evaluated {analysis.airline_alternatives.length} carriers on {analysis.travel_date}.</li>
                     <li>Decision governed deterministically under {analysis.decision_policy_version}.</li>
                   </ul>
@@ -815,9 +815,9 @@ export const AeroGuidePage: React.FC = () => {
 
                 <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
                   <div className="text-xs font-mono text-slate-500 uppercase tracking-wider">Selected Corridor ({origin}-{destination})</div>
-                  <div className="text-3xl font-black text-slate-900 font-mono">₹{analysis.current_observed_fare.toLocaleString('en-IN')}</div>
+                  <div className="text-3xl font-black text-slate-900 font-mono">₹{(analysis.current_observed_fare?.toLocaleString('en-IN') ?? 'N/A')}</div>
                   <div className="text-xs font-mono text-blue-600">
-                    Position: {analysis.price_position} (Median: ₹{analysis.route_historical_median.toLocaleString('en-IN')})
+                    Position: {analysis.price_position} (Median: ₹{(analysis.route_historical_median?.toLocaleString('en-IN') ?? 'N/A')})
                   </div>
                 </div>
 

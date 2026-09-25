@@ -46,6 +46,9 @@ CARRIER_NAMES = {
 
 
 def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> AeroGuideAnalyzeResponse:
+    from app.services.forecasting_engine_service import ForecastingEngineService
+    from app.services.market_state_service import MarketStateService
+
     origin = request.origin.upper()
     destination = request.destination.upper()
     route_id = f"{origin}-{destination}"
@@ -64,26 +67,16 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
 
     # 1. Query all observations for this route to establish historical baseline
     obs_list = db.query(Observation).filter(Observation.route_id == route_id).all()
-    
-    # Fallback to general market if route not in DB
-    if not obs_list:
-        obs_list = db.query(Observation).limit(500).all()
-        
     fares = [float(o.total_fare) for o in obs_list if o.total_fare]
-    if not fares:
-        fares = [6420.0, 6880.0, 7120.0, 8025.0]
 
-    route_min = float(min(fares))
-    route_median = float(statistics.median(fares))
-    route_max = float(max(fares))
-    p15 = float(calc_percentile(fares, ACTIVE_DECISION_POLICY.book_percentile))
-    p80 = float(calc_percentile(fares, ACTIVE_DECISION_POLICY.wait_percentile))
+    route_min = float(min(fares)) if fares else None
+    route_median = float(statistics.median(fares)) if fares else None
+    route_max = float(max(fares)) if fares else None
+    p15 = float(calc_percentile(fares, ACTIVE_DECISION_POLICY.book_percentile)) if fares else None
+    p80 = float(calc_percentile(fares, ACTIVE_DECISION_POLICY.wait_percentile)) if fares else None
 
-    # 2. Find quotes for requested travel date (or closest matching horizon)
+    # 2. Find quotes for requested travel date
     date_obs = [o for o in obs_list if str(o.travel_date) == req_date_str]
-    if not date_obs:
-        # Pick samples matching horizon
-        date_obs = obs_list[:12]
 
     # Build Airline Alternatives
     airline_map: Dict[str, AirlineAlternative] = {}
@@ -94,10 +87,11 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
         
         # Determine position for this specific fare
         pos = "TYPICAL"
-        if f_val <= p15:
-            pos = "LOW"
-        elif f_val >= p80:
-            pos = "HIGH"
+        if p15 and p80:
+            if f_val <= p15:
+                pos = "LOW"
+            elif f_val >= p80:
+                pos = "HIGH"
             
         is_direct = False # Google flights is search aggregation
         source_ev = "SEARCH_OBSERVATION"
@@ -111,7 +105,7 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
                 currency="INR",
                 stops=o.stops if o.stops is not None else 0,
                 duration_minutes=o.duration_minutes or 135,
-                source_id="SRC_GOOGLE_FLIGHTS",
+                source_id=o.source_id or "UNKNOWN",
                 source_evidence=source_ev,
                 source_state=source_st,
                 is_direct_airline=is_direct,
@@ -127,19 +121,19 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
     else: # CHEAPEST default
         airline_alternatives.sort(key=lambda x: x.observed_fare)
 
-    current_observed_fare = airline_alternatives[0].observed_fare if airline_alternatives else route_median
+    current_observed_fare = airline_alternatives[0].observed_fare if airline_alternatives else None
 
     # Price position
-    if current_observed_fare <= p15:
-        price_position = "LOW"
-    elif current_observed_fare >= p80:
-        price_position = "HIGH"
-    else:
-        price_position = "TYPICAL"
+    price_position = "TYPICAL"
+    if current_observed_fare is not None and p15 is not None and p80 is not None:
+        if current_observed_fare <= p15:
+            price_position = "LOW"
+        elif current_observed_fare >= p80:
+            price_position = "HIGH"
 
     # 3. Flexible Date Options (+/- flexibility_days)
     flexible_dates: List[FlexibleDateOption] = []
-    if request.flexibility_days > 0:
+    if request.flexibility_days > 0 and current_observed_fare is not None:
         for offset in range(-request.flexibility_days, request.flexibility_days + 1):
             if offset == 0:
                 continue
@@ -151,32 +145,27 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
             if cand_obs:
                 best_cand_fare = float(min(o.total_fare for o in cand_obs))
                 cand_carrier = cand_obs[0].carrier_id or "6E"
-            else:
-                # Deterministic market spread variation for demo coverage
-                variation_factor = 1.0 + (offset * 0.035 * (-1 if offset % 2 == 0 else 1))
-                best_cand_fare = round(current_observed_fare * variation_factor, -1)
-                cand_carrier = "6E"
                 
-            diff = best_cand_fare - current_observed_fare
-            pct_diff = (diff / current_observed_fare) * 100.0
-            
-            # Format month day string
-            month_str = cand_date.strftime("%b")
-            day_str = cand_date.strftime("%d")
-            label_text = f"{month_str} {day_str} — ₹{best_cand_fare:,.0f} observed"
-            
-            flexible_dates.append(FlexibleDateOption(
-                travel_date=cand_date_str,
-                days_diff=offset,
-                observed_fare=best_cand_fare,
-                difference_from_requested=diff,
-                percent_difference=round(pct_diff, 1),
-                carrier_code=cand_carrier,
-                stops=0,
-                source_evidence="SEARCH_OBSERVATION",
-                is_lower_fare=diff < 0,
-                label=label_text
-            ))
+                diff = best_cand_fare - current_observed_fare
+                pct_diff = (diff / current_observed_fare) * 100.0
+                
+                # Format month day string
+                month_str = cand_date.strftime("%b")
+                day_str = cand_date.strftime("%d")
+                label_text = f"{month_str} {day_str} — ₹{best_cand_fare:,.0f} observed"
+                
+                flexible_dates.append(FlexibleDateOption(
+                    travel_date=cand_date_str,
+                    days_diff=offset,
+                    observed_fare=best_cand_fare,
+                    difference_from_requested=diff,
+                    percent_difference=round(pct_diff, 1),
+                    carrier_code=cand_carrier,
+                    stops=0,
+                    source_evidence="SEARCH_OBSERVATION",
+                    is_lower_fare=diff < 0,
+                    label=label_text
+                ))
             
     flexible_dates.sort(key=lambda x: x.days_diff)
 
@@ -184,7 +173,10 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
     # Check if a flexible date is significantly cheaper (>= 15% discount)
     cheapest_flex = min(flexible_dates, key=lambda x: x.observed_fare) if flexible_dates else None
     
-    if cheapest_flex and cheapest_flex.percent_difference <= -ACTIVE_DECISION_POLICY.flex_date_threshold_pct:
+    if current_observed_fare is None:
+        booking_guidance = "UNAVAILABLE"
+        guidance_reason = "No observations available for this route and date."
+    elif cheapest_flex and cheapest_flex.percent_difference <= -ACTIVE_DECISION_POLICY.flex_date_threshold_pct:
         booking_guidance = "FLEX_DATE"
         guidance_reason = f"Candidate departure on {cheapest_flex.travel_date} has an observed fare of ₹{cheapest_flex.observed_fare:,.0f} ({abs(cheapest_flex.percent_difference):.1f}% lower than requested date)."
     elif price_position == "LOW":
@@ -199,17 +191,23 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
 
     # 5. National Market State & Model Outlook Status
     readiness = calculate_readiness_metrics(db)
-    model_outlook_status = readiness["dataset_classification"]
-    model_outlook_message = (
-        "This route is currently accumulating daily longitudinal target pairs (7-day delta). "
-        "Machine learning predictions are deferred until empirical data requirements are satisfied."
+    
+    forecast_result = ForecastingEngineService.predict_route(
+        db=db,
+        route_id=route_id,
+        travel_date=req_date_str,
     )
+    
+    model_outlook_status = forecast_result["status"]
+    model_outlook_message = forecast_result.get("message", "Status unavailable.")
+    
     model_probabilities = None
+    if forecast_result["status"] == "MODEL_PREDICTION":
+        model_probabilities = forecast_result.get("probabilities")
 
-    from app.services.market_state_service import MarketStateService
     market_state = MarketStateService.get_national_market_state(db)
-    national_index = market_state.get("headline_index", 96.34)
-    national_delta = market_state.get("point_change", -3.66)
+    national_index = market_state.get("headline_index")
+    national_delta = market_state.get("point_change")
 
     explanation_payload = {
         "origin": origin,
@@ -227,7 +225,7 @@ def analyze_airfare_request(request: AeroGuideAnalyzeRequest, db: Session) -> Ae
 
     # 6. Source Agreement & Multi-Source Intelligence
     source_agreement = get_route_source_agreement(db, route_id, req_date_str, request.cabin)
-    active_sources_list = [s.source_id for s in source_agreement.sources] if source_agreement.sources else ["SRC_GOOGLE_FLIGHTS"]
+    active_sources_list = [s.source_id for s in source_agreement.sources] if source_agreement.sources else []
 
     # 7. Build 11-Node Verifiable Decision Trace
     trace = build_decision_trace(

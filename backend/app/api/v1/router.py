@@ -20,6 +20,7 @@ from app.api.v1.endpoints import (
     methodology_info,
     validation_lab,
     aeroguide,
+    operations,
 )
 
 api_router = APIRouter()
@@ -44,4 +45,5 @@ api_router.include_router(data_quality.router, tags=["Data Quality Intelligence"
 api_router.include_router(methodology_info.router, tags=["Methodology Studio"])
 api_router.include_router(validation_lab.router, tags=["Validation Lab"])
 api_router.include_router(aeroguide.router, tags=["AeroGuide Consumer Intelligence"])
+api_router.include_router(operations.router, prefix="/operations", tags=["Production Operations"])
 

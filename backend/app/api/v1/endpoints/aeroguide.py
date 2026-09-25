@@ -131,17 +131,11 @@ def get_trajectory(route_id: str, travel_date: str, db: Session = Depends(get_db
 @router.post("/forecast")
 def forecast_fare(request: AeroGuideAnalyzeRequest, db: Session = Depends(get_db)):
     """Returns 7-day movement forecast status. Honestly returns INSUFFICIENT_LONGITUDINAL_HISTORY until panel collection is complete."""
-    status_info = ForecastingEngineService.get_model_status(db)
-    readiness = get_forecasting_readiness(db)
-    return {
-        "status": readiness.dataset_classification,
-        "model_status": status_info["model_status"],
-        "model_training_status": "ENABLED" if status_info["can_train_live"] else "DISABLED",
-        "route_id": f"{request.origin.upper()}-{request.destination.upper()}",
-        "message": status_info["reason"],
-        "probabilities": None,
-        "eligible_for_model": status_info["can_train_live"]
-    }
+    return ForecastingEngineService.predict_route(
+        db=db,
+        route_id=f"{request.origin.upper()}-{request.destination.upper()}",
+        travel_date=request.travel_date,
+    )
 
 @router.get("/readiness", response_model=ForecastingReadinessResponse)
 def get_readiness(db: Session = Depends(get_db)):
@@ -297,10 +291,14 @@ def get_model_status(db: Session = Depends(get_db)):
     """Returns the machine learning model training status and empirical gating rules."""
     return ForecastingEngineService.get_model_status(db)
 
+@router.post("/model/train")
+def train_model(db: Session = Depends(get_db)):
+    return ForecastingEngineService.train_live(db)
+
 @router.get("/model-evaluation")
-def get_model_evaluation():
+def get_model_evaluation(db: Session = Depends(get_db)):
     """Returns walk-forward benchmark metrics on test fixtures (Research Preview)."""
-    return ForecastingEngineService.evaluate_walk_forward()
+    return ForecastingEngineService.evaluate_walk_forward(db)
 
 @router.get("/market-state")
 def get_market_state(run_id: Optional[str] = None, db: Session = Depends(get_db)):

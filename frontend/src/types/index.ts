@@ -506,12 +506,12 @@ export interface AeroGuideAnalyzeResponse {
   route_id: string;
   travel_date: string;
   days_to_departure: number;
-  current_observed_fare: number;
+  current_observed_fare: number | null;
   currency: string;
   price_position: 'LOW' | 'TYPICAL' | 'HIGH' | 'INSUFFICIENT_DATA' | string;
-  route_historical_median: number;
-  route_historical_min: number;
-  route_historical_max: number;
+  route_historical_median: number | null;
+  route_historical_min: number | null;
+  route_historical_max: number | null;
   observations_in_sample: number;
   model_outlook_status: string;
   model_probabilities?: Record<string, number> | null;

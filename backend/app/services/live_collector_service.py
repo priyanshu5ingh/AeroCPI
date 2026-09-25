@@ -127,14 +127,15 @@ class LiveCollectorService:
         search_date = search_ts.astimezone(kolkata_tz).date()
         travel_date = search_date + dt.timedelta(days=apw)
 
-        # 1. Collection-Event Level Idempotency Check
+        # 1. Collection-Event Level Idempotency Check (Allow multiple snapshots per day, block rapid retries < 15m)
         if db is not None and not dry_run:
+            fifteen_mins_ago = search_ts - dt.timedelta(minutes=15)
             existing_event = db.query(CollectionEvent).filter(
                 CollectionEvent.source_id == "SRC_GOOGLE_FLIGHTS",
                 CollectionEvent.origin == origin,
                 CollectionEvent.destination == dest,
                 CollectionEvent.apw == apw,
-                CollectionEvent.collection_date == search_date,
+                CollectionEvent.executed_at >= fifteen_mins_ago,
                 CollectionEvent.status == "SUCCESS"
             ).first()
 

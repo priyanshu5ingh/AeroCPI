@@ -24,6 +24,7 @@ import { MethodologyPage } from './pages/MethodologyPage';
 import { DataQualityPage } from './pages/DataQualityPage';
 import { ValidationLabPage } from './pages/ValidationLabPage';
 import { AuditEvidencePage } from './pages/AuditEvidencePage';
+import { OperationsPage } from './pages/OperationsPage';
 import { RouteExplanationModal } from './components/RouteExplanationModal';
 import { AuditModal } from './components/AuditModal';
 import { LoadingSkeleton, ErrorView } from './components/StateViews';
@@ -36,7 +37,7 @@ export default function App() {
   const [dashboard, setDashboard] = useState<IndexDashboardResponse | null>(null);
   const [explanation, setExplanation] = useState<IndexExplanationResponse | null>(null);
   const [audit, setAudit] = useState<IndexAuditResponse | null>(null);
-  const [persistedObservations, setPersistedObservations] = useState<number>(36606);
+  const [persistedObservations, setPersistedObservations] = useState<number | undefined>(undefined);
 
   const normalizeTab = (rawTab: string | null): PlatformTab => {
     if (!rawTab) return 'guide';
@@ -44,6 +45,7 @@ export default function App() {
     if (rawTab === 'aeroguide' || rawTab === 'guide') return 'guide';
     if (rawTab === 'market') return 'market';
     if (rawTab === 'proof') return 'proof';
+    if (rawTab === 'operations' || rawTab === 'ops') return 'operations';
     if (rawTab === 'live-market') return 'live-market';
     if (rawTab === 'routes') return 'routes';
     if (rawTab === 'horizon' || rawTab === 'horizons') return 'horizon';
@@ -209,6 +211,11 @@ export default function App() {
               onNavigateToValidation={() => handleSelectTab('validation')}
               persistedObservations={persistedObservations}
             />
+          )}
+
+          {/* MODE 4: OPERATIONS (Production Telemetry, Source Health, Collection Controls) */}
+          {activeTab === 'operations' && (
+            <OperationsPage />
           )}
 
           {/* Secondary Legacy Pages for Deep Analysis and Tests */}

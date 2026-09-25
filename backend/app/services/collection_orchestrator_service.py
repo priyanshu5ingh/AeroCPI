@@ -73,8 +73,8 @@ class CollectionOrchestratorService:
         search_date_val = now_utc.date()
         search_date_str = search_date_val.isoformat()
 
-        target_routes = routes or TIER_1_DGCA_CORE
-        target_dates = travel_dates or DEFAULT_PINNED_DATES
+        target_routes = routes if routes is not None else TIER_1_DGCA_CORE
+        target_dates = travel_dates if travel_dates is not None else DEFAULT_PINNED_DATES
         
         # Determine available sources
         if source_ids:

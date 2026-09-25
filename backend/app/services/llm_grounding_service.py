@@ -12,9 +12,9 @@ def generate_grounded_explanation(payload: Dict[str, Any]) -> str:
     """Generates an evidence-grounded summary adhering to strict zero-hallucination rules."""
     origin = payload.get("origin", "Origin")
     dest = payload.get("destination", "Destination")
-    fare = payload.get("current_observed_fare", 0.0)
+    fare = payload.get("current_observed_fare")
     pos = payload.get("price_position", "TYPICAL")
-    median = payload.get("route_historical_median", 0.0)
+    median = payload.get("route_historical_median")
     decision = payload.get("booking_guidance", "WATCH")
     airlines = payload.get("airlines_observed_count", 0)
     flex_dates = payload.get("flexible_dates", [])
@@ -24,7 +24,9 @@ def generate_grounded_explanation(payload: Dict[str, Any]) -> str:
     parts: List[str] = []
     
     # 1. Price Context & Baseline Comparison
-    if pos == "LOW":
+    if fare is None or median is None:
+        parts.append(f"Insufficient empirical observation data to determine current price position for {origin} ➔ {dest}.")
+    elif pos == "LOW":
         parts.append(f"Today's lowest observed fare for {origin} ➔ {dest} is ₹{fare:,.0f}, positioning below the historical corridor median of ₹{median:,.0f}.")
     elif pos == "HIGH":
         parts.append(f"Today's lowest observed fare for {origin} ➔ {dest} is ₹{fare:,.0f}, positioning above the historical corridor median of ₹{median:,.0f}.")

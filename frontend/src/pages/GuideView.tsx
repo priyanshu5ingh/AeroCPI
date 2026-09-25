@@ -425,7 +425,7 @@ export const GuideView: React.FC<GuideViewProps> = ({
                         Current Lowest Observed Fare
                       </div>
                       <div className="text-4xl md:text-6xl font-black text-white font-mono tracking-tight">
-                        ₹{analysis.current_observed_fare.toLocaleString('en-IN')}
+                        ₹{(analysis.current_observed_fare?.toLocaleString('en-IN') ?? 'N/A')}
                       </div>
                       <div className="text-xs font-mono text-slate-400 flex items-center gap-2 pt-1">
                         <span>Observed on: <strong className="text-slate-200">Google Flights</strong></span>
@@ -513,7 +513,7 @@ export const GuideView: React.FC<GuideViewProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Route Median:</span>
-                      <strong className="text-white">₹{analysis.route_historical_median.toLocaleString('en-IN')}</strong>
+                      <strong className="text-white">₹{(analysis.route_historical_median?.toLocaleString('en-IN') ?? 'N/A')}</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Percentile Rank:</span>
@@ -523,7 +523,7 @@ export const GuideView: React.FC<GuideViewProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Historical Min:</span>
-                      <strong className="text-slate-300">₹{analysis.route_historical_min.toLocaleString('en-IN')}</strong>
+                      <strong className="text-slate-300">₹{(analysis.route_historical_min?.toLocaleString('en-IN') ?? 'N/A')}</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Airlines Quoted:</span>

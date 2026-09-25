@@ -1,7 +1,45 @@
+# Environment & Secret Files
 .env
 .env.*
+!.env.example
+
+# Python Caches & Virtual Environments
 __pycache__/
-*.pyc
-*.db
+**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+backend/.venv/
+venv/
+ENV/
+
+# SQLite lock and temporary journal files (preserve database seed, ignore runtime WAL locks)
+*.db-shm
+*.db-wal
+*.db-journal
+
+# Node & Frontend Build Artifacts
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.vite/
+frontend/.vite/
+
+# Logs & Runtime Diagnostics
 logs/
+backend/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# OS Specific
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary scrapers/captures audit
 data/raw/duffel_audit/

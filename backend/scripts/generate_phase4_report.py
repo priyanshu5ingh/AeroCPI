@@ -38,7 +38,7 @@ def generate_report():
         if hasattr(latest_index_run, "status"):
             index_run_status = getattr(latest_index_run, "status")
         else:
-            index_run_status = "PUBLISHED (Implicit)"
+            index_run_status = "UNEVALUATED"
 
     prod_model = ModelRegistryService.load_production()
     model_status = "PROMOTED" if prod_model else "NONE"

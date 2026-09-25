@@ -28,9 +28,14 @@ class ProductionDataPolicy:
 
     @classmethod
     def apply_forecasting_filters(cls, query: Any) -> Any:
+        from sqlalchemy import or_
         return query.filter(
             Observation.data_status == cls.OBSERVED_STATUS,
             Observation.validation_status == cls.ACCEPTED_VALIDATION,
             Observation.index_eligibility == cls.ELIGIBLE_INDEX,
-            Observation.capture_method != "SYNTHETIC"
+            # Exclude explicitly synthetic captures; NULL capture_method = real unannotated observation
+            or_(
+                Observation.capture_method.is_(None),
+                Observation.capture_method != "SYNTHETIC",
+            )
         )

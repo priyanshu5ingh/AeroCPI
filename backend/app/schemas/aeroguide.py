@@ -142,6 +142,8 @@ class ForecastingReadinessResponse(BaseModel):
     last_training_reasons: Optional[List[str]] = None
     production_model_sha: Optional[str] = None
     production_model_metrics: Optional[Dict[str, Any]] = None
+    dataset_fingerprint: Optional[str] = None
+    next_training_eligibility: Optional[str] = None
 
 class CarrierQuotePoint(BaseModel):
     carrier_code: str

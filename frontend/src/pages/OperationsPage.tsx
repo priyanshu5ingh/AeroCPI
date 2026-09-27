@@ -291,24 +291,75 @@ export const OperationsPage: React.FC = () => {
           The collection scheduler automatically recalculates readiness after every sweep. When empirical criteria are met, an isolated temporal walk-forward evaluation creates a candidate model. Promotion to production is gated by strict baseline comparison.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800/80 text-xs font-mono">
-          <div>
-            <span className="text-slate-500 block text-[10px] uppercase">Last Evaluation Run</span>
-            <span className="text-white font-bold">{metricsData?.readiness?.last_training_time || 'N/A'}</span>
+        {!metricsData?.readiness?.production_model_sha ? (
+          <div className="py-8 text-center border-t border-slate-800/80">
+            <div className="text-xl font-black text-amber-500 mb-2 font-mono">MODEL NOT READY</div>
+            <div className="text-sm text-amber-400/80 font-mono">
+              {metricsData?.readiness?.readiness_notes || 'Waiting for empirical requirements to be met.'}
+            </div>
+            {metricsData?.readiness?.last_training_reasons && metricsData.readiness.last_training_reasons.length > 0 && (
+              <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg inline-block text-left">
+                <div className="text-xs text-rose-400 font-bold mb-1 uppercase tracking-wider">Latest Training Rejection:</div>
+                <div className="text-sm text-rose-300 font-mono">
+                  {metricsData.readiness.last_training_reasons.join(", ")}
+                </div>
+              </div>
+            )}
           </div>
-          <div className="sm:col-span-2">
-            <span className="text-slate-500 block text-[10px] uppercase">Evaluation Notes / Rejection</span>
-            <span className="text-rose-400 font-bold">{metricsData?.readiness?.last_training_reasons?.join(", ") || 'N/A'}</span>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80 text-xs font-mono">
+            <div>
+              <span className="text-slate-500 block text-[10px] uppercase">Promotion Status</span>
+              <span className="text-emerald-400 font-bold">PROMOTED</span>
+            </div>
+            <div className="lg:col-span-2">
+              <span className="text-slate-500 block text-[10px] uppercase">Production Fingerprint (SHA-256)</span>
+              <span className="text-indigo-400 font-bold truncate block" title={metricsData?.readiness?.production_model_sha}>
+                {metricsData?.readiness?.production_model_sha}
+              </span>
+            </div>
+            <div>
+              <span className="text-slate-500 block text-[10px] uppercase">Training Timestamp</span>
+              <span className="text-white font-bold">{metricsData?.readiness?.last_training_time || 'N/A'}</span>
+            </div>
+            
+            <div className="lg:col-span-4 mt-2">
+              <span className="text-slate-500 block text-[10px] uppercase border-b border-slate-800 pb-1 mb-2">Classification Metrics vs Temporal Baseline</span>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <div><span className="text-slate-400 block text-[9px]">Accuracy</span><span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.classification?.accuracy?.toFixed(3) || 'N/A'}</span></div>
+                <div><span className="text-slate-400 block text-[9px]">Macro F1</span><span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.classification?.macro_f1?.toFixed(3) || 'N/A'}</span></div>
+                <div><span className="text-slate-400 block text-[9px]">Balanced Acc</span><span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.classification?.balanced_accuracy?.toFixed(3) || 'N/A'}</span></div>
+                <div><span className="text-slate-400 block text-[9px]">Log Loss</span><span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.classification?.log_loss?.toFixed(3) || 'N/A'}</span></div>
+                <div><span className="text-slate-400 block text-[9px]">Brier Score</span><span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.classification?.brier_score_UP?.toFixed(3) || 'N/A'}</span></div>
+              </div>
+            </div>
+            
+            <div className="lg:col-span-4 mt-2">
+              <span className="text-slate-500 block text-[10px] uppercase border-b border-slate-800 pb-1 mb-2">Regression Metrics vs Temporal Baseline</span>
+              <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
+                <div>
+                  <span className="text-slate-400 block text-[9px]">MAE</span>
+                  <span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.regression?.mae?.toFixed(3) || 'N/A'}</span>
+                  <span className="text-slate-500 text-[10px] ml-2">(Base: {metricsData?.readiness?.production_model_metrics?.regression?.temporal_baseline?.mae?.toFixed(3) || 'N/A'})</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[9px]">RMSE</span>
+                  <span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.regression?.rmse?.toFixed(3) || 'N/A'}</span>
+                  <span className="text-slate-500 text-[10px] ml-2">(Base: {metricsData?.readiness?.production_model_metrics?.regression?.temporal_baseline?.rmse?.toFixed(3) || 'N/A'})</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800/80 text-xs font-mono">
           <div>
-            <span className="text-slate-500 block text-[10px] uppercase">Current Production SHA-256</span>
-            <span className="text-emerald-400 font-bold">{metricsData?.readiness?.production_model_sha || 'NONE'}</span>
+            <span className="text-slate-500 block text-[10px] uppercase">Next Training Eligibility</span>
+            <span className="text-indigo-300 font-bold">{metricsData?.readiness?.next_training_eligibility || 'Unknown'}</span>
           </div>
           <div>
-            <span className="text-slate-500 block text-[10px] uppercase">Production Holdout F1</span>
-            <span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.classification?.macro_f1?.toFixed(3) || 'N/A'}</span>
+             <span className="text-slate-500 block text-[10px] uppercase">Dataset Fingerprint</span>
+             <span className="text-slate-400 font-bold truncate block">{metricsData?.readiness?.dataset_fingerprint || 'Pending initial training'}</span>
           </div>
         </div>
       </div>

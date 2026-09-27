@@ -444,9 +444,9 @@ def get_forecasting_readiness(db: Session) -> ForecastingReadinessResponse:
         manifest = prod["manifest"]
         metrics["production_model_sha"] = manifest.get("artifact_sha256")
         metrics["production_model_metrics"] = manifest.get("metrics")
+        metrics["dataset_fingerprint"] = manifest.get("dataset_fingerprint")
         
     # 2. Load latest candidate info if exists
-    # ModelRegistryService currently doesn't have `load_latest_candidate()`, we can just peek into the model dir
     model_dir = ModelRegistryService.model_dir()
     candidate_manifests = list(model_dir.glob("AEROGUIDE_ML_V1_*.json"))
     if candidate_manifests:
@@ -458,5 +458,16 @@ def get_forecasting_readiness(db: Session) -> ForecastingReadinessResponse:
             metrics["last_training_reasons"] = cand_data.get("rejection_reasons")
         except Exception:
             pass
+            
+    # Calculate next training eligibility
+    MIN_NEW_EXAMPLES = 20
+    prod_examples = prod["manifest"].get("training_summary", {}).get("examples", 0) if prod else 0
+    current_examples = metrics.get("effective_forecasting_examples", 0)
+    if not prod:
+        metrics["next_training_eligibility"] = "Eligible on next schedule (no model exists)"
+    elif (current_examples - prod_examples) >= MIN_NEW_EXAMPLES:
+        metrics["next_training_eligibility"] = "Eligible on next schedule (sufficient new data)"
+    else:
+        metrics["next_training_eligibility"] = f"Requires {MIN_NEW_EXAMPLES - (current_examples - prod_examples)} more examples"
 
     return ForecastingReadinessResponse(**metrics)

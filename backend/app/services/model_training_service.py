@@ -150,6 +150,12 @@ class ModelTrainingService:
         )
         metrics["walk_forward_cv_accuracy"] = cv_metrics
         
+        import hashlib
+        import json
+        # stable dataset fingerprint
+        fingerprint_data = json.dumps(sorted([ex["observation_id"] for ex in examples])).encode('utf-8')
+        dataset_fingerprint = hashlib.sha256(fingerprint_data).hexdigest()
+
         # 9. Registry Bundle
         bundle = {
             "classifier": clf,
@@ -167,6 +173,7 @@ class ModelTrainingService:
             "target_version": TARGET_VERSION,
             "training_examples": len(train_ex),
             "holdout_examples": len(holdout_ex),
+            "dataset_fingerprint": dataset_fingerprint,
             "walk_forward_folds": 3 if cv_metrics else 0,
             "metrics": metrics,
             "fit_time_seconds": round(fit_time, 2),

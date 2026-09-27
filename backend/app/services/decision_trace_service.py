@@ -29,7 +29,7 @@ def build_decision_trace(
 ) -> List[DecisionTraceNode]:
     rd = readiness or {
         "dataset_classification": "INSUFFICIENT_LONGITUDINAL_HISTORY",
-        "model_training_status": "DISABLED",
+        "training_eligibility": "BLOCKED",
         "seven_day_target_pairs": 0,
         "fourteen_day_target_pairs": 0,
         "effective_forecasting_examples": 0
@@ -38,7 +38,7 @@ def build_decision_trace(
     seven_d_cnt = rd.get("seven_day_target_pairs", 0)
     effective_cnt = rd.get("effective_forecasting_examples", 0)
     classification = rd.get("dataset_classification", "INSUFFICIENT_LONGITUDINAL_HISTORY")
-    model_status = rd.get("model_training_status", "DISABLED")
+    model_status = rd.get("training_eligibility", "BLOCKED")
     is_ready = seven_d_cnt >= 7
     forecast_availability = "AVAILABLE" if is_ready else "NOT_AVAILABLE"
 
@@ -108,7 +108,7 @@ def build_decision_trace(
                 "dataset_classification": classification,
                 "seven_day_target_pairs": seven_d_cnt,
                 "effective_forecasting_examples": effective_cnt,
-                "model_training_status": model_status,
+                "training_eligibility": model_status,
                 "forecast_availability": forecast_availability
             }
         ),

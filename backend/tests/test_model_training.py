@@ -94,12 +94,12 @@ def test_11_16_promotion_gates_and_registry_states(db_session):
     # Regression check: fails to beat baseline
     candidate["manifest"]["metrics"]["classification"] = {"accuracy": 0.9, "macro_f1": 0.9, "temporal_baseline": {"accuracy": 0.5, "macro_f1": 0.5}}
     candidate["manifest"]["metrics"]["regression"] = {"mae": 150, "temporal_baseline": {"mae": 100}}
-    with pytest.raises(PromotionGateException, match="Candidate regression MAE"):
+    with pytest.raises(PromotionGateException, match="Regression MAE"):
         ModelTrainingService.promote_candidate(candidate)
 
     # Pass all gates
     candidate["manifest"]["metrics"]["classification"] = {"accuracy": 0.9, "macro_f1": 0.9, "temporal_baseline": {"accuracy": 0.5, "macro_f1": 0.5}}
-    candidate["manifest"]["metrics"]["regression"] = {"mae": 50, "temporal_baseline": {"mae": 100}}
+    candidate["manifest"]["metrics"]["regression"] = {"mae": 50, "rmse": 50, "temporal_baseline": {"mae": 100, "rmse": 100}}
     
     promoted = ModelTrainingService.promote_candidate(candidate)
     assert promoted["manifest"]["status"] == "PROMOTED"

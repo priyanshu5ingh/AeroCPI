@@ -89,6 +89,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_route_universe_is_cpi_basket_member'), 'route_universe', ['is_cpi_basket_member'], unique=False)
     op.create_index(op.f('ix_route_universe_route_id'), 'route_universe', ['route_id'], unique=False)
     op.create_index(op.f('ix_route_universe_tier'), 'route_universe', ['tier'], unique=False)
+    op.create_index('idx_route_universe_pair_tier', 'route_universe', ['canonical_origin_airport', 'canonical_destination_airport', 'tier'], unique=False)
     
     op.create_table('source_capabilities',
     sa.Column('source_id', sa.String(length=40), nullable=False),
@@ -125,10 +126,12 @@ def upgrade() -> None:
     sa.Column('source_b', sa.String(length=40), nullable=False),
     sa.Column('fare_a', sa.Float(), nullable=False),
     sa.Column('fare_b', sa.Float(), nullable=False),
-    sa.Column('absolute_difference', sa.Float(), nullable=False),
-    sa.Column('percentage_difference', sa.Float(), nullable=False),
-    sa.Column('search_timestamp', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('is_anomalous', sa.Boolean(), nullable=False),
+    sa.Column('difference', sa.Float(), nullable=False),
+    sa.Column('difference_pct', sa.Float(), nullable=False),
+    sa.Column('comparison_timestamp', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('comparability_status', sa.String(length=30), nullable=False),
+    sa.Column('comparability_reasons', sa.JSON(), nullable=False),
+    sa.Column('passenger_configuration', sa.JSON(), nullable=False),
     sa.PrimaryKeyConstraint('comparison_id')
     )
     op.create_index(op.f('ix_source_price_comparisons_comparison_id'), 'source_price_comparisons', ['comparison_id'], unique=False)
@@ -139,6 +142,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_table('source_price_comparisons')
     op.drop_table('source_capabilities')
+    op.drop_index('idx_route_universe_pair_tier', table_name='route_universe')
     op.drop_table('route_universe')
     op.drop_table('longitudinal_panel_manifest')
     op.drop_table('airline_registry')

@@ -153,7 +153,8 @@ class ModelTrainingService:
         import hashlib
         import json
         # stable dataset fingerprint
-        fingerprint_data = json.dumps(sorted([ex["observation_id"] for ex in examples])).encode('utf-8')
+        fingerprint_keys = sorted([f"{ex['route_id']}_{ex['travel_date']}_{ex['prediction_date']}" for ex in examples])
+        fingerprint_data = json.dumps(fingerprint_keys).encode('utf-8')
         dataset_fingerprint = hashlib.sha256(fingerprint_data).hexdigest()
 
         # 9. Registry Bundle

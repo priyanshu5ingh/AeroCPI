@@ -1,6 +1,6 @@
 """milestone4d_statistical_index_schema
 
-Revision ID: 012_milestone4d_statistical_index_schema
+Revision ID: 012_m4d_statistical_index
 Revises: 011_trust_evaluation_schema
 Create Date: 2026-09-12
 
@@ -8,7 +8,7 @@ Create Date: 2026-09-12
 from alembic import op
 import sqlalchemy as sa
 
-revision = '012_milestone4d_statistical_index_schema'
+revision = '012_m4d_statistical_index'
 down_revision = '011_trust_evaluation_schema'
 branch_labels = None
 depends_on = None

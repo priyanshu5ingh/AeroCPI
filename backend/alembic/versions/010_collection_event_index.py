@@ -1,6 +1,6 @@
 """collection_event_and_index_eligibility
 
-Revision ID: 010_collection_event_and_index_eligibility
+Revision ID: 010_collection_event_index
 Revises: 009_separate_provenance_hashes
 Create Date: 2026-09-09
 
@@ -8,7 +8,7 @@ Create Date: 2026-09-09
 from alembic import op
 import sqlalchemy as sa
 
-revision = '010_collection_event_and_index_eligibility'
+revision = '010_collection_event_index'
 down_revision = '009_separate_provenance_hashes'
 branch_labels = None
 depends_on = None

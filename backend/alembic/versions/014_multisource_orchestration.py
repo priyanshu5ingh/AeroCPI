@@ -1,15 +1,15 @@
 """014_multisource_orchestration_schema
 
-Revision ID: 014_multisource_orchestration_schema
-Revises: 013_milestone7a_capabilities_schema
+Revision ID: 014_multisource_orchestration
+Revises: 013_m7a_capabilities
 Create Date: 2026-09-16
 
 """
 from alembic import op
 import sqlalchemy as sa
 
-revision = '014_multisource_orchestration_schema'
-down_revision = '013_milestone7a_capabilities_schema'
+revision = '014_multisource_orchestration'
+down_revision = '013_m7a_capabilities'
 branch_labels = None
 depends_on = None
 

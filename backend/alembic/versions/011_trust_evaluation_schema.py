@@ -1,7 +1,7 @@
 """trust_evaluation_schema
 
 Revision ID: 011_trust_evaluation_schema
-Revises: 010_collection_event_and_index_eligibility
+Revises: 010_collection_event_index
 Create Date: 2026-09-11
 
 """
@@ -9,7 +9,7 @@ from alembic import op
 import sqlalchemy as sa
 
 revision = '011_trust_evaluation_schema'
-down_revision = '010_collection_event_and_index_eligibility'
+down_revision = '010_collection_event_index'
 branch_labels = None
 depends_on = None
 

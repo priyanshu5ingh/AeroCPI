@@ -1,15 +1,15 @@
 """milestone7a_capabilities_schema
 
-Revision ID: 013_milestone7a_capabilities_schema
-Revises: 012_milestone4d_statistical_index_schema
+Revision ID: 013_m7a_capabilities
+Revises: 012_m4d_statistical_index
 Create Date: 2026-09-12
 
 """
 from alembic import op
 import sqlalchemy as sa
 
-revision = '013_milestone7a_capabilities_schema'
-down_revision = '012_milestone4d_statistical_index_schema'
+revision = '013_m7a_capabilities'
+down_revision = '012_m4d_statistical_index'
 branch_labels = None
 depends_on = None
 

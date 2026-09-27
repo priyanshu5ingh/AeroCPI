@@ -15,11 +15,19 @@ class Settings(BaseSettings):
     
     DATABASE_URL: Optional[str] = None
 
+    CORS_ORIGINS: str = "http://localhost:5173"
+
     @property
     def sync_database_url(self) -> str:
         if self.DATABASE_URL:
             return self.DATABASE_URL
-        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        if self.POSTGRES_SERVER and self.POSTGRES_SERVER != "localhost":
+            return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        
+        import pathlib
+        backend_dir = pathlib.Path(__file__).resolve().parents[3]
+        db_file = backend_dir / "aerocpi_dev.db"
+        return f"sqlite:///{db_file}"
 
     model_config = SettingsConfigDict(
         env_file=".env",

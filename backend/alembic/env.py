@@ -19,14 +19,7 @@ def get_engine():
     db_url = settings.sync_database_url
     if "sqlite" in db_url:
         return create_engine(db_url)
-    try:
-        eng = create_engine(db_url, poolclass=pool.NullPool)
-        with eng.connect():
-            pass
-        return eng
-    except Exception:
-        # Fallback for local testing when Postgres service is not running on host
-        return create_engine("sqlite:///./aerocpi_dev.db")
+    return create_engine(db_url, poolclass=pool.NullPool)
 
 def run_migrations_offline() -> None:
     url = str(get_engine().url)

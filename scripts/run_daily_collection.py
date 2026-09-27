@@ -1,90 +1,143 @@
+"""AeroCPI Production Daily Collection Scheduler.
+Executes deterministic collection sweeps across configured routes and dates with process lock protection.
+
+Invocation on Operating System:
+- Windows Task Scheduler:
+    Action: Start a program
+    Program: C:\\Users\\priya\\Downloads\\AeroCPI\\backend\\.venv\\Scripts\\python.exe
+    Arguments: C:\\Users\\priya\\Downloads\\AeroCPI\\backend\\scripts\\run_daily_collection.py
+    Schedule: Daily at 02:00 UTC (07:30 IST)
+
+- Linux / POSIX cron:
+    0 2 * * * cd /opt/aerocpi/backend && ./venv/bin/python scripts/run_daily_collection.py >> /var/log/aerocpi/scheduler.log 2>&1
 """
-AeroCPI Live Collection CLI Runner & Scheduler Script
-Usage:
-  Manual Single Route Test (Dry-run):
-    python scripts/run_daily_collection.py --manual --origin DEL --dest BOM --apw 15 --dry-run
+from __future__ import annotations
 
-  Manual Single Route Real Collection & Ingestion:
-    python scripts/run_daily_collection.py --manual --origin DEL --dest BOM --apw 15
-
-  Manual Full Sweep (10 Basket Routes x 5 Production APWs):
-    python scripts/run_daily_collection.py --manual --full-sweep
-
-  Scheduled Execution (Windows Task Scheduler Entry Point):
-    python scripts/run_daily_collection.py --scheduled
-"""
-import sys
 import os
+import sys
+import time
+import atexit
 import argparse
-import pathlib
-from datetime import datetime, timezone
+import datetime as dt
+from pathlib import Path
 
-# Ensure backend directory is in sys.path
-SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent
-BACKEND_DIR = PROJECT_ROOT / "backend"
-if str(BACKEND_DIR) not in sys.path:
-    sys.path.insert(0, str(BACKEND_DIR))
+# Add backend to path
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app.db.session import SessionLocal
-from app.services.live_collector_service import (
-    LiveCollectorService,
-    DEFAULT_BASKET_ROUTES,
-    PRODUCTION_APW_SET
-)
+from app.services.collection_orchestrator_service import CollectionOrchestratorService
+from app.config.collection import ACTIVE_PRODUCTION_ROUTES, PINNED_LONGITUDINAL_DATES, SOURCE_DEFINITIONS
 
-def main():
-    parser = argparse.ArgumentParser(description="AeroCPI Live Fare Observation Collector")
-    parser.add_argument("--manual", action="store_true", help="Execute manual collection run")
-    parser.add_argument("--scheduled", action="store_true", help="Execute scheduled daily collection sweep")
-    parser.add_argument("--full-sweep", action="store_true", help="Run full sweep over all 10 basket routes x 5 production APWs")
-    parser.add_argument("--origin", type=str, default="DEL", help="Origin IATA code (e.g. DEL)")
-    parser.add_argument("--dest", type=str, default="BOM", help="Destination IATA code (e.g. BOM)")
-    parser.add_argument("--apw", type=int, default=15, help="Advance purchase window days (1, 7, 15, 30, 45)")
-    parser.add_argument("--dry-run", action="store_true", help="Fetch and parse quotes without ingesting into database")
+LOCK_FILE = Path(__file__).resolve().parent / ".collector.lock"
 
-    args = parser.parse_args()
 
-    if not args.manual and not args.scheduled:
-        print("Please specify either --manual or --scheduled. Run with --help for options.")
-        sys.exit(1)
+def acquire_process_lock() -> bool:
+    """Acquires an exclusive PID lock file to prevent overlapping collection sweeps."""
+    if LOCK_FILE.exists():
+        try:
+            pid = int(LOCK_FILE.read_text().strip())
+            # Check if process is still running (Windows & POSIX)
+            if os.name == "nt":
+                import ctypes
+                kernel32 = ctypes.windll.kernel32
+                handle = kernel32.OpenProcess(1, False, pid)
+                if handle != 0:
+                    kernel32.CloseHandle(handle)
+                    return False
+            else:
+                os.kill(pid, 0)
+                return False
+        except (ValueError, OSError):
+            pass  # Stale lock file, safe to claim
 
-    db = SessionLocal() if not args.dry_run else None
+    LOCK_FILE.write_text(str(os.getpid()))
+    return True
 
+
+def release_process_lock():
+    """Removes the process lock file."""
+    if LOCK_FILE.exists():
+        try:
+            LOCK_FILE.unlink()
+        except OSError:
+            pass
+
+
+atexit.register(release_process_lock)
+
+
+def run_scheduler(dry_run: bool = False, sources: list[str] | None = None) -> int:
+    print(f"[{dt.datetime.now(dt.timezone.utc).isoformat()}] AeroCPI Production Collection Scheduler Initializing...", flush=True)
+
+    if not acquire_process_lock():
+        print(f"[ERROR] Another collection sweep is currently executing (Lock: {LOCK_FILE}). Aborting to prevent overlap.", file=sys.stderr)
+        return 2
+
+    active_sources = [s_id for s_id, spec in SOURCE_DEFINITIONS.items() if spec["is_operational"]]
+    target_sources = sources or active_sources
+
+    print(f"Target Routes: {len(ACTIVE_PRODUCTION_ROUTES)} corridors")
+    print(f"Target Dates: {len(PINNED_LONGITUDINAL_DATES)} pinned departure dates")
+    print(f"Configured Sources: {list(SOURCE_DEFINITIONS.keys())}")
+    print(f"Active Operational Sources: {active_sources}")
+    print(f"Sweep Sources: {target_sources}")
+
+    db = SessionLocal()
     try:
-        if args.full_sweep or args.scheduled:
-            print("Executing Full Daily Collection Sweep over 10 Basket Routes x 5 Production APWs...")
-            result = LiveCollectorService.execute_daily_collection_sweep(
-                db=db,
-                routes=DEFAULT_BASKET_ROUTES,
-                apws=PRODUCTION_APW_SET,
-                dry_run=args.dry_run
-            )
-            print("Sweep Summary:", result)
-        else:
-            print(f"Executing Single Collection: {args.origin}-{args.dest} APW{args.apw:02d} (Dry-run: {args.dry_run})...")
-            rows, raw_path, digest, status = LiveCollectorService.collect_single_route(
-                origin=args.origin,
-                dest=args.dest,
-                apw=args.apw,
-                cabin="ECONOMY",
-                dry_run=args.dry_run,
-                db=db
-            )
-            print(f"Status: {status}")
-            print(f"SUCCESS: Collected {len(rows)} quotes for {args.origin}-{args.dest} APW{args.apw:02d}")
-            print(f"Raw capture file: {raw_path}")
-            print(f"Uncompressed Raw SHA-256: {digest}")
-            if rows:
-                safe_airline = str(rows[0]['airline']).encode('ascii', 'ignore').decode('ascii')
-                print(f"Sample Quote: {rows[0]['origin_raw']} -> {rows[0]['destination_raw']} INR {rows[0]['total_fare']} ({safe_airline})")
+        res = CollectionOrchestratorService.execute_collection_sweep(
+            db=db,
+            routes=ACTIVE_PRODUCTION_ROUTES,
+            travel_dates=PINNED_LONGITUDINAL_DATES,
+            source_ids=target_sources,
+            run_type="DAILY_OPERATIONAL_SWEEP"
+        )
 
-    except Exception as e:
-        print(f"ERROR: Collection failed: {type(e).__name__}: {str(e)}")
-        sys.exit(1)
+        print("\n=== SWEEP EXECUTION TELEMETRY ===")
+        print(f"Run ID: {res['run_id']}")
+        print(f"Status: {res['status']}")
+        print(f"Total Queries: {res['queries_total']}")
+        print(f"Successful Queries: {res['queries_success']}")
+        print(f"Failed Queries: {res['queries_failed']}")
+        print(f"Observations Saved: {res['observations_saved']}")
+        
+        if res.get("errors_by_source"):
+            for s_id, errs in res["errors_by_source"].items():
+                if errs:
+                    print(f"  [Errors on {s_id}]: {len(errs)} failures (Latest: {errs[-1][:100]})")
+
+        print(f"[{dt.datetime.now(dt.timezone.utc).isoformat()}] Collection sweep complete. Triggering Model Lifecycle Evaluation...")
+        
+        from app.services.model_lifecycle_service import ModelLifecycleService
+        lifecycle_res = ModelLifecycleService.execute_lifecycle_trigger(db)
+        
+        print("\n=== MODEL LIFECYCLE EVALUATION ===")
+        print(f"Triggered: {lifecycle_res.get('triggered')}")
+        if not lifecycle_res.get('triggered'):
+            print(f"Reason: {lifecycle_res.get('reason')}")
+        else:
+            print(f"Training Success: {lifecycle_res.get('training_success')}")
+            print(f"Promoted to Production: {lifecycle_res.get('promoted')}")
+            if not lifecycle_res.get('promoted'):
+                print(f"Rejection Reason: {lifecycle_res.get('reason')}")
+            else:
+                man = lifecycle_res.get("manifest", {})
+                print(f"New Production Model SHA256: {man.get('artifact_sha256')}")
+
+        return 0 if res["status"] in ["COMPLETED", "PARTIAL_SUCCESS"] else 1
+
+    except Exception as exc:
+        print(f"[FATAL] Scheduler encountered uncaught exception: {type(exc).__name__}: {str(exc)}", file=sys.stderr)
+        return 1
     finally:
-        if db is not None:
-            db.close()
+        db.close()
+        release_process_lock()
+
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="AeroCPI Daily Collection Scheduler")
+    parser.add_argument("--dry-run", action="store_true", help="Run without persisting to DB")
+    parser.add_argument("--sources", nargs="+", help="Explicit source IDs to execute")
+    args = parser.parse_args()
+
+    exit_code = run_scheduler(dry_run=args.dry_run, sources=args.sources)
+    sys.exit(exit_code)

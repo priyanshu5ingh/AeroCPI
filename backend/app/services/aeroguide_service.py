@@ -434,5 +434,29 @@ def get_all_source_agreements(db: Session, limit: int = 50) -> List[RouteSourceA
     return results
 
 def get_forecasting_readiness(db: Session) -> ForecastingReadinessResponse:
+    from app.services.model_registry_service import ModelRegistryService
+    import os, json
     metrics = calculate_readiness_metrics(db)
+    
+    # 1. Load production model info
+    prod = ModelRegistryService.load_production()
+    if prod:
+        manifest = prod["manifest"]
+        metrics["production_model_sha"] = manifest.get("artifact_sha256")
+        metrics["production_model_metrics"] = manifest.get("metrics")
+        
+    # 2. Load latest candidate info if exists
+    # ModelRegistryService currently doesn't have `load_latest_candidate()`, we can just peek into the model dir
+    model_dir = ModelRegistryService.model_dir()
+    candidate_manifests = list(model_dir.glob("AEROGUIDE_ML_V1_*.json"))
+    if candidate_manifests:
+        latest = sorted(candidate_manifests, key=lambda p: p.name, reverse=True)[0]
+        try:
+            cand_data = json.loads(latest.read_text(encoding="utf-8"))
+            metrics["last_training_status"] = cand_data.get("status")
+            metrics["last_training_time"] = cand_data.get("created_at")
+            metrics["last_training_reasons"] = cand_data.get("rejection_reasons")
+        except Exception:
+            pass
+
     return ForecastingReadinessResponse(**metrics)

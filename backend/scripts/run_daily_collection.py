@@ -105,6 +105,24 @@ def run_scheduler(dry_run: bool = False, sources: list[str] | None = None) -> in
                 if errs:
                     print(f"  [Errors on {s_id}]: {len(errs)} failures (Latest: {errs[-1][:100]})")
 
+        print(f"[{dt.datetime.now(dt.timezone.utc).isoformat()}] Collection sweep complete. Triggering Model Lifecycle Evaluation...")
+        
+        from app.services.model_lifecycle_service import ModelLifecycleService
+        lifecycle_res = ModelLifecycleService.execute_lifecycle_trigger(db)
+        
+        print("\n=== MODEL LIFECYCLE EVALUATION ===")
+        print(f"Triggered: {lifecycle_res.get('triggered')}")
+        if not lifecycle_res.get('triggered'):
+            print(f"Reason: {lifecycle_res.get('reason')}")
+        else:
+            print(f"Training Success: {lifecycle_res.get('training_success')}")
+            print(f"Promoted to Production: {lifecycle_res.get('promoted')}")
+            if not lifecycle_res.get('promoted'):
+                print(f"Rejection Reason: {lifecycle_res.get('reason')}")
+            else:
+                man = lifecycle_res.get("manifest", {})
+                print(f"New Production Model SHA256: {man.get('artifact_sha256')}")
+
         return 0 if res["status"] in ["COMPLETED", "PARTIAL_SUCCESS"] else 1
 
     except Exception as exc:

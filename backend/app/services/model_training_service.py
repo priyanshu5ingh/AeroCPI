@@ -218,6 +218,20 @@ class ModelTrainingService:
         if status not in ["CANDIDATE", "VALIDATED"]:
             reasons.append(f"Invalid model registry state for promotion: {status}")
 
+        # Ensure we do not replace an existing promoted model with an inferior candidate
+        from app.services.model_registry_service import ModelRegistryService
+        prod = ModelRegistryService.load_production()
+        if prod:
+            prod_metrics = prod["manifest"].get("metrics", {})
+            prod_clf = prod_metrics.get("classification", {})
+            prod_reg = prod_metrics.get("regression", {})
+            
+            if acc < prod_clf.get("accuracy", 0):
+                reasons.append(f"Candidate accuracy ({acc:.3f}) is worse than current production accuracy ({prod_clf.get('accuracy', 0):.3f}).")
+            if mae > prod_reg.get("mae", 9999):
+                reasons.append(f"Candidate MAE ({mae:.3f}) is worse than current production MAE ({prod_reg.get('mae', 0):.3f}).")
+
+
         return len(reasons) == 0, reasons
         
     @classmethod

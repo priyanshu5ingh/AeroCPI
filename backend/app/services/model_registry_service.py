@@ -60,6 +60,12 @@ class ModelRegistryService:
         }
 
     @classmethod
+    def update_candidate_manifest(cls, manifest_path: str, manifest_data: Dict[str, Any]) -> None:
+        path = pathlib.Path(manifest_path)
+        if path.exists():
+            path.write_text(json.dumps(manifest_data, indent=2, sort_keys=True), encoding="utf-8")
+
+    @classmethod
     def promote(cls, candidate: Dict[str, Any]) -> Dict[str, Any]:
         model_dir = cls.model_dir()
         source = pathlib.Path(candidate["artifact_path"])

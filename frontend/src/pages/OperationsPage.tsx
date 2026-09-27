@@ -24,6 +24,7 @@ import {
   fetchOperationalAlerts,
   fetchOperationalRuns,
   triggerCollectionSweep,
+  fetchForecastingReadiness,
 } from '../services/api';
 
 export const OperationsPage: React.FC = () => {
@@ -40,14 +41,15 @@ export const OperationsPage: React.FC = () => {
   const loadData = async () => {
     try {
       setRefreshing(true);
-      const [health, metrics, alerts, runs] = await Promise.all([
+      const [health, metrics, alerts, runs, readiness] = await Promise.all([
         fetchOperationalSourceHealth(),
         fetchOperationalMetrics(),
         fetchOperationalAlerts(),
         fetchOperationalRuns(15),
+        fetchForecastingReadiness()
       ]);
       setHealthData(health);
-      setMetricsData(metrics);
+      setMetricsData({ ...metrics, readiness });
       setAlertsData(alerts || []);
       setRunsData(runs || []);
     } catch (err) {
@@ -263,6 +265,50 @@ export const OperationsPage: React.FC = () => {
           <div>
             <span className="text-slate-500 block text-[10px] uppercase">Training Examples</span>
             <span className="text-white font-bold">{metricsData?.panel?.dataset_examples || 0}</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Automated Model Lifecycle Truth Card */}
+      <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/20 border border-indigo-500/30 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+              <Activity className="w-6 h-6 text-indigo-400" />
+            </div>
+            <div>
+              <div className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-bold">
+                Automated Model Lifecycle Trigger
+              </div>
+              <h3 className="text-lg font-black text-white">
+                Last Status: {metricsData?.readiness?.last_training_status || 'NEVER_TRIGGERED'}
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+          The collection scheduler automatically recalculates readiness after every sweep. When empirical criteria are met, an isolated temporal walk-forward evaluation creates a candidate model. Promotion to production is gated by strict baseline comparison.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800/80 text-xs font-mono">
+          <div>
+            <span className="text-slate-500 block text-[10px] uppercase">Last Evaluation Run</span>
+            <span className="text-white font-bold">{metricsData?.readiness?.last_training_time || 'N/A'}</span>
+          </div>
+          <div className="sm:col-span-2">
+            <span className="text-slate-500 block text-[10px] uppercase">Evaluation Notes / Rejection</span>
+            <span className="text-rose-400 font-bold">{metricsData?.readiness?.last_training_reasons?.join(", ") || 'N/A'}</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800/80 text-xs font-mono">
+          <div>
+            <span className="text-slate-500 block text-[10px] uppercase">Current Production SHA-256</span>
+            <span className="text-emerald-400 font-bold">{metricsData?.readiness?.production_model_sha || 'NONE'}</span>
+          </div>
+          <div>
+            <span className="text-slate-500 block text-[10px] uppercase">Production Holdout F1</span>
+            <span className="text-white font-bold">{metricsData?.readiness?.production_model_metrics?.classification?.macro_f1?.toFixed(3) || 'N/A'}</span>
           </div>
         </div>
       </div>

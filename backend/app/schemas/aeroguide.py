@@ -137,6 +137,11 @@ class ForecastingReadinessResponse(BaseModel):
     overall_readiness: str = "INSUFFICIENT_LONGITUDINAL_HISTORY"
     readiness_notes: str
     required_collection_schedule: Dict[str, Any]
+    last_training_status: Optional[str] = None
+    last_training_time: Optional[str] = None
+    last_training_reasons: Optional[List[str]] = None
+    production_model_sha: Optional[str] = None
+    production_model_metrics: Optional[Dict[str, Any]] = None
 
 class CarrierQuotePoint(BaseModel):
     carrier_code: str

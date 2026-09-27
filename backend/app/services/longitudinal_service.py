@@ -163,8 +163,11 @@ def calculate_readiness_metrics(db: Session) -> Dict[str, Any]:
     sources = [s[0] for s in db.query(distinct(Observation.source_id)).all() if s[0]]
     airlines = [a[0] for a in db.query(distinct(Observation.carrier_id)).all() if a[0]]
     
+    from app.services.forecasting_engine_service import ForecastingEngineService
+    min_pairs = ForecastingEngineService.MIN_EXAMPLES
+    
     # Strict classification logic (Zero Fake ML)
-    is_ready = seven_day_pairs >= 7
+    is_ready = seven_day_pairs >= min_pairs
     classification = "READY_FOR_MODEL" if is_ready else "INSUFFICIENT_LONGITUDINAL_HISTORY"
     model_status = "ENABLED" if is_ready else "DISABLED"
     
@@ -172,7 +175,7 @@ def calculate_readiness_metrics(db: Session) -> Dict[str, Any]:
         notes = (
             f"Longitudinal panel contains {len(manifests)} tracked (route, travel_date) trajectories across {unique_search_dates_cnt} search date(s). "
             f"Zero 7-day forward movement target pairs currently exist. "
-            f"Machine learning model training remains strictly disabled until >= 7 longitudinal target pairs accumulate."
+            f"Machine learning model training remains strictly disabled until >= {min_pairs} longitudinal target pairs accumulate."
         )
     else:
         notes = (

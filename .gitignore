@@ -43,3 +43,8 @@ Desktop.ini
 
 # Temporary scrapers/captures audit
 data/raw/duffel_audit/
+
+# Local Databases
+*.db
+*.sqlite
+*.sqlite3

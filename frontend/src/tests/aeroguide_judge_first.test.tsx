@@ -151,7 +151,7 @@ const mockAnalyzeResponse: AeroGuideAnalyzeResponse = {
       stage_name: 'AI Price Outlook',
       status: 'GATED_EVIDENCE_LIMITED',
       evidence_summary: 'Model training locked awaiting longitudinal target pairs.',
-      structured_payload: { model_status: 'INSUFFICIENT_DATA' }
+      structured_payload: { model_status: 'DISABLED' }
     },
     {
       stage_number: 10,
@@ -371,13 +371,13 @@ describe('AeroGuide Judge-First UX Test Suite', () => {
     });
   });
 
-  it('2. Enforces INSUFFICIENT_DATA state with zero fake probability values when model is collecting', async () => {
+  it('2. Enforces DISABLED state with zero fake probability values when model is collecting', async () => {
     render(<GuideView />);
     await waitFor(() => {
       expect(screen.getAllByText(/AI OUTLOOK/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/0 \/ 7 valid 7-day targets/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/Forecast unavailable/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/INSUFFICIENT_DATA/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/DISABLED/i).length).toBeGreaterThan(0);
       // Ensure no synthetic % bars are rendered
       expect(screen.queryByText(/↓ FALL 50%/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/↑ RISE 50%/i)).not.toBeInTheDocument();

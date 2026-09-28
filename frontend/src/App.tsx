@@ -13,6 +13,7 @@ import {
   fetchForecastingReadiness
 } from './services/api';
 import { Header, PlatformTab } from './components/Header';
+import { ProductionEmptyState } from './components/ProductionEmptyState';
 import { GuideView } from './pages/GuideView';
 import { MarketView } from './pages/MarketView';
 import { ProofView } from './pages/ProofView';
@@ -32,7 +33,7 @@ import { LoadingSkeleton, ErrorView } from './components/StateViews';
 const DEFAULT_RUN_ID = 'e1c05338-bc7a-4e2f-8b81-f855ca54c3be';
 
 export default function App() {
-  const [currentRunId, setCurrentRunId] = useState<string>(DEFAULT_RUN_ID);
+  const [currentRunId, setCurrentRunId] = useState<string | null>(null);
   const [runs, setRuns] = useState<SimpleIndexRun[]>([]);
   const [dashboard, setDashboard] = useState<IndexDashboardResponse | null>(null);
   const [explanation, setExplanation] = useState<IndexExplanationResponse | null>(null);
@@ -90,9 +91,19 @@ export default function App() {
   // Initial load of index runs list and readiness count
   useEffect(() => {
     fetchIndexRuns()
-      .then((data) => setRuns(data))
-      .catch((err) => console.warn('Could not fetch index runs list:', err));
-    fetchForecastingReadiness()
+      .then((data) => {
+        setRuns(data);
+        if (data.length > 0) {
+          setCurrentRunId(data[0].run_id);
+        } else {
+          setLoading(false); // Empty DB, stop loading
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not fetch index runs list:', err);
+        setLoading(false);
+      });
+fetchForecastingReadiness()
       .then((res) => {
         if (res?.total_observations) {
           setPersistedObservations(res.total_observations);
@@ -131,7 +142,9 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadRunData(currentRunId);
+    if (currentRunId) {
+      loadRunData(currentRunId);
+    }
   }, [currentRunId]);
 
   const handleSelectRun = (runId: string) => {
@@ -146,19 +159,19 @@ export default function App() {
     );
   }
 
-  if (error && !dashboard) {
+  if (error && !dashboard && currentRunId) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
         <ErrorView
           message={error}
           is404={is404}
-          onRetry={() => loadRunData(currentRunId)}
+          onRetry={() => currentRunId && loadRunData(currentRunId)}
         />
       </div>
     );
   }
 
-  if (!dashboard) return null;
+  
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-blue-600 selection:text-white font-sans">
@@ -171,12 +184,18 @@ export default function App() {
           Skip to main content
         </a>
         <Header
-          scope={dashboard.dashboard_scope}
+          scope={dashboard?.dashboard_scope || {
+            run_id: 'production-live',
+            reference_date: new Date().toISOString().split('T')[0],
+            calculation_date: new Date().toISOString().split('T')[0],
+            cabin: 'ECONOMY',
+            dashboard_timestamp: new Date().toISOString()
+          }}
           runs={runs}
           onSelectRun={handleSelectRun}
           activeTab={activeTab}
           onSelectTab={handleSelectTab}
-          trustStatus={dashboard.trust.trust_status}
+          trustStatus={dashboard?.trust?.trust_status || "UNVERIFIED"}
           onOpenTrace={() => handleSelectTab('proof')}
           persistedObservations={persistedObservations}
         />
@@ -193,7 +212,7 @@ export default function App() {
           )}
 
           {/* MODE 2: MARKET (What is happening in India's airfare market?) */}
-          {activeTab === 'market' && (
+          {activeTab === 'market' && dashboard && (
             <MarketView
               dashboard={dashboard}
               explanation={explanation}
@@ -202,7 +221,7 @@ export default function App() {
           )}
 
           {/* MODE 3: PROOF (Why should I trust this result?) */}
-          {activeTab === 'proof' && (
+          {activeTab === 'proof' && dashboard && (
             <ProofView
               dashboard={dashboard}
               audit={audit}
@@ -219,7 +238,7 @@ export default function App() {
           )}
 
           {/* Secondary Legacy Pages for Deep Analysis and Tests */}
-          {activeTab === 'overview' && (
+          {activeTab === 'overview' && dashboard && (
             <OverviewPage
               dashboard={dashboard}
               onSelectRoute={setSelectedRouteId}
@@ -227,14 +246,14 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'live-market' && (
+          {activeTab === 'live-market' && dashboard && (
             <LiveMarketPage
               dashboard={dashboard}
               onSelectRoute={setSelectedRouteId}
             />
           )}
 
-          {activeTab === 'routes' && (
+          {activeTab === 'routes' && dashboard && (
             <RoutesPage
               dashboard={dashboard}
               explanation={explanation}
@@ -243,7 +262,7 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'horizon' && (
+          {activeTab === 'horizon' && dashboard && (
             <HorizonAnalysisPage
               dashboard={dashboard}
               onNavigateToExplorer={() => handleSelectTab('live-market')}
@@ -254,13 +273,13 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'methodology' && (
+          {activeTab === 'methodology' && dashboard && (
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
               <MethodologyPage dashboard={dashboard} audit={audit} />
             </div>
           )}
 
-          {activeTab === 'data-quality' && (
+          {activeTab === 'data-quality' && dashboard && (
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
               <DataQualityPage
                 dashboard={dashboard}
@@ -270,7 +289,7 @@ export default function App() {
             </div>
           )}
 
-          {activeTab === 'validation' && (
+          {activeTab === 'validation' && dashboard && (
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
               <ValidationLabPage
                 dashboard={dashboard}
@@ -281,7 +300,7 @@ export default function App() {
             </div>
           )}
 
-          {activeTab === 'audit' && audit && explanation && (
+          {activeTab === 'audit' && dashboard && audit && explanation && (
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
               <AuditEvidencePage
                 dashboard={dashboard}
@@ -292,7 +311,11 @@ export default function App() {
               />
             </div>
           )}
-        </main>
+        
+          {!dashboard && !['guide', 'operations'].includes(activeTab) && (
+            <ProductionEmptyState />
+          )}
+</main>
       </div>
 
       {/* Level 2 Route Explanation Modal (5A) */}

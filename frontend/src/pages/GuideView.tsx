@@ -168,7 +168,7 @@ export const GuideView: React.FC<GuideViewProps> = ({
     }
   };
 
-  const displayPersistedCount = readiness?.total_observations || persistedObservations || 36606;
+  const displayPersistedCount = readiness?.total_observations || persistedObservations || 0;
 
   return (
     <div className="space-y-8 pb-16 font-sans text-slate-100">
@@ -492,7 +492,7 @@ export const GuideView: React.FC<GuideViewProps> = ({
                           </div>
                           <div className="flex justify-between text-slate-400 text-[11px]">
                             <span>Model State:</span>
-                            <span className="text-slate-300 font-bold">INSUFFICIENT_DATA</span>
+                            <span className="text-slate-300 font-bold">{readiness?.model_training_status || 'DISABLED'}</span>
                           </div>
                           <div className="flex justify-between text-slate-400 text-[11px]">
                             <span>Status:</span>
@@ -500,7 +500,7 @@ export const GuideView: React.FC<GuideViewProps> = ({
                           </div>
                         </div>
                         <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
-                          Zero manufactured probabilities. Forward predictive forecasting strictly locks until empirical 7-day longitudinal target pairs accumulate.
+                          {readiness?.readiness_notes || 'Zero manufactured probabilities. Forward predictive forecasting strictly locks until empirical 7-day longitudinal target pairs accumulate.'}
                         </p>
                       </div>
                     )}

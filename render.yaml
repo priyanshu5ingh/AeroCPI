@@ -1,29 +1,23 @@
 services:
-  # ----------------------------------------------------
-  # 1. PostgreSQL Database
-  # ----------------------------------------------------
   - type: pgo
     name: aerocpi-postgres
     plan: free
     version: "15"
 
-  # ----------------------------------------------------
-  # 2. FastAPI Backend Service
-  # ----------------------------------------------------
   - type: web
     name: aerocpi-api
     runtime: python
-    repo: https://github.com/your-username/aerocpi  # TODO: Replace with real repo
+    repo: https://github.com/priyanshu5ingh/AeroCPI
     plan: free
-    buildCommand: "pip install -r backend/requirements.txt && cd backend && alembic upgrade head"
-    startCommand: "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: aerocpi-postgres
           property: connectionString
       - key: CORS_ORIGINS
-        value: "https://aerocpi-frontend.onrender.com" # TODO: Replace with real frontend URL
+        value: "https://aerocpi-frontend.onrender.com"
       - key: DUFFEL_API_TOKEN
         sync: false
       - key: AWS_ACCESS_KEY_ID
@@ -33,34 +27,26 @@ services:
       - key: S3_BUCKET_NAME
         sync: false
 
-  # ----------------------------------------------------
-  # 3. React Frontend Static Site
-  # ----------------------------------------------------
   - type: web
     name: aerocpi-frontend
     runtime: static
-    repo: https://github.com/your-username/aerocpi  # TODO: Replace with real repo
+    repo: https://github.com/priyanshu5ingh/AeroCPI
     buildCommand: "cd frontend && npm install && npm run build"
     staticPublishPath: "./frontend/dist"
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        fromService:
-          name: aerocpi-api
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
-          # Note: RENDER_EXTERNAL_URL doesn't perfectly map to the exact api/v1 suffix. 
-          # You may need to hardcode the value in Render dashboard:
-          # value: "https://aerocpi-api.onrender.com/api/v1"
+        value: "https://aerocpi.onrender.com/api/v1"
 
-  # ----------------------------------------------------
-  # 4. Daily Collection Cron Job
-  # ----------------------------------------------------
   - type: cron
     name: aerocpi-collection-cron
     runtime: python
-    repo: https://github.com/your-username/aerocpi
+    repo: https://github.com/priyanshu5ingh/AeroCPI
     plan: free
-    schedule: "0 2 * * *" # Daily at 02:00 UTC
+    schedule: "0 2 * * *"
     buildCommand: "pip install -r backend/requirements.txt"
     startCommand: "cd backend && python scripts/run_daily_collection.py"
     envVars:
